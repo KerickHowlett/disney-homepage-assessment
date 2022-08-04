@@ -1,30 +1,30 @@
 {
-  "name": "disney-homepage-assessment",
-  "author": {
-    "name": "Kerick Howlett",
-    "url": "https://github.com/KerickHowlett"
-  },
-  "engineStrict": true,
-  "engines": {
-
-  },
-  "version": "1.0.0",
-  "description": "A recreation of the Disney+ homepage written in pure TypeScript.",
-  "license": "UNLICENSED",
-  "scripts": {
-    "test": "test"
-  },
-  "keywords": [
-    "micro-frontend",
-    "single-page application",
-    "spa",
-    "typescript"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/KerickHowlett/disney-homepage-assessment.git"
-  },
-  "bugs": {
-    "url": "https://github.com/KerickHowlett/disney-homepage-assessment/issues"
-  }
+    "name": "disney-homepage-assessment",
+    "author": {
+        "name": "Kerick Howlett",
+        "url": "https://github.com/KerickHowlett"
+    },
+    "engineStrict": true,
+    "engines": {
+        "node": ">=17.0.0"
+    },
+    "version": "1.0.0",
+    "description": "A recreation of the Disney+ homepage written in pure TypeScript.",
+    "license": "UNLICENSED",
+    "scripts": {
+        "test": "test"
+    },
+    "keywords": [
+        "micro-frontend",
+        "single-page application",
+        "spa",
+        "typescript"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/KerickHowlett/disney-homepage-assessment.git"
+    },
+    "bugs": {
+        "url": "https://github.com/KerickHowlett/disney-homepage-assessment/issues"
+    }
 }
