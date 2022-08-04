@@ -1,0 +1,5 @@
+arrowParens: always
+bracketSpacing: true
+editorconfig: true
+semi: true
+trailingComma: all
