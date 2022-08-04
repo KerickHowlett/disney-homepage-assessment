@@ -1,0 +1,39 @@
+*                 text=auto eol=lf
+*.*ignore         text
+*.*rc             text
+*.css             text diff=css
+*.htm             text diff=html
+*.html            text diff=html
+*.js              text
+*.json            text
+*.lock            text -diff
+*.md              text diff=markdown
+*.sass            text
+*.scss            text diff=css
+*.sh              text eol=lf
+*.toml            text
+*.ts              text
+*.txt             text
+*.xml             text
+*.yaml            text
+*.yml             text
+*README*          text
+.editorconfig     text
+.env              text
+.gitattributes    text
+.gitconfig        text
+.husky/*          text eol=lf
+.prettierrc       text
+AUTHORS           text
+CHANGELOG         text
+CONTRIBUTING      text
+Dockerfile        text
+Makefile          text
+TODO              text
+browserslist      text
+makefile          text
+package-lock.json text eol=lf -diff
+package.json      text eol=lf
+pnpm-lock.yaml    text eol=lf -diff
+readme            text
+yarn.lock         text -diff
