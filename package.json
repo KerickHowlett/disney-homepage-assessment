@@ -1,0 +1,25 @@
+{
+  "name": "disney-homepage-assessment",
+  "version": "1.0.0",
+  "description": "A recreation of the Disney+ homepage written in pure TypeScript.",
+  "main": " ",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KerickHowlett/disney-homepage-assessment.git"
+  },
+  "keywords": [
+    "bun",
+    "microfrontend",
+    "typescript",
+    "vite"
+  ],
+  "author": "Kerick Howlett",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/KerickHowlett/disney-homepage-assessment/issues"
+  },
+  "homepage": "https://github.com/KerickHowlett/disney-homepage-assessment#readme"
+}
