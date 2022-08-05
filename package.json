@@ -1,6 +1,7 @@
 {
     "name": "disney-homepage-assessment",
     "version": "1.0.0",
+    "private": true,
     "author": {
         "name": "Kerick Howlett",
         "url": "https://github.com/KerickHowlett"
@@ -25,15 +26,19 @@
         "node": ">=17.0.0",
         "pnpm": ">=7.8.0"
     },
+    "type": "module",
     "scripts": {
         "test": "test"
     },
     "devDependencies": {
+        "@types/jest": "^28.1.6",
+        "@types/node": "^18.6.4",
         "@typescript-eslint/eslint-plugin": "^5.32.0",
         "@typescript-eslint/parser": "^5.32.0",
         "eslint": "^8.21.0",
         "eslint-plugin-simple-import-sort": "^7.0.0",
         "eslint-plugin-sonarjs": "^0.14.0",
+        "jest": "^28.1.3",
         "prettier": "^2.7.1",
         "typescript": "^4.7.4"
     }
