@@ -1,0 +1,37 @@
+{
+    "[javascript]": {
+        "editor.codeActionsOnSave": {
+            "source.fixAll": true,
+            "source.format": true
+        },
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.foldingImportsByDefault": true,
+        "editor.formatOnSave": false
+    },
+    "[typescript]": {
+        "editor.codeActionsOnSave": {
+            "source.fixAll": true,
+            "source.format": true
+        },
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.foldingImportsByDefault": true,
+        "editor.formatOnSave": false
+    },
+    "css.validate": false,
+    "debug.javascript.defaultRuntimeExecutable": {
+        "pwa-node": "node"
+    },
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "less.validate": false,
+    "scss.validate": false,
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "typescript.validate.enable": true,
+    "yaml.completion": true,
+    "yaml.format.bracketSpacing": true,
+    "yaml.format.enable": true,
+    "yaml.format.singleQuote": true,
+    "yaml.hover": true,
+    "yaml.schemaStore.enable": true,
+    "yaml.validate": true
+}
