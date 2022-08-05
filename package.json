@@ -28,4 +28,7 @@
     "scripts": {
         "test": "test"
     },
+    "devDependencies": {
+        "prettier": "^2.7.1"
+    }
 }
