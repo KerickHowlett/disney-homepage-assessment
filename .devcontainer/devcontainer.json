@@ -1,0 +1,36 @@
+{
+    "name": "Disney Homepage Assessment Workspace",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "args": {
+            "VARIANT": "18-bullseye"
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "antfu.vite",
+                "davidanson.vscode-markdownlint",
+                "dbaeumer.vscode-eslint",
+                "editorconfig.editorconfig",
+                "ms-azuretools.vscode-docker",
+                "ms-vscode-remote.remote-containers",
+                "redhat.vscode-yaml",
+                "rohit-gohri.format-code-action",
+                "streetsidesoftware.code-spell-checker",
+                "stylelint.vscode-stylelint",
+                "yzhang.markdown-all-in-one",
+                "zixuanchen.vitest-explorer"
+            ]
+        }
+    },
+    "forwardPorts": [
+        3000,
+        51204,
+        8080
+    ],
+    "remoteUser": "node",
+    "features": {
+        "github-cli": "latest"
+    }
+}
