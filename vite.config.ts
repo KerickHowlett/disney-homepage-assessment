@@ -1,11 +1,16 @@
 import { defineConfig } from 'vitest/config';
 
+const TEST_FILES: string[] = ['**/*.spec.ts'];
+
 export default defineConfig({
     build: {
         watch: {
             include: 'src/**/*',
-            exclude: ['**/node_modules/**', '**/*.spec.ts'],
+            exclude: TEST_FILES,
         },
+    },
+    preview: {
+        port: 8080,
     },
     server: {
         port: 3000,
@@ -17,7 +22,7 @@ export default defineConfig({
             reporter: ['text', 'json', 'html'],
         },
         environment: 'jsdom',
-        include: ['**/*.spec.ts'],
+        include: TEST_FILES,
         globals: true,
         reporters: 'default',
         root: 'src',
