@@ -58,3 +58,7 @@ typings/
 
 # dotenv environment variables file
 .env
+
+# .cache directory's contents.
+.cache/**
+!.cache/.gitkeep
