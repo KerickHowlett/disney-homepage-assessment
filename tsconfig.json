@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "forceConsistentCasingInFileNames": true,
         "target": "ES2022",
         "useDefineForClassFields": true,
         "module": "ES2022",
@@ -21,5 +22,10 @@
     },
     "include": [
         "src"
+    ],
+    "references": [
+        {
+            "path": "./tsconfig.node.json"
+        }
     ]
 }

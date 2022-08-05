@@ -4,7 +4,7 @@
         "sourceMap": true,
         "noEmit": true,
         "types": [
-            "jest"
+            "vitest/globals"
         ]
     },
     "include": [
