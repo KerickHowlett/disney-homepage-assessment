@@ -1,0 +1,31 @@
+env:
+    es2021: true
+    node: true
+extends:
+    - eslint:recommended
+parserOptions:
+    ecmaVersion: latest
+    ecmaFeatures:
+        impliedStrict: true
+    sourceType: module
+rules:
+    indent:
+        - error
+        - 4
+        - SwitchCase: 1
+    linebreak-style:
+        - error
+        - unix
+    quotes:
+        - error
+        - single
+    semi:
+        - error
+        - always
+overrides:
+    - files: "**/*.ts"
+      extends:
+          - eslint:recommended
+          - plugin:@typescript-eslint/recommended
+      rules:
+          indent: off

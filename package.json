@@ -29,6 +29,12 @@
         "test": "test"
     },
     "devDependencies": {
-        "prettier": "^2.7.1"
+        "@typescript-eslint/eslint-plugin": "^5.32.0",
+        "@typescript-eslint/parser": "^5.32.0",
+        "eslint": "^8.21.0",
+        "eslint-plugin-simple-import-sort": "^7.0.0",
+        "eslint-plugin-sonarjs": "^0.14.0",
+        "prettier": "^2.7.1",
+        "typescript": "^4.7.4"
     }
 }
