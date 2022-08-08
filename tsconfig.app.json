@@ -1,11 +1,17 @@
 {
-    "extends": "../tsconfig.json",
+    "extends": "./tsconfig.json",
     "compileOnSave": true,
     "compilerOptions": {
+        "esModuleInterop": true,
+        "isolatedModules": true,
         "sourceMap": true,
         "noEmit": true,
     },
     "include": [
         "src/**/*.ts"
-    ]
+    ],
+    "exclude": [
+        "node_modules",
+        "**/*.spec.ts"
+    ],
 }
