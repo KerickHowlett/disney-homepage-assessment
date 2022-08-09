@@ -3,7 +3,6 @@
         "node_modules/.bin/prettier --ignore-unknown --write",
         "node_modules/.bin/prettier --ignore-unknown --check"
     ],
-    "src/**/*.css": "node_modules/.bin/stylelint",
     "src/**/*.{js,ts}": [
         "node_modules/.bin/eslint --fix",
         "node_modules/.bin/eslint"
