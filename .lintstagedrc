@@ -6,9 +6,5 @@
     "src/**/*.{js,ts}": [
         "node_modules/.bin/eslint --fix",
         "node_modules/.bin/eslint"
-    ],
-    "**/*.md": [
-        "pnpm run fix:markdown",
-        "pnpm run check:markdown"
     ]
 }

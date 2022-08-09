@@ -19,7 +19,6 @@ specifiers:
     inquirer: "8"
     jsdom: ^20.0.0
     lint-staged: ^13.0.3
-    markdownlint-cli: ^0.32.1
     msw: ^0.44.2
     npm-run-all: ^4.1.5
     prettier: ^2.7.1
@@ -48,7 +47,6 @@ devDependencies:
     inquirer: 8.2.4
     jsdom: 20.0.0
     lint-staged: 13.0.3
-    markdownlint-cli: 0.32.1
     msw: 0.44.2_typescript@4.7.4
     npm-run-all: 4.1.5
     prettier: 2.7.1
@@ -1183,15 +1181,6 @@ packages:
             concat-map: 0.0.1
         dev: true
 
-    /brace-expansion/2.0.1:
-        resolution:
-            {
-                integrity: sha512-XnAIvQ8eM+kC6aULx6wuQiwVsnzsi9d3WxzV3FpWTGA19F621kwdbsAcFKXgKUHZWsy+mY6iL1sHTxWEFCytDA==,
-            }
-        dependencies:
-            balanced-match: 1.0.2
-        dev: true
-
     /braces/3.0.2:
         resolution:
             {
@@ -1797,14 +1786,6 @@ packages:
             type-detect: 4.0.8
         dev: true
 
-    /deep-extend/0.6.0:
-        resolution:
-            {
-                integrity: sha512-LOHxIOaPYdHlJRtCQfDIVZtfw/ufM8+rVj649RIHzcm/vGwQRXFt6OPqIFWsm2XEMrNIEtWR64sY1LEKD2vAOA==,
-            }
-        engines: { node: ">=4.0.0" }
-        dev: true
-
     /deep-is/0.1.4:
         resolution:
             {
@@ -1930,14 +1911,6 @@ packages:
             {
                 integrity: sha512-L18DaJsXSUk2+42pv8mLs5jJT2hqFkFE4j21wOmgbUqsZ2hL72NsUU785g9RXgo3s0ZNgVl42TiHp3ZtOv/Vyg==,
             }
-        dev: true
-
-    /entities/3.0.1:
-        resolution:
-            {
-                integrity: sha512-WiyBqoomrwMdFG1e0kqvASYfnlb0lp8M5o5Fw2OFq1hNZxxcNk8Ik0Xm7LxzBhuidnZB/UtBqVCgUz3kBOP51Q==,
-            }
-        engines: { node: ">=0.12" }
         dev: true
 
     /entities/4.3.1:
@@ -2861,14 +2834,6 @@ packages:
             has-symbols: 1.0.3
         dev: true
 
-    /get-stdin/9.0.0:
-        resolution:
-            {
-                integrity: sha512-dVKBjfWisLAicarI2Sf+JuBE/DghV4UzNAVe9yhEJuzeREd3JhOTE9cUaJTeSa77fsbQUK3pcOpJfM59+VKZaA==,
-            }
-        engines: { node: ">=12" }
-        dev: true
-
     /get-stream/6.0.1:
         resolution:
             {
@@ -2942,20 +2907,6 @@ packages:
             minimatch: 3.1.2
             once: 1.4.0
             path-is-absolute: 1.0.1
-        dev: true
-
-    /glob/8.0.3:
-        resolution:
-            {
-                integrity: sha512-ull455NHSHI/Y1FqGaaYFaLGkNMMJbavMrEGFXG/PGrg6y7sutWHUHrz6gy6WEBH6akM1M414dWKCNs+IhKdiQ==,
-            }
-        engines: { node: ">=12" }
-        dependencies:
-            fs.realpath: 1.0.0
-            inflight: 1.0.6
-            inherits: 2.0.4
-            minimatch: 5.1.0
-            once: 1.4.0
         dev: true
 
     /global-dirs/0.1.1:
@@ -3303,14 +3254,6 @@ packages:
             {
                 integrity: sha512-JV/yugV2uzW5iMRSiZAyDtQd+nxtUnjeLt0acNdw98kKLrvuRVyB80tsREOE7yvGVgalhZ6RNXCmEHkUKBKxew==,
             }
-        dev: true
-
-    /ini/3.0.0:
-        resolution:
-            {
-                integrity: sha512-TxYQaeNW/N8ymDvwAxPyRbhMBtnEwuvaTYpOQkFx1nSeusgezHniEc/l35Vo4iCq/mMiTJbpD7oYxN98hFlfmw==,
-            }
-        engines: { node: ^12.13.0 || ^14.15.0 || >=16.0.0 }
         dev: true
 
     /inquirer/8.2.4:
@@ -3812,13 +3755,6 @@ packages:
         hasBin: true
         dev: true
 
-    /jsonc-parser/3.1.0:
-        resolution:
-            {
-                integrity: sha512-DRf0QjnNeCUds3xTjKlQQ3DpJD51GvDjJfnxUVWg6PZTo2otSm+slzNAxU/35hF8/oJIKoG9slq30JYOsF2azg==,
-            }
-        dev: true
-
     /jsonfile/6.1.0:
         resolution:
             {
@@ -3881,15 +3817,6 @@ packages:
             {
                 integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==,
             }
-        dev: true
-
-    /linkify-it/4.0.1:
-        resolution:
-            {
-                integrity: sha512-C7bfi1UZmoj8+PQx22XyeXCuBlokoyWQL5pWSP+EI6nzRylyThouddufc2c1NDIcP9k5agmN9fLpA7VNJfIiqw==,
-            }
-        dependencies:
-            uc.micro: 1.0.6
         dev: true
 
     /lint-staged/13.0.3:
@@ -4094,65 +4021,6 @@ packages:
         engines: { node: ">=8" }
         dev: true
 
-    /markdown-it/13.0.1:
-        resolution:
-            {
-                integrity: sha512-lTlxriVoy2criHP0JKRhO2VDG9c2ypWCsT237eDiLqi09rmbKoUetyGHq2uOIRoRS//kfoJckS0eUzzkDR+k2Q==,
-            }
-        hasBin: true
-        dependencies:
-            argparse: 2.0.1
-            entities: 3.0.1
-            linkify-it: 4.0.1
-            mdurl: 1.0.1
-            uc.micro: 1.0.6
-        dev: true
-
-    /markdownlint-cli/0.32.1:
-        resolution:
-            {
-                integrity: sha512-hVLQ+72b5esQd7I+IqzBEB4x/4C+wJaxS2M6nqaGoDwrtNY6gydGf5CIUJtQcXtqsM615++a8TZPsvEtH6H4gw==,
-            }
-        engines: { node: ">=14" }
-        hasBin: true
-        dependencies:
-            commander: 9.4.0
-            get-stdin: 9.0.0
-            glob: 8.0.3
-            ignore: 5.2.0
-            js-yaml: 4.1.0
-            jsonc-parser: 3.1.0
-            markdownlint: 0.26.1
-            markdownlint-rule-helpers: 0.17.1
-            minimatch: 5.1.0
-            run-con: 1.2.11
-        dev: true
-
-    /markdownlint-rule-helpers/0.17.1:
-        resolution:
-            {
-                integrity: sha512-Djc5IjJt7VA5sZRisISsJC/rQXR7hr8JS9u6Q9/ce3mjPZdzw535cFGG0U6Mag+ldRTRmRwCcTfivOh57KUP4w==,
-            }
-        engines: { node: ">=12" }
-        dev: true
-
-    /markdownlint/0.26.1:
-        resolution:
-            {
-                integrity: sha512-8sLz1ktz5s4E0IDum2H9aiWLQU7RA5Eket9HUW5IRwfFnW2RD2ZyqYePW+z71tMc7lrFZc1+yPmlN9lirbJnlg==,
-            }
-        engines: { node: ">=14" }
-        dependencies:
-            markdown-it: 13.0.1
-        dev: true
-
-    /mdurl/1.0.1:
-        resolution:
-            {
-                integrity: sha512-/sKlQJCBYVY9Ers9hqzKou4H6V5UWc/M59TH2dvkt+84itfnq7uFOMLpOiOS4ujvHP4etln18fmIxA5R5fll0g==,
-            }
-        dev: true
-
     /memorystream/0.3.1:
         resolution:
             {
@@ -4263,16 +4131,6 @@ packages:
             }
         dependencies:
             brace-expansion: 1.1.11
-        dev: true
-
-    /minimatch/5.1.0:
-        resolution:
-            {
-                integrity: sha512-9TPBGGak4nHfGZsPBohm9AWg6NoT7QTCehS3BIJABslyZbzxfV78QM2Y6+i741OPZIafFAaiiEMh5OyIrJPgtg==,
-            }
-        engines: { node: ">=10" }
-        dependencies:
-            brace-expansion: 2.0.1
         dev: true
 
     /minimist-options/4.1.0:
@@ -5137,19 +4995,6 @@ packages:
         engines: { node: ">=0.12.0" }
         dev: true
 
-    /run-con/1.2.11:
-        resolution:
-            {
-                integrity: sha512-NEMGsUT+cglWkzEr4IFK21P4Jca45HqiAbIIZIBdX5+UZTB24Mb/21iNGgz9xZa8tL6vbW7CXmq7MFN42+VjNQ==,
-            }
-        hasBin: true
-        dependencies:
-            deep-extend: 0.6.0
-            ini: 3.0.0
-            minimist: 1.2.6
-            strip-json-comments: 3.1.1
-        dev: true
-
     /run-parallel/1.2.0:
         resolution:
             {
@@ -5867,13 +5712,6 @@ packages:
             }
         engines: { node: ">=4.2.0" }
         hasBin: true
-        dev: true
-
-    /uc.micro/1.0.6:
-        resolution:
-            {
-                integrity: sha512-8Y75pvTYkLJW2hWQHXxoqRgV7qb9B+9vFEtidML+7koHUFapnVJAZ6cKs+Qjz5Aw3aZWHMC6u0wJE3At+nSGwA==,
-            }
         dev: true
 
     /unbox-primitive/1.0.2:
