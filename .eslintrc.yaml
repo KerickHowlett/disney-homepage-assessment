@@ -4,6 +4,7 @@ env:
 extends:
     - eslint:recommended
     - plugin:sonarjs/recommended
+    - plugin:wc/recommended
 plugins:
     - simple-import-sort
 parserOptions:
@@ -33,3 +34,4 @@ overrides:
           - plugin:sonarjs/recommended
       rules:
           indent: off
+          "@typescript-eslint/no-non-null-assertion": off

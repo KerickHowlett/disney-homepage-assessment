@@ -1,20 +1,10 @@
 {
-    "[javascript]": {
-        "editor.codeActionsOnSave": {
-            "source.fixAll": true,
-            "source.format": true
-        },
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.foldingImportsByDefault": true,
-        "editor.formatOnSave": false
-    },
     "[typescript]": {
         "editor.codeActionsOnSave": {
             "source.fixAll": true,
             "source.format": true
         },
         "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.foldingImportsByDefault": true,
         "editor.formatOnSave": false
     },
     "css.validate": false,
@@ -33,5 +23,7 @@
     "yaml.format.singleQuote": true,
     "yaml.hover": true,
     "yaml.schemaStore.enable": true,
-    "yaml.validate": true
+    "yaml.validate": true,
+    "testing.automaticallyOpenPeekView": "never",
+    "exportall.config.folderListener": ["/src/shared/utils/decorators", "/src/shared/utils", "/src/common/functions"]
 }

@@ -1,3 +1,4 @@
+import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
 const TEST_FILES: string[] = ['**/*.spec.ts'];
@@ -9,6 +10,11 @@ export default defineConfig({
             exclude: TEST_FILES,
         },
     },
+    css: {
+        devSourcemap: true,
+    },
+    envPrefix: 'DISNEY_',
+    plugins: [tsconfigPaths()],
     preview: {
         port: 8080,
     },
@@ -26,6 +32,5 @@ export default defineConfig({
         globals: true,
         reporters: 'default',
         root: 'src',
-        // setupFiles: [''],
     },
 });

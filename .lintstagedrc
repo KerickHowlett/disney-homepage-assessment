@@ -1,11 +1,12 @@
 {
+    "*": [
+        "node_modules/.bin/prettier --ignore-unknown --write",
+        "node_modules/.bin/prettier --ignore-unknown --check"
+    ],
     "src/**/*.css": "node_modules/.bin/stylelint",
-    "src/**/*.html": "node_modules/.bin/htmlhint",
     "src/**/*.{js,ts}": [
         "node_modules/.bin/eslint --fix",
-        "node_modules/.bin/prettier --write",
-        "node_modules/.bin/eslint",
-        "node_modules/.bin/prettier --check"
+        "node_modules/.bin/eslint"
     ],
     "**/*.md": [
         "pnpm run fix:markdown",
