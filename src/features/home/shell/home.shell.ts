@@ -28,7 +28,7 @@ export default class DisneyHomeShell extends HTMLElement {
     render(): void {
         this.shadowRoot!.innerHTML = `
             <pre style="color: white">
-                ${JSON.stringify(this.containers)}
+                ${this.containers.length}
             </pre>
         `;
     }

@@ -1,4 +1,5 @@
-import { getEnv, isNull } from '@common/functions';
+import { getEnv, isNull, isValidResponse } from '@common/functions';
+import { CacheStore } from '@common/store';
 import { ContainerType, TARGET_ASPECT_RATIO } from '../constants';
 import {
     Container,
@@ -20,15 +21,21 @@ export class HomeApi {
         method: 'GET',
     };
 
-    constructor(private readonly apiDomain: string = getEnv('DISNEY_API_DOMAIN')) {}
+    constructor(
+        private readonly apiDomain: string = getEnv('DISNEY_API_DOMAIN'),
+        private readonly cache: CacheStore = new CacheStore(),
+    ) {}
 
     async get<TResponse = Readonly<unknown>>(uri: string): Promise<TResponse | null> {
         const endpoint = `${this.apiDomain}/${uri}`;
+        const endpointUrl = new URL(endpoint);
 
         try {
-            const response: Response = await fetch(endpoint, HomeApi.options);
-            if (this.isValid(response)) {
-                return response.json();
+            const response: Response = (await this.cache.get(endpointUrl)) || (await fetch(endpoint, HomeApi.options));
+            if (isValidResponse(response)) {
+                const payload: TResponse = await response.json();
+                this.cache.saveApiResponse(endpointUrl, payload);
+                return payload;
             }
         } catch (error: unknown) {
             console.error(error);
@@ -82,10 +89,6 @@ export class HomeApi {
 
     private isContainerType(type: ContainerSetType, set: Readonly<ContainerSet>): boolean {
         return set.type === type;
-    }
-
-    private isValid(response: Response): boolean {
-        return response.ok && response.status !== 404;
     }
 
     private setCuratedCollection(set: Readonly<ContainerSet>): Record<string, string> | Record<never, never> {

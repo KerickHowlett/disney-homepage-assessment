@@ -13,6 +13,7 @@
     },
     "editor.insertSpaces": true,
     "editor.tabSize": 4,
+    "javascript.validate.enable": false,
     "less.validate": false,
     "scss.validate": false,
     "typescript.tsdk": "node_modules/typescript/lib",
@@ -25,5 +26,6 @@
     "yaml.schemaStore.enable": true,
     "yaml.validate": true,
     "testing.automaticallyOpenPeekView": "never",
-    "exportall.config.folderListener": ["/src/shared/utils/decorators", "/src/shared/utils", "/src/common/functions"]
+    "exportall.config.folderListener": ["/src/shared/utils/decorators", "/src/shared/utils", "/src/common/functions"],
+    "cSpell.words": ["serviceworker"]
 }

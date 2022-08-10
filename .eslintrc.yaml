@@ -1,4 +1,5 @@
 env:
+    browser: true
     es2021: true
     node: true
 extends:
@@ -35,3 +36,23 @@ overrides:
       rules:
           indent: off
           "@typescript-eslint/no-non-null-assertion": off
+    - files: "src/**"
+      env:
+          browser: true
+          es2021: true
+    - files: "src/app.service-worker.js"
+      env:
+          browser: true
+          es2021: true
+          node: false
+          serviceworker: true
+          worker: true
+      extends:
+          - eslint:recommended
+          - plugin:sonarjs/recommended
+      parserOptions:
+          ecmaVersion: latest
+          ecmaFeatures:
+              impliedStrict: true
+          sourceType: script
+          node: false
