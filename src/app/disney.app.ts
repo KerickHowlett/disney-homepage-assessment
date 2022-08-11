@@ -1,29 +1,24 @@
+import { getRootHTML } from '@common/functions/get-root-html';
+import type { CustomElement, RootHTML } from '@common/types';
+import { Component } from '@disney/common';
 import '@disney/features/home';
-import { Component } from '../common';
-import html from './disney.app.html?raw';
+import view from './disney.app.html?raw';
 
 @Component({
     selector: 'disney-app',
 })
-export default class DisneyApp extends HTMLElement {
+export default class DisneyApp extends HTMLElement implements CustomElement {
     constructor() {
         super();
     }
+
+    rootHtml: RootHTML = getRootHTML.bind(this)();
 
     connectedCallback(): void {
         this.render();
     }
 
-    private render(): void {
-        const shadowRoot: ShadowRoot = this.attachShadow({ mode: 'open' });
-        const template: HTMLTemplateElement = this.createTemplate();
-        shadowRoot.appendChild(template.content.cloneNode(true));
-    }
-
-    private createTemplate(): HTMLTemplateElement {
-        const template: HTMLTemplateElement = document.createElement('template');
-        template.id = 'disney-content';
-        template.innerHTML = html;
-        return template;
+    render(): void {
+        this.rootHtml.innerHTML = view;
     }
 }

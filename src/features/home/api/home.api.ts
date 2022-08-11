@@ -1,5 +1,5 @@
 import { getEnv, isNull, isValidResponse } from '@common/functions';
-import { CacheStore } from '@common/store';
+import { ServiceWorkerStore } from '@common/store';
 import { ContainerType, TARGET_ASPECT_RATIO } from '../constants';
 import {
     Container,
@@ -23,7 +23,7 @@ export class HomeApi {
 
     constructor(
         private readonly apiDomain: string = getEnv('DISNEY_API_DOMAIN'),
-        private readonly cache: CacheStore = new CacheStore(),
+        private readonly cache: ServiceWorkerStore = ServiceWorkerStore.getSingletonInstance(),
     ) {}
 
     async get<TResponse = Readonly<unknown>>(uri: string): Promise<TResponse | null> {

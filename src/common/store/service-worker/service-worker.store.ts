@@ -1,11 +1,8 @@
-import { getEnv, isUndefined } from '../functions';
+import { getEnv, isUndefined } from '../../functions';
 
-export class CacheStore {
+export class ServiceWorkerStore {
     private _store: Cache | undefined;
-
-    constructor() {
-        this.init();
-    }
+    private static instance: ServiceWorkerStore | undefined;
 
     get hasServiceWorker(): boolean {
         return 'serviceWorker' in navigator && isUndefined(this._store);
@@ -23,6 +20,17 @@ export class CacheStore {
     async saveApiResponse<T = unknown>(request: URL, response: T): Promise<void> {
         if (isUndefined(this._store)) return;
         await this._store.put(request, new Response(JSON.stringify(response)));
+    }
+
+    static getSingletonInstance(): ServiceWorkerStore {
+        if (isUndefined(ServiceWorkerStore.instance)) {
+            ServiceWorkerStore.instance = new ServiceWorkerStore();
+        }
+        return ServiceWorkerStore.instance;
+    }
+
+    private constructor() {
+        this.init();
     }
 
     private async init(): Promise<void> {

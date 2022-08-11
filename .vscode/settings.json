@@ -26,6 +26,12 @@
     "yaml.schemaStore.enable": true,
     "yaml.validate": true,
     "testing.automaticallyOpenPeekView": "never",
-    "exportall.config.folderListener": ["/src/shared/utils/decorators", "/src/shared/utils", "/src/common/functions"],
+    "exportall.config.folderListener": [
+        "/src/shared/utils/decorators",
+        "/src/shared/utils",
+        "/src/common/functions",
+        "/src/features/home/ui",
+        "/src/common"
+    ],
     "cSpell.words": ["serviceworker"]
 }

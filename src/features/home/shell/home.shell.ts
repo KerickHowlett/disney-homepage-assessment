@@ -1,4 +1,5 @@
-import { Component } from '@disney/common';
+import type { CustomElement, RootHTML } from '@common/types';
+import { Component, getRootHTML } from '@disney/common';
 import { HomeApi } from '../api';
 import { HOME_API } from '../constants';
 import type { DisneyHomeResponse, HomepageCollection } from '../types';
@@ -6,12 +7,12 @@ import type { DisneyHomeResponse, HomepageCollection } from '../types';
 @Component({
     selector: 'disney-home',
 })
-export default class DisneyHomeShell extends HTMLElement {
+export default class DisneyHomeShell extends HTMLElement implements CustomElement {
     constructor(private readonly api: HomeApi = new HomeApi()) {
         super();
-        this.attachShadow({ mode: 'open' });
-        this.shadowRoot!.innerHTML = '';
     }
+
+    rootHtml: RootHTML = getRootHTML.bind(this)();
 
     private _containers: ReadonlyArray<HomepageCollection> = [];
     get containers(): ReadonlyArray<HomepageCollection> {
@@ -23,10 +24,11 @@ export default class DisneyHomeShell extends HTMLElement {
 
     connectedCallback(): void {
         this.fetchMovies();
+        this.render();
     }
 
     render(): void {
-        this.shadowRoot!.innerHTML = `
+        this.rootHtml.innerHTML = `
             <pre style="color: white">
                 ${this.containers.length}
             </pre>
@@ -36,6 +38,7 @@ export default class DisneyHomeShell extends HTMLElement {
     private async fetchMovies(): Promise<void> {
         const response: DisneyHomeResponse | null = await this.api.get(HOME_API);
         this.containers = this.api.pluckCollections(response);
+        console.log(this.containers.length);
         this.render();
     }
 }
