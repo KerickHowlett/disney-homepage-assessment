@@ -31,7 +31,8 @@
         "/src/shared/utils",
         "/src/common/functions",
         "/src/features/home/ui",
-        "/src/common"
+        "/src/common",
+        "/src/features/home/helpers"
     ],
     "cSpell.words": ["serviceworker"]
 }

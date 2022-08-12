@@ -21,7 +21,8 @@
             "@app/*": ["src/app/*"],
             "@common/*": ["src/common/*"],
             "@disney/*": ["src/*"],
-            "@features/*": ["src/features/*"]
+            "@features/*": ["src/features/*"],
+            "@home": ["src/features/home/*"]
         },
         "skipLibCheck": true,
         "types": ["node", "vitest/globals"]

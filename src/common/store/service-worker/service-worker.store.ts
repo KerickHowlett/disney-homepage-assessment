@@ -1,8 +1,15 @@
+import { Singleton } from '@common/decorators';
 import { getEnv, isUndefined } from '../../functions';
 
+@Singleton()
 export class ServiceWorkerStore {
-    private _store: Cache | undefined;
-    private static instance: ServiceWorkerStore | undefined;
+    // @NOTE: I couldn't put the body of 'init()' directly in the constructor
+    //        due to it needing to be async when a constructor can't be.
+    constructor() {
+        this.init();
+    }
+
+    private _store?: Cache;
 
     get hasServiceWorker(): boolean {
         return 'serviceWorker' in navigator && isUndefined(this._store);
@@ -19,18 +26,7 @@ export class ServiceWorkerStore {
 
     async saveApiResponse<T = unknown>(request: URL, response: T): Promise<void> {
         if (isUndefined(this._store)) return;
-        await this._store.put(request, new Response(JSON.stringify(response)));
-    }
-
-    static getSingletonInstance(): ServiceWorkerStore {
-        if (isUndefined(ServiceWorkerStore.instance)) {
-            ServiceWorkerStore.instance = new ServiceWorkerStore();
-        }
-        return ServiceWorkerStore.instance;
-    }
-
-    private constructor() {
-        this.init();
+        await this._store.put(request, new DisneyAPIResponse(JSON.stringify(response)));
     }
 
     private async init(): Promise<void> {

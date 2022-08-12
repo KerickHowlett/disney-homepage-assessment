@@ -1,24 +1,21 @@
 import type { CustomElement, RootHTML } from '@common/types';
 import { Component, getRootHTML } from '@disney/common';
-import { HomeApi } from '../api';
-import { HOME_API } from '../constants';
-import type { DisneyHomeResponse, HomepageCollection } from '../types';
+import type { Collection } from '../types';
 
 @Component({
     selector: 'disney-home',
 })
 export default class DisneyHomeShell extends HTMLElement implements CustomElement {
-    constructor(private readonly api: HomeApi = new HomeApi()) {
+    constructor() {
         super();
     }
-
     rootHtml: RootHTML = getRootHTML.bind(this)();
 
-    private _containers: ReadonlyArray<HomepageCollection> = [];
-    get containers(): ReadonlyArray<HomepageCollection> {
+    private _containers: ReadonlyArray<Collection> = [];
+    get containers(): ReadonlyArray<Collection> {
         return this._containers;
     }
-    set containers(containers: ReadonlyArray<HomepageCollection>) {
+    set containers(containers: ReadonlyArray<Collection>) {
         this._containers = containers;
     }
 
@@ -36,8 +33,8 @@ export default class DisneyHomeShell extends HTMLElement implements CustomElemen
     }
 
     private async fetchMovies(): Promise<void> {
-        const response: DisneyHomeResponse | null = await this.api.get(HOME_API);
-        this.containers = this.api.pluckCollections(response);
+        // const response: DisneyAPIResponse | null = await this.api.get(HOME_API);
+        // this.containers = this.api.pluckCollections(response);
         console.log(this.containers.length);
         this.render();
     }
