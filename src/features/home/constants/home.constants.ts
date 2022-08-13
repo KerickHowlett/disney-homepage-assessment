@@ -6,12 +6,11 @@ export const ContainerType: Record<string, ContainerSetType> = {
     SetRef: 'SetRef',
 } as const;
 
-export const DISNEY_HOME_API = 'home.json';
-export const DISNEY_HOME_STORE_LABEL = '[DISNEY HOMEPAGE]';
-
 export const OnHomeAction: OnAction<HomeActionTypes> = {
     FETCH_HOME_API: 'FETCH_HOME_API',
     SAVE_COLLECTIONS: 'SAVE_COLLECTIONS',
 } as const;
 
+export const HOME_JSON_API = 'home.json';
+export const MESSENGER_EVENTS_KEY = 'HOME_STORE_UPDATED';
 export const TARGET_ASPECT_RATIO = '1.78';

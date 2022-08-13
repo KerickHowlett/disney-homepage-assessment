@@ -1,6 +1,6 @@
 import { Singleton } from '@common/decorators';
 import { getEnv } from '@common/functions';
-import { DISNEY_HOME_API } from '../../constants';
+import { HOME_JSON_API } from '../../constants';
 import { HomeDataFetching } from '../../data-fetching';
 import type { HomeAPIResponse } from '../../types';
 
@@ -12,7 +12,7 @@ export class HomeEffects {
     ) {}
 
     async fetchHomeJSON(): Promise<HomeAPIResponse | null> {
-        const endpoint = `${this.homeApiDomain}/${DISNEY_HOME_API}`;
+        const endpoint = `${this.homeApiDomain}/${HOME_JSON_API}`;
         return this.api.get<HomeAPIResponse>(endpoint);
     }
 }

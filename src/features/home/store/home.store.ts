@@ -1,6 +1,8 @@
 import { Singleton } from '@common/decorators';
 import { PubSub } from '@common/events';
-import { HomeState } from '../types';
+import type { Callback } from '@common/types';
+import { MESSENGER_EVENTS_KEY } from '../constants';
+import { CollectionStateKey, HomeState } from '../types';
 import { HomeReducer } from './reducer/home.reducer';
 import { initialState } from './state/home.state';
 
@@ -19,8 +21,12 @@ export class HomeStore {
     }
 
     private set state(state: Readonly<HomeState>) {
-        this.messenger.publish('HOME_STORE_UPDATED', state);
+        this.messenger.publish(MESSENGER_EVENTS_KEY, state);
         this._state = state;
+    }
+
+    getCollectionIds(): ReadonlyArray<CollectionStateKey> {
+        return Array.from(this.state.collections.keys());
     }
 
     async onInit(): Promise<void> {
@@ -32,5 +38,9 @@ export class HomeStore {
             type: 'FETCH_HOME_API',
             payload: null,
         });
+    }
+
+    subscribe(callback: Callback) {
+        return this.messenger.subscribe(MESSENGER_EVENTS_KEY, callback);
     }
 }
