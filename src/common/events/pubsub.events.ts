@@ -18,6 +18,6 @@ export class PubSub {
     }
 
     private getCurrentCallbacks(event: string): ReadonlyArray<Callback> {
-        return Object.freeze(this.events.get(event) || []);
+        return Object.freeze<ReadonlyArray<Callback>>(this.events.get(event) || []);
     }
 }
