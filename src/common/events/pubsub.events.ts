@@ -8,7 +8,7 @@ export class PubSub {
     subscribe(event: string, callback: Callback): PubSubEvents {
         const currentCallbacks: ReadonlyArray<Callback> = this.getCurrentCallbacks(event);
         this.events.set(event, [...currentCallbacks, callback]);
-        return new Map(this.events);
+        return new Map<string, ReadonlyArray<Callback>>(this.events);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
