@@ -26,7 +26,9 @@ export class ServiceWorkerStore {
 
     async saveApiResponse<T = unknown>(request: URL, response: T): Promise<void> {
         if (isUndefined(this._store)) return;
-        await this._store.put(request, new DisneyAPIResponse(JSON.stringify(response)));
+
+        const dataToCache: Response = response instanceof Response ? response : new Response(JSON.stringify(response));
+        await this._store.put(request, dataToCache);
     }
 
     private async init(): Promise<void> {
