@@ -1,10 +1,8 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Callback<T = any> = (...args: any[]) => T;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Constructor<T = any> = Callback<T>;
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ClassType<T = any> = new (...args: any[]) => T;
+
+export type OriginalMethod = Callback;
 
 export type ComponentParams = {
     selector: string;
@@ -35,3 +33,5 @@ export interface Action<A extends string, P = never> {
     payload: P | null;
 }
 export type OnAction<A extends string> = Record<A, A>;
+
+export type State<V = any> = Record<string | number, V>;

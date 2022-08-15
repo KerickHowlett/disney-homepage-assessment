@@ -12,5 +12,5 @@ export const OnHomeAction: OnAction<HomeActionTypes> = {
 } as const;
 
 export const HOME_JSON_API = 'home.json';
-export const MESSENGER_EVENTS_KEY = 'HOME_STORE_UPDATED';
+export const HOME_STATE_EVENTS = 'HOME_STORE_UPDATED';
 export const TARGET_ASPECT_RATIO = '1.78';

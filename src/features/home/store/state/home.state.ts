@@ -1,7 +1,9 @@
-import { getFrozenMap } from '@common/functions';
+import { getFrozenMap } from '@common/utils';
 import type { Collection, CollectionStateKey, HomeState } from '../../types';
 
-export const initialState: Readonly<HomeState> = {
-    collections: getFrozenMap<CollectionStateKey, Readonly<Collection>>(),
-    response: null,
-};
+export function getInitialState(): HomeState {
+    return {
+        response: null,
+        collections: getFrozenMap<CollectionStateKey, Collection>(),
+    };
+}

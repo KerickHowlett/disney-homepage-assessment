@@ -1,5 +1,5 @@
 import { Singleton } from '@common/decorators';
-import { getEnv, isUndefined } from '../../functions';
+import { getEnv, isUndefined } from '../../utils';
 
 @Singleton()
 export class ServiceWorkerStore {

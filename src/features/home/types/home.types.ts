@@ -65,10 +65,10 @@ export type CollectionsState = ReadonlyMap<CollectionStateKey, Collection>;
 export type ContentStateKey = Content['id'];
 export type ContentState = ReadonlyMap<ContentStateKey, Content>;
 
-export type HomeState = {
+export interface HomeState {
     readonly collections: CollectionsState;
     readonly response: HomeAPIResponse | null;
-};
+}
 
 export type FetchCollections = Action<'FETCH_HOME_API'>;
 export type SaveCollections = Action<'SAVE_COLLECTIONS', HomeAPIResponse>;

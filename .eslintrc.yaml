@@ -32,7 +32,9 @@ overrides:
           - plugin:sonarjs/recommended
       rules:
           indent: off
-          "@typescript-eslint/no-non-null-assertion": off
+          "@typescript-eslint/no-explicit-any":
+              - warn
+              - ignoreRestArgs: true
     - files: "src/**"
       env:
           browser: true

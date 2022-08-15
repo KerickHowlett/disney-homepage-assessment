@@ -12,6 +12,7 @@
         "isolatedModules": true,
         "importHelpers": true,
         "esModuleInterop": true,
+        "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "noEmit": true,
         "noUnusedLocals": true,

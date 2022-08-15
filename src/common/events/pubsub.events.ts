@@ -11,10 +11,12 @@ export class PubSub {
         return new Map<string, ReadonlyArray<Callback>>(this.events);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     publish<TReturn = unknown>(event: string, ...args: any[]): ReadonlyArray<TReturn> {
         const callbacks: ReadonlyArray<Callback> = this.getCurrentCallbacks(event);
-        return callbacks.map<TReturn>((callback: Callback): TReturn => callback(...args));
+        return callbacks.map<TReturn>((callback: Callback): TReturn => {
+            console.dir(callback);
+            return callback(...args);
+        });
     }
 
     private getCurrentCallbacks(event: string): ReadonlyArray<Callback> {

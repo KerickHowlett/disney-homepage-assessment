@@ -1,5 +1,5 @@
 import { Singleton } from '@common/decorators';
-import { getEnv } from '@common/functions';
+import { getEnv } from '@common/utils';
 import { HOME_JSON_API } from '../../constants';
 import { HomeDataFetching } from '../../data-fetching';
 import type { HomeAPIResponse } from '../../types';

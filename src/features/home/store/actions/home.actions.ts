@@ -1,5 +1,5 @@
 import { Singleton } from '@common/decorators';
-import { updateState } from '@common/functions';
+import { updateState } from '@common/utils';
 import { getCollection, getContainers } from '../../helpers';
 import type { Collection, CollectionStateKey, HomeAPIResponse, HomeState } from '../../types';
 import { HomeEffects } from '../effects';
@@ -10,16 +10,15 @@ export class HomeActions {
 
     async fetchHomeAPI(originalState: Readonly<HomeState>): Promise<Readonly<HomeState>> {
         const response: HomeAPIResponse | null = await this.effects.fetchHomeJSON();
-        return updateState<HomeState>(response, 'response', originalState);
+        return updateState<HomeState>(originalState, { response });
     }
 
     saveCollections(originalState: Readonly<HomeState>, response: HomeAPIResponse | null): Readonly<HomeState> {
-        const collectionState: Map<CollectionStateKey, Readonly<Collection>> = new Map();
+        const collections: Map<CollectionStateKey, Readonly<Collection>> = new Map();
         for (const { set } of getContainers(response)) {
             const collection: Collection = getCollection(set);
-            collectionState.set(collection.id, collection);
+            collections.set(collection.id, collection);
         }
-
-        return updateState<HomeState>(collectionState, 'collections', originalState);
+        return updateState<HomeState>(originalState, { collections });
     }
 }

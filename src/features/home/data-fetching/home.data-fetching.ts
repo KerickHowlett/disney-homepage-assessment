@@ -1,6 +1,6 @@
 import { Singleton } from '@common/decorators';
-import { isUndefined } from '@common/functions';
-import { ServiceWorkerStore } from '@common/store';
+import { ServiceWorkerStore } from '@common/stores';
+import { isUndefined } from '@common/utils';
 
 @Singleton()
 export class HomeDataFetching {

@@ -1,4 +1,4 @@
-import { isUndefined } from '@common/functions';
+import { isUndefined } from '@common/utils';
 import type { CollectionId, ContainerSet } from '@disney/features/home/types';
 
 export function getCollectionId(set: Readonly<ContainerSet>): CollectionId {

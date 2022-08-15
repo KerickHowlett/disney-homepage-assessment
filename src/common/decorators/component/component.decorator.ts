@@ -1,5 +1,5 @@
-import { isUndefined } from '@common/functions';
 import { ComponentDecoratorFunc, ComponentParams } from '@common/types';
+import { isUndefined } from '@common/utils';
 
 export function Component({ selector, options }: ComponentParams): ComponentDecoratorFunc {
     return (target: CustomElementConstructor): void => {

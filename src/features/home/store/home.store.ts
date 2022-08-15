@@ -1,46 +1,29 @@
 import { Singleton } from '@common/decorators';
-import { PubSub } from '@common/events';
-import type { Callback } from '@common/types';
-import { MESSENGER_EVENTS_KEY } from '../constants';
-import { CollectionStateKey, HomeState } from '../types';
-import { HomeReducer } from './reducer/home.reducer';
-import { initialState } from './state/home.state';
+import { Callback } from '@common/types';
+import { isNull } from '@common/utils';
+import { HOME_STATE_EVENTS, OnHomeAction } from '../constants';
+import type { CollectionId, CollectionStateKey } from '../types';
+import { HomeReducer } from './reducer';
+
+const { FETCH_HOME_API, SAVE_COLLECTIONS } = OnHomeAction;
 
 @Singleton()
 export class HomeStore {
-    constructor(
-        private _state: HomeState = initialState,
-        private messenger: PubSub = new PubSub(),
-        private readonly reducer: HomeReducer = new HomeReducer(),
-    ) {
-        this.messenger.publish('HOME_STORE_INITIALIZED', this._state);
-    }
-
-    get state(): Readonly<HomeState> {
-        return this._state;
-    }
-
-    private set state(state: Readonly<HomeState>) {
-        this.messenger.publish(MESSENGER_EVENTS_KEY, state);
-        this._state = state;
-    }
-
+    constructor(private readonly reducer: HomeReducer = new HomeReducer()) {}
     getCollectionIds(): ReadonlyArray<CollectionStateKey> {
-        return Array.from(this.state.collections.keys());
+        if (isNull(this.reducer.state.collections)) return [];
+        return Array.from<CollectionId>(this.reducer.state.collections.keys());
     }
 
-    async onInit(): Promise<void> {
-        this.state = await this.reducer.dispatch(this._state, {
-            type: 'FETCH_HOME_API',
-            payload: null,
-        });
-        this.state = await this.reducer.dispatch(this._state, {
-            type: 'FETCH_HOME_API',
-            payload: null,
-        });
+    get state() {
+        return this.reducer.state;
     }
 
-    subscribe(callback: Callback) {
-        return this.messenger.subscribe(MESSENGER_EVENTS_KEY, callback);
+    effect$(callback: Callback): void {
+        this.reducer.subscribe(HOME_STATE_EVENTS, callback);
+    }
+
+    init(): void {
+        this.reducer.on(FETCH_HOME_API).then(() => this.reducer.on(SAVE_COLLECTIONS, this.state.response));
     }
 }

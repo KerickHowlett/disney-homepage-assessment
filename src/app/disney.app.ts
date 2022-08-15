@@ -1,5 +1,5 @@
-import { getRootHTML } from '@common/functions/get-root-html';
 import type { CustomElement, RootHTML } from '@common/types';
+import { getRootHTML } from '@common/utils/get-root-html';
 import { Component } from '@disney/common';
 import '@disney/features/home';
 import view from './disney.app.html?raw';
