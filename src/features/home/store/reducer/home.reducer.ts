@@ -5,6 +5,10 @@ import type { AllHomeActions, HomeActionPayloads, HomeActionTypes, HomeState } f
 import { HomeActions } from '../actions';
 import { getInitialState } from '../state';
 
+// @NOTE: Ideally, I'd wanna make something like this more generalized/universal
+//        that can be fed a reducer, actions, effects, and/or selectors like your
+//        typical redux setup, but I'd need more time to create something like that
+//        from scratch.
 @Singleton()
 export class HomeReducer extends PubSub {
     constructor(private _state: HomeState = getInitialState(), private action: HomeActions = new HomeActions()) {
