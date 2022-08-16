@@ -1,76 +1,56 @@
 import { Component } from '@common/decorators';
-import { clamp, isNull } from '../../utils';
+import { isEmpty, isNil, isNull } from '../../utils';
+
 import htmlFileTemplate from './carousel.component.html?raw';
 
 import './carousel.component.css';
-
-const CLICK_EVENT = 'click';
-const SIZE_OF_SLIDE_MOVEMENT = 250;
 
 @Component({
     selector: 'disney-carousel',
 })
 export class CarouselComponent extends HTMLElement {
-    constructor() {
+    constructor(private readonly parser: DOMParser = new DOMParser()) {
         super();
     }
-
-    private next: HTMLButtonElement | null = null;
-    private previous: HTMLButtonElement | null = null;
-    private carouselItems: HTMLElement | null = null;
-    private originalBody: string | null = null;
 
     connectedCallback(): void {
         this.render();
     }
 
     render(): void {
-        this.originalBody = new DOMParser().parseFromString(this.innerHTML, 'text/html').body.innerHTML;
-        this.innerHTML = htmlFileTemplate;
-        const template: HTMLElement | null = document.querySelector('template');
-        if (!this.hasValidContentNode(template)) {
-            console.error('Carousel template was not found!');
-            return;
-        }
-        this.innerHTML = template.innerHTML;
-        this.getEssentialElements();
-        this.loadCarouselEvents();
-        this.reinsertContent();
+        const originalBody: string = this.getOriginalChildElements();
+        this.setChildrenElementsWith(htmlFileTemplate);
+        this.setupTemplate();
+        this.wrapCarouselAroundChildrenElements(originalBody);
     }
 
-    private getEssentialElements(): void {
-        this.next = this.querySelector<HTMLButtonElement>('.carousel-next');
-        this.previous = this.querySelector<HTMLButtonElement>('.carousel-previous');
-        this.carouselItems = this.querySelector<HTMLElement>('.carousel-items');
+    private getOriginalChildElements(): string {
+        const originalChildrenElements: Document = this.parser.parseFromString(this.innerHTML, 'text/html');
+        return originalChildrenElements.body.innerHTML;
     }
 
-    private loadCarouselEvents(): void {
-        if (isNull(this.next) || isNull(this.previous) || isNull(this.carouselItems)) {
-            console.error('Essential carousel elements were not found!');
-            return;
-        }
-
-        this.previous.addEventListener(CLICK_EVENT, this.goToPreviousSlide);
-        this.next.addEventListener(CLICK_EVENT, this.goToNextSlide);
+    private setChildrenElementsWith(html?: string): void {
+        this.innerHTML = isNil(html) ? '' : html;
     }
 
-    private goToNextSlide = (): void => {
-        if (isNull(this.carouselItems)) return;
-        const moveBy: number = clamp(this.carouselItems.scrollLeft + SIZE_OF_SLIDE_MOVEMENT, 0);
-        this.carouselItems.scrollLeft += moveBy;
-    };
+    private setupTemplate(): void {
+        const template: HTMLTemplateElement | null = document.querySelector<HTMLTemplateElement>('template');
+        const { innerHTML } = this.templateExists(template) ? template : document.createElement('template');
+        this.setChildrenElementsWith(innerHTML);
+    }
 
-    private goToPreviousSlide = (): void => {
-        if (isNull(this.carouselItems)) return;
-        this.carouselItems.scrollLeft -= SIZE_OF_SLIDE_MOVEMENT;
-    };
-
-    private hasValidContentNode(template: unknown): template is HTMLTemplateElement {
+    private templateExists(template: unknown): template is HTMLTemplateElement {
         return !isNull(template) && template instanceof HTMLTemplateElement;
     }
 
-    private reinsertContent(): void {
-        if (isNull(this.originalBody) || isNull(this.carouselItems)) return;
-        this.carouselItems.innerHTML = this.originalBody;
+    private wrapCarouselAroundChildrenElements(originalBody: string): void {
+        const carouselItems: HTMLElement | null = this.querySelector<HTMLElement>('.carousel-items');
+        if (isEmpty(originalBody) || isNull(carouselItems)) {
+            this.style.display = 'none';
+            console.error('Essential carousel elements were not found.');
+            return;
+        }
+
+        carouselItems.innerHTML = originalBody;
     }
 }
