@@ -44,7 +44,7 @@ export interface ContainerSet {
 export interface Collection {
     readonly id: CollectionId;
     readonly title: string;
-    readonly content?: ContentState;
+    readonly content?: ReadonlyArray<Content>;
     readonly type: ContainerSetType;
 }
 

@@ -13,10 +13,7 @@ export class PubSub {
 
     publish<TReturn = unknown>(event: string, ...args: any[]): ReadonlyArray<TReturn> {
         const callbacks: ReadonlyArray<Callback> = this.getCurrentCallbacks(event);
-        return callbacks.map<TReturn>((callback: Callback): TReturn => {
-            console.dir(callback);
-            return callback(...args);
-        });
+        return callbacks.map<TReturn>((callback: Callback): TReturn => callback(...args));
     }
 
     private getCurrentCallbacks(event: string): ReadonlyArray<Callback> {

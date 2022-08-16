@@ -1,6 +1,6 @@
 import type { Collection, ContainerSet } from '../../types';
 import { getCollectionId } from '../get-collection-id';
-import { getContentState } from '../get-content-state';
+import { getContent } from '../get-content';
 import { getTitle } from '../get-title';
 
 export function getCollection(set: ContainerSet): Collection {
@@ -8,6 +8,6 @@ export function getCollection(set: ContainerSet): Collection {
         id: getCollectionId(set),
         title: getTitle(set.text),
         type: set.type,
-        content: getContentState(set.items),
+        content: getContent(set.items),
     };
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export type Callback<T = any> = (...args: any[]) => T;
 export type Constructor<T = any> = Callback<T>;
 export type ClassType<T = any> = new (...args: any[]) => T;

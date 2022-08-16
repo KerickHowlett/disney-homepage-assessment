@@ -1,6 +1,7 @@
 import type { ClassType, Constructor } from '../../types';
 
 const SINGLETON_KEY = Symbol();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ServiceConstraints<T = any> = ClassType<T> | Constructor<T>;
 type Singleton<T extends Constructor | ClassType> = T & {
     [SINGLETON_KEY]: T extends ServiceConstraints<infer I> ? I : never;
@@ -10,6 +11,7 @@ type Singleton<T extends Constructor | ClassType> = T & {
 export function Singleton() {
     return <T extends ServiceConstraints>(target: T): T => {
         return new Proxy<T>(target, {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             construct(target: Singleton<T>, args: any[], newTarget: Constructor) {
                 if (ifClassHasInheritance(target, newTarget)) {
                     // Skip proxy.

@@ -1,6 +1,7 @@
 import { Component } from '@disney/common';
 import { HomeStore } from '../store';
-import type { CollectionStateKey } from '../types';
+import type { CollectionId } from '../types';
+import '../ui/collection';
 
 @Component({
     selector: 'disney-home',
@@ -10,18 +11,20 @@ export default class DisneyHomeShell extends HTMLElement {
         super();
         this.store.effect$(this.render);
     }
-    private collectionIds: ReadonlyArray<CollectionStateKey> = [];
-
     connectedCallback(): void {
         this.store.init();
     }
 
     readonly render = (): void => {
-        this.collectionIds = this.store.getCollectionIds();
-        this.innerHTML = `
-            <pre style="color: white">
-                ${this.collectionIds.length}
-            </pre>
-        `;
+        this.createCollectionElements();
     };
+
+    private createCollectionElements(): void {
+        const collectionIds: ReadonlyArray<CollectionId> = this.store.getCollectionIds();
+        collectionIds.forEach((id: CollectionId): void => {
+            const collectionElement: HTMLElement = document.createElement('disney-collection');
+            collectionElement.setAttribute('id', id as string);
+            this.appendChild(collectionElement);
+        });
+    }
 }
