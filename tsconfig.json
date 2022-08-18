@@ -28,9 +28,14 @@
         "skipLibCheck": true,
         "types": ["node", "vitest/globals"]
     },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "dist", "vite.config.ts", "/service-worker.ts"],
     "references": [
         {
-            "path": "./tsconfig.node.json"
+            "path": "tsconfig.vite.json"
+        },
+        {
+            "path": "tsconfig.sw.json"
         }
     ]
 }

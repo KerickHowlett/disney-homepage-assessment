@@ -39,16 +39,13 @@ overrides:
       env:
           browser: true
           es2021: true
-    - files: "src/app.service-worker.js"
+    - files: "service-worker.ts"
       env:
           browser: true
           es2021: true
           node: false
           serviceworker: true
           worker: true
-      extends:
-          - eslint:recommended
-          - plugin:sonarjs/recommended
       parserOptions:
           ecmaVersion: latest
           ecmaFeatures:

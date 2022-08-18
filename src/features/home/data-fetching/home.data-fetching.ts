@@ -1,28 +1,13 @@
 import { Singleton } from '@common/decorators';
-import { ServiceWorkerStore } from '@common/stores';
 import { isUndefined } from '@common/utils';
 
 @Singleton()
 export class HomeDataFetching {
-    constructor(private readonly cache: ServiceWorkerStore = new ServiceWorkerStore()) {}
-
     async get<T = unknown>(endpoint: string): Promise<T | null> {
-        const endpointUrl: URL = new URL(endpoint);
-
         try {
-            const response: Response =
-                // @NOTE: Ideally, we'd later want the means to insert a
-                //        TTL (Time-To-Live) for the cache, so we can control
-                //        how often we want to fetch fresh data.
-                (await this.cache.get(endpointUrl)) ||
-                (await fetch(endpoint, {
-                    method: 'GET',
-                }));
-
+            const response: Response = await fetch(endpoint);
             if (this.isValidResponse(response)) {
-                const payload: T = await response.json();
-                this.cache.saveApiResponse(endpointUrl, payload);
-                return payload;
+                return response.json();
             }
         } catch (error: unknown) {
             console.error(error);
@@ -32,7 +17,8 @@ export class HomeDataFetching {
     }
 
     private isEmptyResponse(response: Response): boolean {
-        return !response.ok || response.status === 404;
+        const NOT_FOUND = 404;
+        return !response.ok || response.status === NOT_FOUND;
     }
 
     private isValidResponse(response?: Response): response is Response {

@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "composite": true,
+        "lib": ["ESNext", "WebWorker"],
+        "module": "ESNext",
+        "moduleResolution": "NodeNext",
+        "outDir": "dist/sw",
+        "skipLibCheck": true,
+        "strict": true
+    },
+    "include": ["service-worker.ts"]
+}
