@@ -23,7 +23,7 @@ export default class DisneyHomeShell extends HTMLElement {
         const collectionIds: ReadonlyArray<CollectionId> = this.store.getCollectionIds();
         collectionIds.forEach((id: CollectionId): void => {
             const collectionElement: HTMLElement = document.createElement('disney-collection');
-            collectionElement.setAttribute('id', id as string);
+            collectionElement.setAttribute('collection-id', id as string);
             this.appendChild(collectionElement);
         });
     }

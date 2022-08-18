@@ -43,7 +43,7 @@ export class CollectionComponent extends HTMLElement {
     }
 
     static get observedAttributes(): string[] {
-        return ['id'];
+        return ['collection-id'];
     }
 
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
@@ -55,7 +55,7 @@ export class CollectionComponent extends HTMLElement {
     }
 
     connectedCallback(): void {
-        this.collectionId = this.getAttribute('id');
+        this.collectionId = this.getAttribute('collection-id');
         this.render();
     }
 
