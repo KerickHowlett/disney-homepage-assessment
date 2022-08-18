@@ -1,17 +1,18 @@
-// This is a hack to redefine the typing of "self", since there doesn't appear
-// to be an official means of doing so in native TypeScript yet.
-// declare const self: ServiceWorkerGlobalScope;
-// export { };
+/// <reference types="vite/client" />
 
-// Hardcoded Cache Store Names
+// This is a hack to redefine the typing of "self", since there doesn't appear
+// to be an official means of doing so in native TypeScript (without a library)
+// yet.
+type ClientsClaimOverride = { clients: { claim: () => Promise<void> } };
+
+// @NOTE: Will need to apply a dotenv implementation to these hard-coded
+//        variables.
 const CACHE_STATIC_FILES_STORE_NAME = 'disney-v1-static';
 const CACHE_FETCH_RESPONSES_STORE_NAME = 'disney-v1-fetch-responses';
-const CONSOLE_GROUP_NAME = '[Service Worker]';
 const ASSET_API_DOMAIN = 'https://prod-ripcut-delivery.disney-plus.net/v1/variant/disney';
 const HOME_API_DOMAIN = 'https://cd-static.bamgrid.com/dp-117731241344';
-const NO_CORS_SETTINGS: RequestInit = { mode: 'no-cors' };
+const NO_CORS: RequestInit = { mode: 'no-cors' };
 const NOT_FOUND = 404;
-
 const PRE_CACHED_STATIC_FILES: string[] = [
     '/',
     'index.html',
@@ -27,7 +28,7 @@ const PRE_CACHED_STATIC_FILES: string[] = [
 const addNoCORSHeaderToRequests = (urls: string[]): Request[] =>
     urls.reduce((requests: Request[], url: string): Request[] => {
         if (!url.includes('https://')) {
-            const request: Request = new Request(url, { mode: 'no-cors' });
+            const request: Request = new Request(url, NO_CORS);
             return [...requests, request];
         }
         return requests;
@@ -44,7 +45,7 @@ const requestForPreCachedFile = (event: FetchEvent): boolean => {
     return PRE_CACHED_STATIC_FILES.includes(requestUrl);
 };
 
-// Cache Strategies.
+// Caching Strategies.
 const cacheFirstThenNetworkStrategy = (event: FetchEvent): void =>
     event.respondWith(
         caches.open(CACHE_FETCH_RESPONSES_STORE_NAME).then((cache: Cache): Promise<Response> => {
@@ -53,7 +54,7 @@ const cacheFirstThenNetworkStrategy = (event: FetchEvent): void =>
                 .then((cachedResponse: Response | undefined): Response | Promise<Response> => {
                     return (
                         cachedResponse ||
-                        fetch(event.request.url, NO_CORS_SETTINGS).then((networkResponse: Response): Response => {
+                        fetch(event.request.url, NO_CORS).then((networkResponse: Response): Response => {
                             if (isSuccessful(networkResponse)) {
                                 cache.put(event.request, networkResponse.clone());
                             }
@@ -66,13 +67,14 @@ const cacheFirstThenNetworkStrategy = (event: FetchEvent): void =>
 
 const cacheOnlyStrategy = (event: FetchEvent): void =>
     event.respondWith(
-        caches.open(CACHE_STATIC_FILES_STORE_NAME).then(
-            (cache: Cache): Promise<Response> =>
-                cache.match(event.request).catch((error: Error): Response => {
-                    console.error(`${CONSOLE_GROUP_NAME} ${error}`);
-                    return new Response(null, { status: NOT_FOUND });
-                }) as Promise<Response>,
-        ),
+        caches
+            .open(CACHE_STATIC_FILES_STORE_NAME)
+            .then(
+                (cache: Cache): Promise<Response> =>
+                    cache
+                        .match(event.request)
+                        .catch((): Response => new Response(null, { status: NOT_FOUND })) as Promise<Response>,
+            ),
     );
 
 const networkFirstWithCacheFallbackStrategy = (event: FetchEvent): void =>
@@ -93,7 +95,6 @@ const networkFirstWithCacheFallbackStrategy = (event: FetchEvent): void =>
 const preCacheEssentialStaticFilesStrategy = (event: ExtendableEvent): void =>
     event.waitUntil(
         caches.open(CACHE_STATIC_FILES_STORE_NAME).then((cache: Cache): Promise<void> => {
-            console.log(`${CONSOLE_GROUP_NAME} Caching App Shell...`);
             const preCacheRequests: Request[] = addNoCORSHeaderToRequests(PRE_CACHED_STATIC_FILES);
             return cache.addAll(preCacheRequests);
         }),
@@ -105,7 +106,6 @@ const removeOutdatedCacheStoresStrategy = (event: ExtendableEvent): void =>
             Promise.all(
                 keys.map((key: string): Promise<boolean> | void => {
                     if (!matchesWithACacheStoreName(key)) {
-                        console.log(`${CONSOLE_GROUP_NAME} Removing outdated cache: ${key}`);
                         return caches.delete(key);
                     }
                 }),
@@ -114,17 +114,13 @@ const removeOutdatedCacheStoresStrategy = (event: ExtendableEvent): void =>
     );
 
 // Service Worker Event Handlers
-console.groupCollapsed(CONSOLE_GROUP_NAME);
-
-self.addEventListener('install', (event: Event): void => {
-    console.log(`${CONSOLE_GROUP_NAME} Installing Service Worker...`, event);
-    return preCacheEssentialStaticFilesStrategy(event as ExtendableEvent);
-});
+self.addEventListener('install', (event: Event): void =>
+    preCacheEssentialStaticFilesStrategy(event as ExtendableEvent),
+);
 
 self.addEventListener('activate', (event: Event): Promise<void> => {
-    console.log(`${CONSOLE_GROUP_NAME} Activating Service Worker...`, event);
     removeOutdatedCacheStoresStrategy(event as ExtendableEvent);
-    return (self as unknown as { clients: { claim: () => Promise<void> } }).clients.claim();
+    return (self as unknown as ClientsClaimOverride).clients.claim();
 });
 
 self.addEventListener('fetch', (event: Event): void => {
@@ -137,5 +133,3 @@ self.addEventListener('fetch', (event: Event): void => {
     }
     return networkFirstWithCacheFallbackStrategy(fetchEvent);
 });
-
-console.groupEnd();
