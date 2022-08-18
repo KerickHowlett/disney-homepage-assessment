@@ -214,7 +214,6 @@ h4 {
     background: linear-gradient(rgb(48, 50, 62), rgb(30, 31, 42));
     border-radius: 4px;
     padding-top: 56.25%;
-    /* height: 0px; */
     overflow: hidden;
     position: relative;
     width: 100%;
@@ -238,6 +237,10 @@ h4 {
     font-weight: 700;
     letter-spacing: 0.11px;
     line-height: 28px;
+}
+
+.image-failsafe {
+    filter: brightness(65%);
 }
 
 .image-failsafe-title {
