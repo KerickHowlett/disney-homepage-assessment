@@ -42,6 +42,10 @@ export class CollectionComponent extends HTMLElement {
         this.content = collection.content || [];
     }
 
+    static get observedAttributes(): string[] {
+        return ['id'];
+    }
+
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
         if (!changeDetectedBetween(oldValue, newValue)) return;
         if (this.isCollectionId(name)) {

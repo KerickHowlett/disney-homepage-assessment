@@ -19,11 +19,6 @@ export class ImageComponent extends HTMLImageElement {
 
     renderFailsafeImage(): void {
         if (isNull(this.failsafeImage) || isNull(this.failsafeTitle)) return;
-
         this.src = this.failsafeImage;
-        const titleElement = document.createElement('div');
-        titleElement.classList.add('image-failsafe-title', 'text-color--primary');
-        titleElement.textContent = this.failsafeTitle;
-        this.insertAdjacentElement('afterend', titleElement);
     }
 }
