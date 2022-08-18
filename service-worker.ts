@@ -10,18 +10,18 @@ type ClientsClaimOverride = { clients: { claim: () => Promise<void> } };
 const CACHE_STATIC_FILES_STORE_NAME = 'disney-v1-static';
 const CACHE_FETCH_RESPONSES_STORE_NAME = 'disney-v1-fetch-responses';
 const ASSET_API_DOMAIN = 'https://prod-ripcut-delivery.disney-plus.net/v1/variant/disney';
-const HOME_API_DOMAIN = 'https://cd-static.bamgrid.com/dp-117731241344';
 const NO_CORS: RequestInit = { mode: 'no-cors' };
 const NOT_FOUND = 404;
+const NOT_FOUND_RESPONSE: Response = new Response(null, { status: NOT_FOUND });
 const PRE_CACHED_STATIC_FILES: string[] = [
     '/',
     'index.html',
+    'src/assets/default-content-tile.jpeg',
     'src/styles.css',
     'src/favicon.ico',
     'src/main.ts',
     'https://static-assets.bamgrid.com/fonts/avenir-world-for-disney/AvenirWorldforDisneyv2-Demi.c737f3bb45822159626cd7952dc1636e.woff2',
     'https://static-assets.bamgrid.com/fonts/avenir-world-for-disney/AvenirWorldforDisneyv2.d63aa1080e072dcb10992153d5ebd496.woff2',
-    'https://prod-ripcut-delivery.disney-plus.net/v1/variant/disney/73FE8AEF93AE19518421FDA85EE671B6EECE6C8DD02B1E7434D3DE719E97E72B/scale?format=jpeg&quality=90&scalingAlgorithm=lanczos3&width=500',
 ];
 
 // Helpers
@@ -34,7 +34,7 @@ const addNoCORSHeaderToRequests = (urls: string[]): Request[] =>
         return requests;
     }, []);
 const isCallToAssetAPI = (event: FetchEvent): boolean => event.request.url.includes(ASSET_API_DOMAIN);
-const isCallToHomeAPI = (event: FetchEvent): boolean => event.request.url.includes(HOME_API_DOMAIN);
+const isNetworkCall = (event: FetchEvent): boolean => event.request.url.indexOf('http') === 0;
 const isSuccessful = (response: Response): boolean => response.ok && response.status !== NOT_FOUND;
 const matchesWithACacheStoreName = (cacheName: string): boolean => {
     return cacheName === CACHE_STATIC_FILES_STORE_NAME || cacheName === CACHE_FETCH_RESPONSES_STORE_NAME;
@@ -71,25 +71,27 @@ const cacheOnlyStrategy = (event: FetchEvent): void =>
             .open(CACHE_STATIC_FILES_STORE_NAME)
             .then(
                 (cache: Cache): Promise<Response> =>
-                    cache
-                        .match(event.request)
-                        .catch((): Response => new Response(null, { status: NOT_FOUND })) as Promise<Response>,
-            ),
+                    cache.match(event.request).catch((): Response => NOT_FOUND_RESPONSE) as Promise<Response>,
+            )
+            .catch((): Response => NOT_FOUND_RESPONSE) as Promise<Response>,
     );
 
 const networkFirstWithCacheFallbackStrategy = (event: FetchEvent): void =>
     event.respondWith(
-        caches.open(CACHE_FETCH_RESPONSES_STORE_NAME).then(
-            (cache: Cache): Promise<Response> =>
-                fetch(event.request)
-                    .then((response: Response): Response => {
-                        if (isSuccessful(response)) {
-                            cache.put(event.request.url, response.clone());
-                        }
-                        return response;
-                    })
-                    .catch((): Promise<Response> => caches.match(event.request) as Promise<Response>),
-        ),
+        caches
+            .open(CACHE_FETCH_RESPONSES_STORE_NAME)
+            .then(
+                (cache: Cache): Promise<Response> =>
+                    fetch(event.request)
+                        .then((response: Response): Response => {
+                            if (isSuccessful(response)) {
+                                cache.put(event.request.url, response.clone());
+                            }
+                            return response;
+                        })
+                        .catch((): Promise<Response> => caches.match(event.request) as Promise<Response>),
+            )
+            .catch((): Response => NOT_FOUND_RESPONSE) as Promise<Response>,
     );
 
 const preCacheEssentialStaticFilesStrategy = (event: ExtendableEvent): void =>
@@ -102,15 +104,18 @@ const preCacheEssentialStaticFilesStrategy = (event: ExtendableEvent): void =>
 
 const removeOutdatedCacheStoresStrategy = (event: ExtendableEvent): void =>
     event.waitUntil(
-        caches.keys().then((keys: string[]) =>
-            Promise.all(
-                keys.map((key: string): Promise<boolean> | void => {
-                    if (!matchesWithACacheStoreName(key)) {
-                        return caches.delete(key);
-                    }
-                }),
-            ),
-        ),
+        caches
+            .keys()
+            .then((keys: string[]) =>
+                Promise.all(
+                    keys.map((key: string): Promise<boolean> | void => {
+                        if (!matchesWithACacheStoreName(key)) {
+                            return caches.delete(key);
+                        }
+                    }),
+                ),
+            )
+            .catch((): Response => NOT_FOUND_RESPONSE) as Promise<Response>,
     );
 
 // Service Worker Event Handlers
@@ -131,5 +136,7 @@ self.addEventListener('fetch', (event: Event): void => {
     if (imageRequest(fetchEvent) && isCallToAssetAPI(fetchEvent)) {
         return cacheFirstThenNetworkStrategy(fetchEvent);
     }
-    return networkFirstWithCacheFallbackStrategy(fetchEvent);
+    if (isNetworkCall(fetchEvent)) {
+        return networkFirstWithCacheFallbackStrategy(fetchEvent);
+    }
 });
