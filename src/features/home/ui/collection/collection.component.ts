@@ -1,5 +1,5 @@
 import '@common/ui/carousel';
-import { Component, isNil, isUndefined } from '@disney/common';
+import { changeDetectedBetween, Component, isNil, isUndefined } from '@disney/common';
 import { HomeStore } from '../../store';
 import type { Collection, Content } from '../../types';
 import '../content-tile';
@@ -42,7 +42,8 @@ export class CollectionComponent extends HTMLElement {
         this.content = collection.content || [];
     }
 
-    attributeChangedCallback(name: string, _oldValue: string, newValue: string): void {
+    attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
+        if (!changeDetectedBetween(oldValue, newValue)) return;
         if (this.isCollectionId(name)) {
             this.collectionId = newValue;
         }
@@ -56,7 +57,7 @@ export class CollectionComponent extends HTMLElement {
 
     readonly render = (): void => {
         const template: string = this.createTemplate();
-        if (this.changeDetected(template)) {
+        if (this.changeDetectedBetween(template)) {
             this.template = template;
         }
     };
@@ -74,7 +75,7 @@ export class CollectionComponent extends HTMLElement {
         `;
     }
 
-    private changeDetected(newTemplate: string): boolean {
+    private changeDetectedBetween(newTemplate: string): boolean {
         return this.template !== newTemplate;
     }
 

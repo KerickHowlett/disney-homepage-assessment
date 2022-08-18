@@ -1,5 +1,7 @@
 import { Component } from '@common/decorators';
 import type { ValueOf } from '@common/types';
+import '@common/ui/image';
+import { changeDetectedBetween } from '@common/utils';
 import type { Content, ContentProperties } from '../../types';
 
 @Component({
@@ -22,21 +24,17 @@ export class ContentTileComponent extends HTMLElement {
         this.render();
     }
 
-    attributeChangedCallback(name: string, _oldValue: string, newValue: string): void {
-        this.content = {
-            ...this.content,
-            [name]: newValue,
-        };
+    attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
+        if (!changeDetectedBetween(oldValue, newValue)) return;
+        this.content = { ...this.content, [name]: newValue };
         this.render();
     }
 
     render(): void {
         const template: string = this.createTemplate();
-        if (this.changeDetected(template)) this.innerHTML = template;
-    }
-
-    private changeDetected(newTemplate: string): boolean {
-        return this.currentTemplate !== newTemplate;
+        if (changeDetectedBetween(this.currentTemplate, template)) {
+            this.innerHTML = template;
+        }
     }
 
     private createTemplate(): string {
@@ -46,7 +44,15 @@ export class ContentTileComponent extends HTMLElement {
                 <div class="content-tile-container" aria-hidden="false">
                     <a class="content-tile-link" tab-index="0">
                         <div class="image-container">
-                            <img class="content-image-tile" src="${imageUrl}" alt="${title}" aria-label="${title}">
+                            <img
+                                alt="${title}"
+                                aria-label="${title}"
+                                class="content-image-tile"
+                                failsafe-src="/src/assets/default-content-tile.jpeg"
+                                is="disney-image"
+                                loading="lazy"
+                                src="${imageUrl}"
+                            />
                         </div>
                     </a>
                 </div>

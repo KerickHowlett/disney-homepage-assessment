@@ -1,3 +1,4 @@
+export * from './change-detected-between';
 export * from './clamp';
 export * from './get-env';
 export * from './get-frozen-map';
