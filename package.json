@@ -57,8 +57,7 @@
         "preview:without-build": "vite preview",
         "preview": "run-s build preview:without-build",
         "serve": "vite dev",
-        "serve:open": "vite dev --open",
-        "start": "run-s check:build:all serve:open",
+        "start": "run-s check:build:all serve",
         "vite": "vite"
     },
     "devDependencies": {

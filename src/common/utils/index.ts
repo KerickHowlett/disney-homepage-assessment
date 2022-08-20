@@ -1,5 +1,7 @@
+export * from './allowed-component-attribute';
 export * from './change-detected-between';
 export * from './clamp';
+export * from './get-contrast-between';
 export * from './get-env';
 export * from './get-frozen-map';
 export * from './get-root-html';
@@ -12,4 +14,5 @@ export * from './is-primitive-value';
 export * from './is-string';
 export * from './is-undefined';
 export * from './merge';
+export * from './template-element-factory';
 export * from './update-state';

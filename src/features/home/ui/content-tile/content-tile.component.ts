@@ -1,9 +1,8 @@
 import { Component } from '@common/decorators';
-import type { ValueOf } from '@common/types';
 import '@common/ui/image';
 import type { ImageComponent } from '@common/ui/image';
-import { changeDetectedBetween, isNil, isNull } from '@common/utils';
-import type { Content, ContentProperties } from '../../types';
+import { allowedComponentAttribute, changeDetectedBetween, isNil, isNull } from '@common/utils';
+import type { Content } from '../../types';
 
 @Component({
     selector: 'disney-content-tile',
@@ -17,16 +16,17 @@ export class ContentTileComponent extends HTMLElement {
     private currentTemplate = '';
 
     static get observedAttributes(): string[] {
-        return ['title', 'image'];
+        return ['content-title', 'content-image-src'];
     }
 
     connectedCallback(): void {
-        this.content = this.getContentTileAttributes('title', 'image');
+        this.content = this.getContentTileAttributes();
         this.render();
     }
 
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
-        if (!changeDetectedBetween(oldValue, newValue)) return;
+        if (!changeDetectedBetween(oldValue, newValue) || !allowedComponentAttribute(name, ContentTileComponent))
+            return;
         this.content = { ...this.content, [name]: newValue };
         this.render();
     }
@@ -72,14 +72,12 @@ export class ContentTileComponent extends HTMLElement {
         image.insertAdjacentElement('afterend', titleElement);
     }
 
-    private getContentTileAttributes(...names: string[]): Content {
-        return names.reduce<Readonly<Record<ContentProperties, string>>>(
-            (content: Content, name: string) => ({
-                ...content,
-                [name as ContentProperties]: this.getAttribute(name) as ValueOf<Content>,
-            }),
-            {} as Content,
-        );
+    private getContentTileAttributes(): Content {
+        return {
+            ...this.content,
+            title: this.getAttribute('content-title'),
+            image: this.getAttribute('content-image-src'),
+        } as Content;
     }
 
     private setImgOnErrorListener(): void {

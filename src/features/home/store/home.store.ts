@@ -1,33 +1,61 @@
 import { Singleton } from '@common/decorators';
 import { Callback } from '@common/types';
-import { isNull } from '@common/utils';
+import { isUndefined } from '@common/utils';
 import { HOME_STATE_EVENTS, OnHomeAction } from '../constants';
-import type { Collection, CollectionId, CollectionStateKey } from '../types';
+import { byHavingContent, byPersonalizedCollections, byStandardCollections } from '../helpers';
+import type { Collection, CollectionStateKey } from '../types';
 import { HomeReducer } from './reducer';
 
-const { FETCH_HOME_API, SAVE_COLLECTIONS } = OnHomeAction;
+const { LOAD_STANDARD_COLLECTIONS, LOAD_PERSONALIZED_COLLECTION } = OnHomeAction;
 
 @Singleton()
 export class HomeStore {
     constructor(private readonly reducer: HomeReducer = new HomeReducer()) {}
-    getCollectionIds(): ReadonlyArray<CollectionStateKey> {
-        if (isNull(this.reducer.state.collections)) return [];
-        return Array.from<CollectionId>(this.reducer.state.collections.keys());
+
+    get collections(): Collection[] {
+        return Array.from(this.state.collections.values());
     }
 
-    getCollection(id: CollectionStateKey | string): Readonly<Collection> | undefined {
-        return this.reducer.state.collections.get(id);
+    get collectionsWithContent(): Collection[] {
+        return this.collections.filter(byHavingContent);
+    }
+
+    get personalizedCollections(): Collection[] {
+        return this.collections.filter(byPersonalizedCollections);
+    }
+
+    get standardCollections(): Collection[] {
+        return this.collections.filter(byStandardCollections);
     }
 
     get state() {
         return this.reducer.state;
     }
 
-    effect$(callback: Callback): void {
+    getCollection(id: CollectionStateKey): Readonly<Collection> | undefined {
+        const collection: Collection | undefined = this.reducer.state.collections.get(id);
+        if (isUndefined(collection)) {
+            console.error(`[Collection Not Found]: ${id}`);
+        }
+        return collection;
+    }
+
+    *lazyLoadPersonalCollection(): Generator<void, void, void> {
+        for (const { id: refId } of this.personalizedCollections) {
+            this.reducer.on(LOAD_PERSONALIZED_COLLECTION, refId);
+            yield;
+        }
+    }
+
+    loadStandardCollections(): void {
+        this.reducer.on(LOAD_STANDARD_COLLECTIONS);
+    }
+
+    subscribe(callback: Callback): void {
         this.reducer.subscribe(HOME_STATE_EVENTS, callback);
     }
 
-    init(): void {
-        this.reducer.on(FETCH_HOME_API).then(() => this.reducer.on(SAVE_COLLECTIONS, this.state.response));
+    unsubscribe(callback: Callback): void {
+        this.reducer.unsubscribe(HOME_STATE_EVENTS, callback);
     }
 }

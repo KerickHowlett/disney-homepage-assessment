@@ -1,5 +1,5 @@
-import { isNull } from '../is-null';
+import { isNil } from '../is-nill';
 
 export function isObject(value: unknown): value is object {
-    return typeof value === 'object' && !isNull(value);
+    return !isNil(value) && !Array.isArray(value) && typeof value === 'object';
 }

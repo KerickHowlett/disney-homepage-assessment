@@ -1,7 +1,10 @@
-import '@common/ui/carousel';
-import { changeDetectedBetween, Component, isNil, isUndefined } from '@disney/common';
+import { changeDetectedBetween, Component, isEmpty, isNull, isUndefined, templateElementFactory } from '@disney/common';
+import { COLLECTION_ID } from '../../constants';
 import { HomeStore } from '../../store';
-import type { Collection, Content } from '../../types';
+import type { Collection, CollectionId, Content } from '../../types';
+
+// Child Component Imports
+import '@common/ui/carousel';
 import '../content-tile';
 
 @Component({
@@ -10,97 +13,79 @@ import '../content-tile';
 export class CollectionComponent extends HTMLElement {
     constructor(private readonly store: HomeStore = new HomeStore()) {
         super();
-        this.store.effect$(this.render);
     }
 
-    private _collection?: Readonly<Collection>;
-    private collectionId?: string | null;
-
-    private _content?: ReadonlyArray<Content>;
-    get content(): ReadonlyArray<Content> {
-        return this._content || [];
-    }
-    set content(content: ReadonlyArray<Content>) {
-        this._content = content;
-    }
-
-    private _template?: string;
-    get template(): string {
-        return this._template || '';
-    }
-    set template(template: string) {
-        this._template = template;
-        this.innerHTML = template;
-    }
-    get collection(): Readonly<Collection> | undefined {
-        return this._collection;
-    }
-    set collection(collection: Readonly<Collection> | undefined) {
-        this._collection = collection;
-        if (isUndefined(collection)) return;
-
-        this.content = collection.content || [];
-    }
+    private collectionId?: CollectionId;
+    private collection?: Readonly<Collection>;
 
     static get observedAttributes(): string[] {
-        return ['collection-id'];
-    }
-
-    attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
-        if (!changeDetectedBetween(oldValue, newValue)) return;
-        if (this.isCollectionId(name)) {
-            this.collectionId = newValue;
-        }
-        this.render();
+        return [COLLECTION_ID];
     }
 
     connectedCallback(): void {
-        this.collectionId = this.getAttribute('collection-id');
+        const collectionId: CollectionId | null = this.getAttribute(COLLECTION_ID);
+        if (isNull(collectionId)) {
+            console.error('Collection ID is required');
+            return;
+        }
+        this.collectionId = collectionId;
         this.render();
     }
 
-    readonly render = (): void => {
-        const template: string = this.createTemplate();
-        if (this.changeDetectedBetween(template)) {
-            this.template = template;
+    render(): void {
+        if (isUndefined(this.collectionId)) {
+            this.hideCollection();
+            return;
         }
-    };
 
-    private createTemplate(): string {
-        this.getCollection();
-        if (isUndefined(this.collection) || !this.hasContent()) return '';
-        return `
-            <h4 class="text-color--primary">${this.collection.title}</h4>
+        this.collection = this.store.getCollection(this.collectionId);
+        if (isUndefined(this.collection) || isEmpty(this.collection)) {
+            console.log(typeof this.collection?.content);
+            this.hideCollection();
+            return;
+        }
+
+        const template: HTMLTemplateElement = this.createTemplate(this.collection);
+        if (!changeDetectedBetween(this.innerHTML, template.innerHTML)) return;
+
+        this.innerHTML = template.innerHTML;
+    }
+
+    private createContentTile({ image, title }: Readonly<Content>): HTMLElement {
+        const contentTile: HTMLElement = document.createElement('disney-content-tile');
+        contentTile.setAttribute('content-image-src', image);
+        contentTile.setAttribute('content-title', title);
+        return contentTile;
+    }
+
+    private createContentTiles(content: ReadonlyArray<Content>): string {
+        const template: HTMLTemplateElement = templateElementFactory();
+        for (const tile of content) {
+            const contentTileElement: HTMLElement = this.createContentTile(tile);
+            template.content.appendChild(contentTileElement);
+        }
+        return template.innerHTML;
+    }
+
+    private createTemplate({ content, title }: Readonly<Collection>): HTMLTemplateElement {
+        const template: HTMLTemplateElement = templateElementFactory({ styles: ['display: none'] });
+        if (isUndefined(content)) return template;
+
+        template.style.display = 'block';
+        template.innerHTML = `
+            <h4 class="text-color--primary">${title}</h4>
             <div class="collection-content">
                 <disney-carousel>
-                    ${this.createContentTiles()}
+                    ${this.createContentTiles(content)}
                 </disney-carousel>
             </div>
         `;
+
+        return template;
     }
 
-    private changeDetectedBetween(newTemplate: string): boolean {
-        return this.template !== newTemplate;
-    }
-
-    private createContentTiles(): string {
-        return this.content
-            .map((content: Content): string => {
-                return `<disney-content-tile title="${content.title}" image="${content.image}"></disney-content-tile>`;
-            })
-            .join('\n');
-    }
-
-    private getCollection(): void {
-        if (isNil(this.collectionId)) return;
-        this.collection = this.store.getCollection(this.collectionId);
-    }
-
-    private hasContent(): boolean {
-        return this.content.length > 0;
-    }
-
-    private isCollectionId(attributeName: string): boolean {
-        return attributeName === 'id';
+    private hideCollection(): void {
+        this.style.display = 'none';
+        this.innerHTML = '';
     }
 }
