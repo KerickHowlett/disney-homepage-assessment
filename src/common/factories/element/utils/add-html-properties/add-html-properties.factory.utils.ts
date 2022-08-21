@@ -9,7 +9,7 @@ const addHTMLProperties = <T extends HTMLElement>(callback: Callback) => {
     return (element: T, properties?: HTMLProperty[]): void => {
         if (isUndefined(properties) || isEmpty(properties)) return;
         for (const property of properties) {
-            const [propertyName, propertyValue] = property.split(':').map(trimPropertyAndValue);
+            const [propertyName, ...propertyValue] = property.split(':').map(trimPropertyAndValue);
             callback(element, propertyName, propertyValue);
         }
     };
@@ -22,5 +22,7 @@ const _addAttributes = <T extends HTMLElement>(element: T, property: string, val
     element.setAttribute(property, value);
 };
 
+// @TODO: Need to debug how "addAttributes" sets "http(s)://" URLs as
+//        an attribute.
 export const addAttributes = addHTMLProperties(_addAttributes);
 export const addStyles = addHTMLProperties(_addStyles);

@@ -1,46 +1,38 @@
 import { Component } from '@common/decorators';
+import { elementFactory } from '@common/factories';
 import '@common/ui/image';
 import type { ImageComponent } from '@common/ui/image';
-import { allowedComponentAttribute, changeDetectedBetween, isNil, isNull } from '@common/utils';
 import type { Content } from '../../types';
+
+import css from './content-tile.component.css';
 
 @Component({
     selector: 'disney-content-tile',
 })
 export class ContentTileComponent extends HTMLElement {
-    private content: Partial<Content> = {
-        title: '',
-        image: '',
-    };
+    private readonly element: ShadowRoot;
 
-    private currentTemplate = '';
-
-    static get observedAttributes(): string[] {
-        return ['content-title', 'content-image-src'];
+    constructor() {
+        super();
+        this.element = this.attachShadow({ mode: 'open' });
     }
+
+    private content: Content = {} as Content;
 
     connectedCallback(): void {
-        this.content = this.getContentTileAttributes();
-        this.render();
-    }
-
-    attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
-        if (!changeDetectedBetween(oldValue, newValue) || !allowedComponentAttribute(name, ContentTileComponent))
-            return;
-        this.content = { ...this.content, [name]: newValue };
+        this.getContentTileAttributes();
         this.render();
     }
 
     render(): void {
-        const templateInnerHTML: string = this.createTemplateInnerHTML(this.content);
-        if (changeDetectedBetween(this.currentTemplate, templateInnerHTML)) {
-            this.innerHTML = templateInnerHTML;
-            this.setImgOnErrorListener();
-        }
+        this.renderContentTile();
+        this.setImgOnErrorListener();
     }
 
-    private createTemplateInnerHTML({ title, image }: Partial<Content>): string {
-        return `
+    private renderContentTile(): void {
+        const { image, title } = this.content;
+        this.element.innerHTML = `
+            <style>${css}</style>
             <div class="content-tile">
                 <div class="content-tile-container" aria-hidden="false">
                     <a class="content-tile-link" tab-index="0">
@@ -49,7 +41,7 @@ export class ContentTileComponent extends HTMLElement {
                                 alt="${title}"
                                 aria-label="${title}"
                                 class="content-image-tile"
-                                failsafe-src="/src/assets/default-content-tile.jpeg"
+                                failsafe-src="/default-content-tile.jpeg"
                                 is="disney-image"
                                 loading="lazy"
                                 src="${image}"
@@ -61,31 +53,29 @@ export class ContentTileComponent extends HTMLElement {
         `;
     }
 
-    private createTitleOverlay(image: ImageComponent): void {
-        if (isNil(this.content.title)) return;
-
-        const titleElement = document.createElement('div');
-        titleElement.classList.add('image-failsafe-title', 'text-color--primary');
-        titleElement.textContent = this.content.title;
-
-        image.classList.add('image-failsafe');
+    private renderTitleOverlay(image: ImageComponent): void {
+        const titleElement: HTMLDivElement = elementFactory<HTMLDivElement>({
+            classes: ['image-failsafe-title'],
+            body: this.content.title,
+        });
         image.insertAdjacentElement('afterend', titleElement);
     }
 
-    private getContentTileAttributes(): Content {
-        return {
-            ...this.content,
-            title: this.getAttribute('content-title'),
-            image: this.getAttribute('content-image-src'),
-        } as Content;
+    private getContentTileAttributes(): void {
+        this.content = {
+            title: this.getAttribute('content-title') ?? '',
+            image: this.getAttribute('content-image-src') ?? '',
+            id: this.getAttribute('content-id') ?? '',
+        };
     }
 
     private setImgOnErrorListener(): void {
-        const image: ImageComponent | null = this.querySelector('img') as ImageComponent | null;
-        if (isNull(image)) return;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const image: ImageComponent = this.element.querySelector('img')! as ImageComponent;
         image.onerror = (): void => {
             image.renderFailsafeImage();
-            this.createTitleOverlay(image);
+            image.classList.add('image-failsafe');
+            this.renderTitleOverlay(image);
         };
     }
 }

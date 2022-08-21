@@ -1,2 +1,2 @@
-import DisneyHomeShell from './home.shell';
-export default DisneyHomeShell;
+import HomeShell from './home.shell';
+export default HomeShell;

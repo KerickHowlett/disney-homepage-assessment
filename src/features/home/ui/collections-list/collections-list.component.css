@@ -1,0 +1,10 @@
+:host {
+    display: block;
+}
+
+.home-collections {
+    -moz-box-flex: 1;
+    -webkit-box-flex: 1;
+    flex-grow: 1;
+    margin-top: 0px;
+}

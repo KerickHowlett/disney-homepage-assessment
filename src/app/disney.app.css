@@ -1,0 +1,35 @@
+.app-body {
+    align-items: stretch;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.app-background {
+    background-color: rgb(26, 29, 41);
+    height: calc(100vh + 100em);
+    position: fixed;
+    top: 0px;
+    width: 100vw;
+    z-index: 0;
+}
+
+.app-background::after {
+    content: "";
+    position: absolute;
+    inset: 0px;
+    opacity: 1;
+    background: url(https://static-assets.bamgrid.com/product/disneyplus/images/background.dc67869b698f6c927aae59c68d9dda46.png)
+        50% / cover no-repeat fixed;
+}
+
+.container {
+    top: 72px;
+    display: block;
+    flex-grow: 1;
+    flex-shrink: 0;
+    min-height: calc(100vh + 250px);
+    overflow-x: visible;
+    padding: 0 calc(3.5vw + 24px);
+    position: relative;
+}

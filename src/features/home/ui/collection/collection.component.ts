@@ -1,26 +1,25 @@
-import { changeDetectedBetween, Component, isEmpty, isNull, isUndefined, templateElementFactory } from '@disney/common';
+import { elementFactory } from '@common/factories';
+import { Component, isNull, isUndefined } from '@disney/common';
 import { COLLECTION_ID } from '../../constants';
 import { HomeStore } from '../../store';
 import type { Collection, CollectionId, Content } from '../../types';
 
-// Child Component Imports
 import '@common/ui/carousel';
 import '../content-tile';
+import css from './collection.component.css?inline';
 
 @Component({
     selector: 'disney-collection',
 })
 export class CollectionComponent extends HTMLElement {
+    private readonly element: ShadowRoot;
     constructor(private readonly store: HomeStore = new HomeStore()) {
         super();
+        this.element = this.attachShadow({ mode: 'open' });
     }
 
     private collectionId?: CollectionId;
     private collection?: Readonly<Collection>;
-
-    static get observedAttributes(): string[] {
-        return [COLLECTION_ID];
-    }
 
     connectedCallback(): void {
         const collectionId: CollectionId | null = this.getAttribute(COLLECTION_ID);
@@ -37,51 +36,36 @@ export class CollectionComponent extends HTMLElement {
             this.hideCollection();
             return;
         }
-
         this.collection = this.store.getCollection(this.collectionId);
-        if (isUndefined(this.collection) || isEmpty(this.collection)) {
-            console.log(typeof this.collection?.content);
-            this.hideCollection();
-            return;
-        }
-
-        const template: HTMLTemplateElement = this.createTemplate(this.collection);
-        if (!changeDetectedBetween(this.innerHTML, template.innerHTML)) return;
-
-        this.innerHTML = template.innerHTML;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        this.createTemplate(this.collection!);
     }
 
     private createContentTile({ image, title }: Readonly<Content>): HTMLElement {
-        const contentTile: HTMLElement = document.createElement('disney-content-tile');
+        const contentTile: HTMLElement = elementFactory({
+            tagName: 'disney-content-tile',
+            attributes: [`content-title: ${title}`],
+        });
         contentTile.setAttribute('content-image-src', image);
-        contentTile.setAttribute('content-title', title);
         return contentTile;
     }
 
-    private createContentTiles(content: ReadonlyArray<Content>): string {
-        const template: HTMLTemplateElement = templateElementFactory();
-        for (const tile of content) {
-            const contentTileElement: HTMLElement = this.createContentTile(tile);
-            template.content.appendChild(contentTileElement);
-        }
-        return template.innerHTML;
+    private createContentTiles(content: ReadonlyArray<Content>): void {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const carousel: HTMLElement = this.element.querySelector('disney-carousel')!;
+        carousel.replaceChildren(...content.map<HTMLElement>(this.createContentTile.bind(this)));
     }
 
-    private createTemplate({ content, title }: Readonly<Collection>): HTMLTemplateElement {
-        const template: HTMLTemplateElement = templateElementFactory({ styles: ['display: none'] });
-        if (isUndefined(content)) return template;
-
-        template.style.display = 'block';
-        template.innerHTML = `
+    private createTemplate({ content, title }: Readonly<Collection>): void {
+        if (isUndefined(content)) return;
+        this.element.innerHTML = `
+            <style>${css}</style>
             <h4 class="text-color--primary">${title}</h4>
             <div class="collection-content">
-                <disney-carousel>
-                    ${this.createContentTiles(content)}
-                </disney-carousel>
+                <disney-carousel></disney-carousel>
             </div>
         `;
-
-        return template;
+        this.createContentTiles(content);
     }
 
     private hideCollection(): void {

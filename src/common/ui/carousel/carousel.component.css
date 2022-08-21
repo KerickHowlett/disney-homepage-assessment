@@ -3,28 +3,27 @@
 }
 
 .carousel-container {
+    direction: ltr;
     display: flex;
-    overflow-y: visible;
-    overflow-x: hidden;
+    flex-flow: nowrap;
+    position: relative;
+    z-index: 6;
 }
 
 .carousel-items {
-    display: flex;
-    flex-shrink: 1;
-    overflow-y: hidden;
-    overflow-x: scroll;
-    scroll-behavior: smooth;
-    scrollbar-width: none;
-    scroll-snap-type: x mandatory;
+    transform: translate3d(0px, 0px, 0px);
+    position: relative;
+    display: block;
+    margin: 0px -10px;
+    padding: 0px;
 }
 
-.carouse-items > div {
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    scroll-snap-align: start;
-}
-
-.carousel-items::-webkit-scrollbar {
-    display: none;
+.carousel-track {
+    width: 7900px;
+    opacity: 1;
+    transform: translate3d(0px, 0px, 0px);
+    position: relative;
+    top: 0px;
+    left: 0px;
+    display: block;
 }

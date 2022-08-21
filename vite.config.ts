@@ -6,13 +6,16 @@ const TEST_FILES: string[] = ['**/*.spec.ts'];
 
 export default defineConfig({
     build: {
+        cssCodeSplit: true,
         outDir: 'dist/disney-homepage-assessment',
         sourcemap: 'hidden',
+        target: 'ESNext',
         watch: {
             include: 'src/**/*',
             exclude: TEST_FILES,
         },
     },
+    cacheDir: '.cache/vite',
     css: {
         devSourcemap: true,
     },
@@ -27,7 +30,9 @@ export default defineConfig({
     preview: {
         port: 8080,
     },
+    publicDir: 'src/assets',
     server: {
+        hmr: true,
         port: 3000,
     },
     test: {

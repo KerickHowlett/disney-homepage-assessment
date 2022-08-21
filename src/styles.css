@@ -1,256 +1,39 @@
 /* Fonts */
-@import url("https://static-assets.bamgrid.com/fonts/avenir-world-for-disney/AvenirWorldforDisneyv2-Demi.c737f3bb45822159626cd7952dc1636e.woff2");
-@import url("https://static-assets.bamgrid.com/fonts/avenir-world-for-disney/AvenirWorldforDisneyv2.d63aa1080e072dcb10992153d5ebd496.woff2");
-
 :root {
     --white: #f9f9f9;
+    -moz-font-smoothing: antialiased;
+    -moz-text-size-adjust: 100%;
     -webkit-font-smoothing: antialiased;
-    align-items: stretch;
+    -webkit-text-size-adjust: 100%;
     background-color: rgb(26 29 41);
     color: var(--white);
     /* cursor: none; */
-    display: block;
     font-family: Avenir-World-for-Disney-Demi, sans-serif;
-    font-size: 20px;
-    letter-spacing: 0.11px;
     line-height: 18.4px;
     top: 0;
-    transition: opacity 200ms ease 0s;
+    user-select: none;
     z-index: -3;
 }
 
 * {
     box-sizing: border-box;
-    overflow-y: visible;
-}
-
-body {
-    font-family: Arial, Helvetica, sans-serif;
-    height: 100%;
-    user-select: none;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 html {
-    -moz-text-size-adjust: 100%;
-    -webkit-text-size-adjust: 100%;
-    height: 100%;
+    height: calc(100vh + 50px);
     line-height: 1.15;
-    overflow: hidden;
-}
-
-.app-body {
-    -moz-box-flex: 1;
-    -moz-font-smoothing: antialiased;
-    -moz-text-size-adjust: 100%;
-    -webkit-box-flex: 1;
-    -webkit-font-smoothing: antialiased;
-    -webkit-text-size-adjust: 100%;
-    align-items: stretch;
-    flex-direction: column;
-    overflow: hidden;
-    position: absolute;
-    min-height: 0;
-    height: 100vh;
-}
-
-.app-background {
-    background-color: rgb(26, 29, 41);
-    box-sizing: border-box;
-    font-family: Avenir-World-for-Disney-Regular, sans-serif;
-    height: 100vh;
-    line-height: 1.15;
-    position: fixed;
-    top: 0px;
-    transition: opacity 200ms ease 0s;
-    user-select: none;
-    width: 100%;
-    z-index: -3;
-}
-
-.app-background::after {
-    content: "";
-    position: absolute;
-    inset: 0px;
-    opacity: 1;
-    transition: opacity 500ms ease 0s;
-    background: url(https://static-assets.bamgrid.com/product/disneyplus/images/background.dc67869b698f6c927aae59c68d9dda46.png)
-        50% / cover no-repeat fixed;
-}
-
-.container {
-    display: block;
-    flex-grow: 1;
-    flex-shrink: 0;
-    height: calc(100vh + 8em);
-    justify-content: center;
-    line-height: 1.15;
-    min-height: calc(100vh - 250px);
+    margin: 0;
     overflow-x: hidden;
-    overflow-y: scroll;
-    position: relative;
-    top: 72px;
-    left: 85px;
-    user-select: none;
 }
 
-h4 {
-    -webkit-font-smoothing: antialiased;
-    -webkit-text-size-adjust: 100%;
-    box-sizing: border-box;
-    color: var(--white);
-    font-family: Avenir-World-for-Disney-Demi, sans-serif;
-    font-size: 20px;
-    letter-spacing: 0.11px;
-    line-height: 1.4;
-    margin: 0 0 0 10px;
-    padding: 0;
+html::-webkit-scrollbar {
+    width: 0;
 }
 
-.collection-carousel {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    margin-block-end: 1.33em;
-    margin-block-start: 1.33em;
-    margin-inline-end: 0px;
-    margin-inline-start: 0px;
-    overflow-x: scroll;
-}
-
-.collection-content {
-    display: block;
-    margin-bottom: 16px;
-    overflow-x: visible;
-    padding-right: 30em;
-    margin-right: 30em;
-    position: relative;
-    text-size-adjust: 100%;
-    width: calc(100vw + 1500px);
-    z-index: 6;
-}
-
-.carousel-content:first-child {
-    margin-left: -1500px;
-}
-.carousel-content:last-child {
-    margin-right: 50em;
-}
-
-.content-tile-container {
-    -moz-text-smoothing: subpixel-antialiased;
-    -webkit-font-smoothing: subpixel-antialiased;
-    backface-visibility: hidden;
-    border-radius: 4px;
-    display: inline-block;
-    height: 190px;
-    outline: none;
-    padding: 10px;
-    position: relative;
-    transform: scale(1, 1) translateZ(0px);
-    transition-duration: 300ms;
-    transition-property: transform, box-shadow;
-    transition-timing-function: ease-out;
-    width: 349px;
-}
-
-.content-tile-container::after {
-    border-radius: 4px;
-    border: 4px solid rgba(255, 255, 255, 0);
-    inset: 0px;
-    content: "";
-    position: absolute;
-    transition: border 300ms ease-out 0s;
-}
-
-.content-tile-link {
-    -moz-font-smoothing: subpixel-antialiased;
-    -moz-text-size-adjust: 100%;
-    -webkit-font-smoothing: subpixel-antialiased;
-    -webkit-text-size-adjust: 100%;
-    backface-visibility: hidden;
-    background-color: transparent;
-    border-radius: 4px;
-    box-shadow: rgba(0, 0, 0, 0.69) 0px 26px 30px -10px, rgba(0, 0, 0, 0.73) 0px 16px 10px -10px;
-    box-sizing: border-box;
-    cursor: pointer;
-    display: block;
-    line-height: 1.15;
-    position: relative;
-    transition-duration: 300ms;
-    transition-property: transform, box-shadow;
-    transition-timing-function: ease-out;
-    z-index: 10;
-}
-
-.content-tile-link:active,
-.content-tile-link:focus,
-.content-tile-link:focus-within,
-.content-tile-link:hover {
-    box-shadow: rgb(0 0 0 / 80%) 0px 40px 58px -16px, rgb(0 0 0 / 72%) 0px 30px 22px -10px;
-    transform: scale(1.05, 1.05) translateZ(0px) translate3d(0px, 0px, 0px);
-    z-index: 15;
-}
-
-.content-tile-link::after {
-    border-radius: 4px;
-    border: 4px solid rgba(255, 255, 255, 0);
-    inset: 0px;
-    content: "";
-    position: absolute;
-    transition: border 300ms ease-out 0s;
-}
-
-.content-tile-link:active::after,
-.content-tile-link:focus::after,
-.content-tile-link:focus-within::after,
-.content-tile-link:hover::after {
-    border: 4px solid rgba(249, 249, 249, 0.8);
-}
-
-.image-container {
-    background: linear-gradient(rgb(48, 50, 62), rgb(30, 31, 42));
-    border-radius: 4px;
-    padding-top: 56.25%;
-    overflow: hidden;
-    position: relative;
-    width: 100%;
-}
-
-.content-image-tile {
-    inset: 0px;
-    display: inline-block;
-    height: 100%;
-    object-fit: cover;
-    opacity: 1;
-    position: absolute;
-    transition: opacity 500ms ease-in-out 0s;
-    width: 100%;
-}
-
-.text-color--primary {
-    color: #f9f9f9;
-    font-family: Avenir-World-for-Disney-Demi, sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: 0.11px;
-    line-height: 28px;
-}
-
-.image-failsafe {
-    filter: brightness(65%);
-}
-
-.image-failsafe-title {
-    display: inline-block;
-    padding: 1rem;
-    position: absolute;
-    line-height: 100%;
-    width: 100%;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 20px;
-    font-size: 1.25rem;
-    text-align: center;
+body {
+    margin: 0;
+    overflow-x: hidden;
+    width: calc(100vw + 250px);
 }
