@@ -1,0 +1,14 @@
+.virtual-scroll-viewport {
+    overflow: visible;
+    /* position: fixed; */
+}
+
+.virtual-scroll-content {
+    height: 100vh;
+    overflow: visible;
+    overflow-y: scroll;
+}
+
+.virtual-scroll-track {
+    will-change: transform;
+}

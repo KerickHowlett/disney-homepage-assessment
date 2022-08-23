@@ -1,3 +1,7 @@
+:host {
+    cursor: none;
+}
+
 .content-tile {
     display: block;
     float: left;
@@ -32,7 +36,7 @@
     border-radius: 4px;
     box-shadow: rgba(0, 0, 0, 0.69) 0px 26px 30px -10px, rgba(0, 0, 0, 0.73) 0px 16px 10px -10px;
     box-sizing: border-box;
-    cursor: pointer;
+    cursor: none;
     display: block;
     position: relative;
     transform: scale(1, 1) translateZ(0px);
@@ -42,10 +46,8 @@
     z-index: 10;
 }
 
-.content-tile-link:active,
 .content-tile-link:focus,
-.content-tile-link:focus-within,
-.content-tile-link:hover {
+.content-tile-link:focus-within {
     box-shadow: rgb(0 0 0 / 80%) 0px 40px 58px -16px, rgb(0 0 0 / 72%) 0px 30px 22px -10px;
     transform: scale(1.05, 1.05) translateZ(0px) translate3d(0px, 0px, 0px);
     z-index: 15;
@@ -60,10 +62,8 @@
     transition: border 300ms ease-out 0s;
 }
 
-.content-tile-link:active::after,
 .content-tile-link:focus::after,
-.content-tile-link:focus-within::after,
-.content-tile-link:hover::after {
+.content-tile-link:focus-within::after {
     border: 4px solid rgba(249, 249, 249, 0.8);
 }
 
@@ -77,25 +77,23 @@
 }
 
 .content-image-tile {
-    inset: 0px;
-    display: inline-block;
+    border-style: none;
+    display: block;
     height: 100%;
+    inset: 0px;
     object-fit: cover;
-    opacity: 1;
+    opacity: 0;
     position: absolute;
     transition: opacity 500ms ease-in-out 0s;
     width: 100%;
 }
 
-img {
-    border-style: none;
-    inset: 0px;
-    display: block;
-    height: 100%;
-    object-fit: cover;
+.partially-visible-tile {
+    opacity: 0.5;
+}
+
+.fully-visible-tile {
     opacity: 1;
-    position: absolute;
-    width: 100%;
 }
 
 .image-failsafe {

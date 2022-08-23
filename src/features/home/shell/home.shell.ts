@@ -1,5 +1,5 @@
 import { Component } from '@disney/common';
-import { HomeStore } from '../store';
+import { HomeControls, HomeStore } from '../state-management';
 
 import '../ui/collections-list';
 
@@ -9,7 +9,10 @@ import '../ui/collections-list';
 export default class HomeShell extends HTMLElement {
     private readonly element: ShadowRoot;
 
-    constructor(private readonly store: HomeStore = new HomeStore()) {
+    constructor(
+        private readonly store: HomeStore = new HomeStore(),
+        private readonly navigation: HomeControls = new HomeControls(),
+    ) {
         super();
         this.element = this.attachShadow({ mode: 'open' });
     }
@@ -17,10 +20,12 @@ export default class HomeShell extends HTMLElement {
     connectedCallback(): void {
         this.store.loadStandardCollections();
         this.render();
+        this.navigation.init();
     }
 
-    render() {
-        const collectionsList: HTMLElement = document.createElement('disney-collections-list');
-        this.element.replaceChildren(collectionsList);
+    render(): void {
+        this.element.innerHTML = `
+            <disney-collections-list></disney-collections-list>
+        `;
     }
 }

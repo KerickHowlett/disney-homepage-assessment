@@ -15,6 +15,7 @@ export default class DisneyApp extends HTMLElement {
     }
 
     connectedCallback(): void {
+        window.scrollTo(0, 0);
         this.render();
     }
 

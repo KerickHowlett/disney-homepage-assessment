@@ -1,11 +1,9 @@
-:host {
-    display: block;
-}
-
 h4 {
     font-size: 20px;
     letter-spacing: 0.11px;
     line-height: 1.4;
-    margin: 0 0 0 0.6rem;
+    margin: 0 0 0 16px;
     padding: 0;
+    position: relative;
+    z-index: 100;
 }

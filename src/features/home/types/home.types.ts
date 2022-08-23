@@ -1,5 +1,3 @@
-import type { Action } from '@common/types';
-
 export type CollectionSetType = 'CuratedSet' | 'SetRef';
 export type DefaultData<T> = Readonly<Record<'default', T>>;
 
@@ -69,15 +67,3 @@ export type RefIdResponses = ReadonlyMap<RefId, Readonly<SetRefAPIResponse>>;
 export interface HomeState {
     readonly collections: CollectionsState;
 }
-
-export type LoadStandardCollections = Action<'LOAD_STANDARD_COLLECTIONS'>;
-export type LoadPersonalizedCollection = Action<'LOAD_PERSONALIZED_COLLECTION', RefId>;
-export interface SaveContentForPersonalizedSetPayload {
-    readonly refId: RefId;
-    readonly response: Readonly<SetRefAPIResponse>;
-}
-
-export type AllHomeActions = LoadStandardCollections | LoadPersonalizedCollection;
-
-export type HomeActionTypes = AllHomeActions['type'];
-export type HomeActionPayloads = AllHomeActions['payload'];

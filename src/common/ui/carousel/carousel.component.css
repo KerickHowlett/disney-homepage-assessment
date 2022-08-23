@@ -6,6 +6,8 @@
     direction: ltr;
     display: flex;
     flex-flow: nowrap;
+    margin-bottom: 16px;
+    margin-left: 16px;
     position: relative;
     z-index: 6;
 }
