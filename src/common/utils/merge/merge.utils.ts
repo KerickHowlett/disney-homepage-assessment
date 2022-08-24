@@ -68,7 +68,6 @@ function deepMergeMaps(
     mergedObject: AnyObject,
     key: keyof typeof mergedObject,
 ): void {
-    console.dir({ firstValue, secondValue });
     const firstObjectifiedMap: ObjectifiedMap = Object.fromEntries(firstValue);
     const secondObjectifiedMap: ObjectifiedMap = Object.fromEntries(secondValue);
     const mergedObjectifiedMap: ObjectifiedMap = merge(firstObjectifiedMap, secondObjectifiedMap);

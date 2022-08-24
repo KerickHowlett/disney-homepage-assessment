@@ -1,7 +1,6 @@
 import { Singleton } from '@common/decorators';
 import { isNil, updateState } from '@common/utils';
-import type { DOMQuery } from '@disney/features/home/utils';
-import { getCollectionsList } from '@disney/features/home/utils';
+import { DOMQuery, getCollectionsList, getInteractiveTilesFromFirstCollection } from '@disney/features/home/utils';
 import type { HomeControlsState } from '../state';
 
 function clamp(value: number, min?: number, max?: number): number {
@@ -16,7 +15,7 @@ export type Direction = HorizontalPayload | VerticalPayload;
 export class HomeControlsActions {
     moveHorizontally(state: HomeControlsState, direction: HorizontalPayload): Readonly<HomeControlsState> {
         const moveToColumn: number = state.column + (direction === 'LEFT' ? -1 : 1);
-        const totalTiles: number = this.getTotalInteractiveTilesInCollection();
+        const totalTiles: number = this.getTotalInteractiveTilesInFirstCollection();
         return updateState<HomeControlsState>(state, { column: clamp(moveToColumn, 1, totalTiles) });
     }
 
@@ -31,15 +30,9 @@ export class HomeControlsActions {
         return collectionsList.querySelectorAll('disney-collection').length;
     }
 
-    private getTotalInteractiveTilesInCollection(): number {
-        const collectionsList: ShadowRoot = getCollectionsList() as ShadowRoot;
-        const firstCollection: DOMQuery<Element> = collectionsList.querySelector('disney-collection');
-        if (isNil(firstCollection)) return 0;
-
-        const firstCollectionInteractiveTiles: DOMQuery<NodeListOf<Element>> =
-            firstCollection.shadowRoot?.querySelectorAll('[interactive-tile]');
-        if (isNil(firstCollectionInteractiveTiles)) return 0;
-
-        return firstCollectionInteractiveTiles.length;
+    private getTotalInteractiveTilesInFirstCollection(): number {
+        const interactiveTilesFromFirstCollection: DOMQuery<HTMLElement[]> = getInteractiveTilesFromFirstCollection();
+        if (isNil(interactiveTilesFromFirstCollection)) return 0;
+        return interactiveTilesFromFirstCollection.length;
     }
 }

@@ -34,5 +34,5 @@
         "/src/common",
         "/src/features/home/helpers"
     ],
-    "cSpell.words": ["serviceworker"]
+    "cSpell.words": ["serviceworker", "slotchange"]
 }

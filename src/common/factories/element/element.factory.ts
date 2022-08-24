@@ -18,13 +18,13 @@ export function elementFactory<T extends HTMLElement = HTMLDivElement>(options: 
     addStyles(element, options.styles);
     addAttributes(element, options.attributes);
 
-    if (isUndefined(options.body)) return element;
-
+    if (isUndefined(options.body)) {
+        return element;
+    }
     if (isString(options.body)) {
         setTextContent(element, options.body);
     }
     if (isHTMLChildren(options.body)) {
-        if (element.classList.contains('carousel-items')) console.dir(options.body);
         appendChildren(element, ...options.body);
     }
 

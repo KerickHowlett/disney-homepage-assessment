@@ -17,4 +17,5 @@ export * from './is-primitive-value';
 export * from './is-string';
 export * from './is-undefined';
 export * from './merge';
+export * from './to-number';
 export * from './update-state';

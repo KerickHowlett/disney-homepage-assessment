@@ -36,6 +36,7 @@ overrides:
           "@typescript-eslint/no-explicit-any":
               - warn
               - ignoreRestArgs: true
+          "@typescript-eslint/no-non-null-assertion": off
     - files: "src/**"
       env:
           browser: true

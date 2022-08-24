@@ -2,30 +2,42 @@
     display: block;
 }
 
-.carousel-container {
+template,
+slot {
+    display: inline-block;
+    flex-wrap: nowrap;
+    width: 7500000px;
+    position: relative;
+}
+
+.carousel-viewport {
     direction: ltr;
     display: flex;
     flex-flow: nowrap;
     margin-bottom: 16px;
     margin-left: 16px;
+    overflow: hidden;
     position: relative;
+    width: 95vw;
     z-index: 6;
 }
 
-.carousel-items {
-    transform: translate3d(0px, 0px, 0px);
-    position: relative;
-    display: block;
-    margin: 0px -10px;
-    padding: 0px;
-}
-
 .carousel-track {
-    width: 7900px;
-    opacity: 1;
+    /* width: 7900px; */
     transform: translate3d(0px, 0px, 0px);
+    overflow: visible;
     position: relative;
     top: 0px;
     left: 0px;
-    display: block;
+    display: inline-block;
+    width: 96vw;
+}
+
+.carousel-item {
+    border-style: none;
+    display: inline-block;
+    height: 100%;
+    inset: 0px;
+    object-fit: cover;
+    position: absolute;
 }

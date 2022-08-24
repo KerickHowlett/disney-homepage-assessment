@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Component } from '@common/decorators';
-import { elementFactory } from '@common/factories';
-import '@common/ui/image';
+import { Component } from '@common/decorators/component';
+import { elementFactory } from '@common/factories/element';
+import { INTERACTIVE_TILE } from '@common/ui/carousel';
 import type { ImageComponent } from '@common/ui/image';
-import { changeDetectedBetween, isEmpty } from '@common/utils';
-import { HomeControls } from '../../state-management/controls';
+import { changeDetectedBetween, toNumber } from '@common/utils';
+import { HomeControls } from '../../state-management';
 import type { Content } from '../../types';
 
 import css from './content-tile.component.css';
+
+import '@common/ui/image';
 
 @Component({
     selector: 'disney-content-tile',
@@ -25,6 +27,28 @@ export class ContentTileComponent extends HTMLElement {
         return ['interactive-tile'];
     }
 
+    get collectionIndex(): number {
+        const indexAttribute: string | null = this.getAttribute('collection-index');
+        return toNumber(indexAttribute);
+    }
+
+    get contentTileWrapper(): HTMLElement {
+        return this.element.querySelector('.content-tile')!;
+    }
+
+    get imageElement(): ImageComponent {
+        return this.element.querySelector<ImageComponent>('img')!;
+    }
+
+    get interactiveIndex(): number {
+        const indexAttribute: string | null = this.contentTileWrapper.getAttribute(INTERACTIVE_TILE);
+        return toNumber(indexAttribute);
+    }
+
+    get tileLink(): HTMLAnchorElement {
+        return this.element.querySelector<HTMLAnchorElement>('.content-tile-link')!;
+    }
+
     private content: Content = {} as Content;
 
     attributeChangedCallback(_: string, oldValue: string, newValue: string): void {
@@ -37,9 +61,15 @@ export class ContentTileComponent extends HTMLElement {
         this.render();
     }
 
+    disconnectedCallback(): void {
+        this.controls.unsubscribe(this.navigationHandler);
+    }
+
     render(): void {
         this.renderContentTile();
         this.setImgOnErrorListener();
+        this.navigationHandler();
+        this.focusOnInit();
     }
 
     private renderContentTile(): void {
@@ -56,9 +86,9 @@ export class ContentTileComponent extends HTMLElement {
                                 class="content-image-tile"
                                 failsafe-src="/default-content-tile.jpeg"
                                 is="disney-image"
-                                tabindex="0"
                                 loading="lazy"
                                 src="${image}"
+                                tabindex="0"
                             />
                         </div>
                     </a>
@@ -67,49 +97,52 @@ export class ContentTileComponent extends HTMLElement {
         `;
     }
 
-    private renderTitleOverlay(image: ImageComponent): void {
+    private renderTitleOverlay(): void {
         const titleElement: HTMLDivElement = elementFactory<HTMLDivElement>({
             classes: ['image-failsafe-title'],
             body: this.content.title,
         });
-        image.insertAdjacentElement('afterend', titleElement);
+        this.imageElement.insertAdjacentElement('afterend', titleElement);
+    }
+
+    // @NOTE: This is a small hack to focus on the first tile on the homepage's
+    //        top-left-hand corner when the page is first loaded.
+    //        This was necessary because the interactive index that is used to
+    //        target these tiles starts off as -1 since the carousel component
+    //        hasn't added the necessary attributes to the tiles yet.
+    private focusOnInit(): void {
+        const isFirstContentRenderedOnPage = (): boolean => {
+            const contentIndexAttribute: string | null = this.getAttribute('content-index');
+            const contentIndex: number = toNumber(contentIndexAttribute);
+            return contentIndex === 1 && this.collectionIndex === 1;
+        };
+        if (!isFirstContentRenderedOnPage()) return;
+        this.imageElement.focus();
     }
 
     private getContentTileAttributes(): void {
         this.content = {
-            title: this.getAttribute('content-title') ?? '',
-            image: this.getAttribute('content-image-src') ?? '',
-            id: this.getAttribute('content-id') ?? '',
+            title: this.getAttribute('content-title')!,
+            image: this.getAttribute('content-image-src')!,
+            id: this.getAttribute('content-id')!,
         };
     }
 
-    private setImgOnErrorListener(): void {
-        const image: ImageComponent = this.element.querySelector('img') as ImageComponent;
-        image.onerror = (): void => {
-            image.renderFailsafeImage();
-            image.classList.add('image-failsafe');
-            this.renderTitleOverlay(image);
-        };
+    private isActiveContentTile(): boolean {
+        const { column: focusedTile, row: focusedCollection } = this.controls.state;
+        return focusedCollection === this.collectionIndex && focusedTile === this.interactiveIndex;
     }
 
     private navigationHandler(): void {
         if (!this.isActiveContentTile()) return;
-        const tileLink: HTMLAnchorElement = this.element.querySelector<HTMLAnchorElement>('.content-tile-link')!;
-        const image: HTMLImageElement = tileLink.querySelector<HTMLImageElement>('.content-image-tile')!;
-        image.focus();
+        this.imageElement.focus();
     }
 
-    private isActiveContentTile(): boolean {
-        const collectionIndex: number = this.getAttributeIndex('collection-index');
-        const interactiveIndex: number = this.getAttributeIndex('interactive-tile');
-        const { column: focusedTile, row: focusedCollection } = this.controls.state;
-        return focusedCollection === collectionIndex && focusedTile === interactiveIndex;
-    }
-
-    private getAttributeIndex(attributeName: string): number {
-        const attributeValue: string = this.getAttribute(attributeName) || '';
-        if (isEmpty(attributeValue)) return -1;
-        const index: number = parseInt(attributeValue);
-        return isNaN(index) ? -1 : index;
+    private setImgOnErrorListener(): void {
+        this.imageElement.onerror = (): void => {
+            this.imageElement.renderFailsafeImage();
+            this.imageElement.classList.add('image-failsafe');
+            this.renderTitleOverlay();
+        };
     }
 }
