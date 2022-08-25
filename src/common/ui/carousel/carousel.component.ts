@@ -75,13 +75,14 @@ export class CarouselComponent extends HTMLElement {
         `;
     }
 
-    update(): void {
-        this.setCarouselItemsAndWidth();
+    updateCarouselItems(): void {
+        this.setCarouselElementsMetrics();
+        this.setTrackWidth();
         this.watchItemsForStyling();
     }
 
     private bindEvents(): void {
-        this.slotElement.addEventListener('slotchange', this.update.bind(this));
+        this.slotElement.addEventListener('slotchange', this.updateCarouselItems.bind(this));
         this.addEventListener('focusin', (event: FocusEvent): void => this.turnCarouselOnFocus(event), true);
     }
 
@@ -109,7 +110,7 @@ export class CarouselComponent extends HTMLElement {
         this.carouselTrack.style.transform = `translate3d(${this.xPosition}px, 0px, 0px)`;
     }
 
-    private setCarouselItemsAndWidth(): void {
+    private setCarouselElementsMetrics(): void {
         const carouselItemsPlaceholder: HTMLElement = this.slotElement.assignedElements()[0] as HTMLElement;
         this.carouselItems = Array.from(carouselItemsPlaceholder.children) as HTMLElement[];
         this.totalItems = this.carouselItems.length;
@@ -118,6 +119,12 @@ export class CarouselComponent extends HTMLElement {
         if (isNull(firstTargetElement)) return;
 
         this.widthOfItem = firstTargetElement?.offsetWidth || 0;
+    }
+
+    private setTrackWidth(): void {
+        const maxWidth: number = this.widthOfItem * this.totalItems;
+        this.carouselTrack.style.width = `${maxWidth}px`;
+        this.slotElement.style.width = `${maxWidth}px`;
     }
 
     // @TODO: This should go into a separate component or service that ties in
