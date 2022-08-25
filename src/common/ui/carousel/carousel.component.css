@@ -29,6 +29,7 @@ slot {
     top: 0px;
     left: 0px;
     display: inline-block;
+    transition: transform 300ms ease-in 0s;
     width: 95vw;
 }
 

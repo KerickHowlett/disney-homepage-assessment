@@ -167,11 +167,18 @@ export class CarouselComponent extends HTMLElement {
 
         const { left: leftOfItem, right: rightOfItem } = carouselItem.getBoundingClientRect();
         const leftOfCarousel: number = this.carouselViewport.getBoundingClientRect().left;
+        const widthOfPartiallyVisibleItem: number = this.widthOfItem * this.partiallyVisibleItemRatio;
 
-        if (leftOfItem < leftOfCarousel) {
+        console.dir({
+            left: `${leftOfItem}px < ${leftOfCarousel}px`,
+            right: `${rightOfItem}px > ${leftOfCarousel}px + ${this.carouselViewport.offsetWidth} - ${widthOfPartiallyVisibleItem}px`,
+            rightSummed: `${rightOfItem}px > ${
+                leftOfCarousel + this.carouselViewport.offsetWidth - widthOfPartiallyVisibleItem
+            }px`,
+        });
+        if (leftOfItem <= leftOfCarousel) {
             return this.moveCarousel('LEFT');
         }
-        const widthOfPartiallyVisibleItem: number = this.widthOfItem * this.partiallyVisibleItemRatio;
         if (rightOfItem > leftOfCarousel + this.carouselViewport.offsetWidth - widthOfPartiallyVisibleItem) {
             return this.moveCarousel('RIGHT');
         }
