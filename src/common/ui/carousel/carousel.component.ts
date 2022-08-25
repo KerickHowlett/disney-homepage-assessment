@@ -1,4 +1,4 @@
-import { Component } from '@common/decorators';
+import { Component, Debounce } from '@common/decorators';
 import { clamp, isNil, isNull, isUndefined } from '@common/utils';
 
 import css from './carousel.component.css?inline';
@@ -62,6 +62,9 @@ export class CarouselComponent extends HTMLElement {
 
     disconnectCallback(): void {
         this.observer?.disconnect();
+        window.removeEventListener('resize', this.onResize.bind(this));
+        this.removeEventListener('focusin', this.turnCarouselOnFocus.bind(this), true);
+        this.slotElement.removeEventListener('slotchange', this.updateCarouselItems.bind(this));
     }
 
     render(): void {
@@ -76,19 +79,22 @@ export class CarouselComponent extends HTMLElement {
     }
 
     updateCarouselItems(): void {
-        this.setCarouselElementsMetrics();
+        this.measureCarouselElements();
         this.setTrackWidth();
         this.watchItemsForStyling();
     }
 
     private bindEvents(): void {
         this.slotElement.addEventListener('slotchange', this.updateCarouselItems.bind(this));
-        this.addEventListener('focusin', (event: FocusEvent): void => this.turnCarouselOnFocus(event), true);
+        window.addEventListener('resize', this.onResize.bind(this));
+        this.addEventListener('focusin', this.turnCarouselOnFocus.bind(this), true);
     }
 
     // @NOTE: The most outer element can sometimes not register as an element or
     //        even as one with actual "mass" (i.e., height & width), so this was
     //        written to serve as a tool to find a usable element much easier.
+    //        This may be due to the nature of ShadowDOMs -- additional research
+    //        is needed.
     private getTrueElement(item: Element): HTMLElement | null {
         const itemRoot: HTMLElement | ShadowRoot = isNil(item?.shadowRoot) ? (item as HTMLElement) : item.shadowRoot;
         if (isNil(itemRoot)) return null;
@@ -110,7 +116,7 @@ export class CarouselComponent extends HTMLElement {
         this.carouselTrack.style.transform = `translate3d(${this.xPosition}px, 0px, 0px)`;
     }
 
-    private setCarouselElementsMetrics(): void {
+    private measureCarouselElements(): void {
         const carouselItemsPlaceholder: HTMLElement = this.slotElement.assignedElements()[0] as HTMLElement;
         this.carouselItems = Array.from(carouselItemsPlaceholder.children) as HTMLElement[];
         this.totalItems = this.carouselItems.length;
@@ -164,6 +170,15 @@ export class CarouselComponent extends HTMLElement {
         }
         this.partiallyVisibleItemRatio = ratioForPartiallyVIsibleItem;
         this.setInteractiveAttributeForFullyVisibleItems();
+    }
+
+    // @NOTE: Here for performance, and because, for some unknown reason, the event
+    //        that sets the width for the carousel track is not firing on init
+    //        when the debounce decorator is placed on the "updateCarouselItems"
+    //        method directly, but it does so fine here.
+    @Debounce(100)
+    private onResize(): void {
+        this.updateCarouselItems();
     }
 
     private turnCarouselOnFocus(event: FocusEvent): void {

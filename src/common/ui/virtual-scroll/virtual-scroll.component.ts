@@ -25,7 +25,6 @@ export class VirtualScroll extends HTMLElement {
     constructor() {
         super();
         this.element = this.attachShadow({ mode: 'open' });
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         this.viewport = document.querySelector<HTMLDivElement>('.virtual-scroll-viewport')!;
     }
 

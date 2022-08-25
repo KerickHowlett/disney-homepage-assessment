@@ -1,21 +1,21 @@
 import type { OriginalMethod } from '@common/types';
 
-const DEFAULT_TIMEOUT = 250;
-export function Throttle(delay?: number): MethodDecorator {
+type Timeout = ReturnType<typeof setTimeout>;
+const DEFAULT_TIMEOUT = 100;
+export function Debounce(delay?: number): MethodDecorator {
     return function (
         // eslint-disable-next-line @typescript-eslint/ban-types
         _target: Object,
         _propertyKey: string | symbol,
         descriptor: PropertyDescriptor,
     ): PropertyDescriptor {
-        let paused = false;
         const original: OriginalMethod = descriptor.value;
-        descriptor.value = function throttle(...args: any[]): void {
-            if (paused) return;
-            paused = true;
-            original.apply(this, args);
-            setTimeout(() => {
-                paused = false;
+        let timeoutId: Timeout | undefined;
+        descriptor.value = function debounce(...args: any[]): void {
+            clearTimeout(timeoutId);
+            console.log('debouncing');
+            timeoutId = setTimeout((): void => {
+                original.apply(this, args);
             }, delay || DEFAULT_TIMEOUT);
         };
 
