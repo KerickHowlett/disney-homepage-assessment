@@ -20,15 +20,17 @@
     z-index: -3;
 }
 
-* {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
-    overflow: hidden;
 }
 
 html {
     height: calc(100vh + 50px);
     line-height: 1.15;
     margin: 0;
+    overflow: hidden;
 }
 
 body {
