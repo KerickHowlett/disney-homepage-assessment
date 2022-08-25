@@ -38,22 +38,18 @@ export class HomeControlsReducer {
             case 'ArrowUp':
             case 'KeyW':
             case 'Numpad8':
-                event.preventDefault();
                 return this.actions.moveVertically(this.state, 'UP');
             case 'ArrowRight':
             case 'KeyD':
             case 'Numpad6':
-                event.preventDefault();
                 return this.actions.moveHorizontally(this.state, 'RIGHT');
             case 'ArrowDown':
             case 'KeyS':
             case 'Numpad2':
-                event.preventDefault();
                 return this.actions.moveVertically(this.state, 'DOWN');
             case 'ArrowLeft':
             case 'KeyA':
             case 'Numpad4':
-                event.preventDefault();
                 return this.actions.moveHorizontally(this.state, 'LEFT');
             default:
                 return state;

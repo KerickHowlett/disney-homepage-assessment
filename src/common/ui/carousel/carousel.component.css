@@ -6,7 +6,7 @@ template,
 slot {
     display: inline-block;
     flex-wrap: nowrap;
-    width: 7500000px;
+    width: 7500px;
     position: relative;
 }
 
@@ -17,27 +17,23 @@ slot {
     margin-bottom: 16px;
     margin-left: 16px;
     overflow: hidden;
+    overscroll-behavior: none;
     position: relative;
     width: 95vw;
     z-index: 6;
 }
 
 .carousel-track {
-    /* width: 7900px; */
-    transform: translate3d(0px, 0px, 0px);
     overflow: visible;
     position: relative;
     top: 0px;
     left: 0px;
     display: inline-block;
-    width: 96vw;
+    width: 95vw;
 }
 
 .carousel-item {
-    border-style: none;
     display: inline-block;
     height: 100%;
-    inset: 0px;
-    object-fit: cover;
     position: absolute;
 }
