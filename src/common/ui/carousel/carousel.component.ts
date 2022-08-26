@@ -82,9 +82,9 @@ export class CarouselComponent extends HTMLElement {
     }
 
     private bindEvents(): void {
-        this.slotElement.addEventListener('slotchange', this.updateCarouselItems.bind(this));
         window.addEventListener('resize', this.onResize.bind(this));
         this.addEventListener('focusin', this.turnCarouselOnFocus.bind(this), true);
+        this.slotElement.addEventListener('slotchange', this.updateCarouselItems.bind(this));
     }
 
     // @NOTE: The most outer element can sometimes not register as an element or
