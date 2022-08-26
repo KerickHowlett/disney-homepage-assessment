@@ -1,12 +1,12 @@
 :host {
     display: block;
+    z-index: 1000;
 }
 
 template,
 slot {
     display: inline-block;
     flex-wrap: nowrap;
-    /* width: 7500px; */
     position: relative;
 }
 
@@ -30,7 +30,6 @@ slot {
     left: 0px;
     display: inline-block;
     transition: transform 300ms ease-in 0s;
-    /* width: 95vw; */
 }
 
 .carousel-item {

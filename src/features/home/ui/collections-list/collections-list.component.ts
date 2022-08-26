@@ -36,9 +36,10 @@ export default class CollectionsListComponent extends HTMLElement {
     }
 
     appendCollectionsToDOM(collectionIds: CollectionId[]): void {
-        const collectionsList: HTMLElement = this.element.getElementById('home-collections') as HTMLElement;
-        const carousel: HTMLElement = this.element.querySelector(`disney-virtual-scroll`) as HTMLElement;
-        const preRenderedCollections: NodeListOf<Element> | undefined = carousel?.querySelectorAll(DISNEY_COLLECTION);
+        const collectionsList: HTMLElement = this.element.getElementById('home-collections')!;
+        const carousel: HTMLElement = this.element.querySelector(`disney-virtual-scroll`)!;
+        const preRenderedCollections: NodeListOf<Element> = carousel?.querySelectorAll(DISNEY_COLLECTION);
+
         let index: number = preRenderedCollections?.length || 0;
         for (const collectionId of collectionIds) {
             const collectionElement: CollectionComponent = this.createCollectionElement(collectionId, index);

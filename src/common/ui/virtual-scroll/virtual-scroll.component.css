@@ -1,12 +1,14 @@
-.virtual-scroll-viewport {
-    overflow: visible;
-    /* position: fixed; */
+:host {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 100%;
 }
 
-.virtual-scroll-content {
-    height: 100vh;
-    overflow: visible;
-    overflow-y: scroll;
+.virtual-scroll-viewport {
+    height: 800vh;
+    overflow: hidden;
+    width: 100vw;
 }
 
 .virtual-scroll-track {

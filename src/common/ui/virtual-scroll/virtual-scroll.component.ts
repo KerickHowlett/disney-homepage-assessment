@@ -9,7 +9,6 @@ type ViewportSize = Record<'width' | 'height', number>;
 })
 export class VirtualScroll extends HTMLElement {
     private readonly element: ShadowRoot;
-
     private readonly resizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]) => {
         for (const entry of entries) {
             if (entry.target !== this) continue;
@@ -19,8 +18,8 @@ export class VirtualScroll extends HTMLElement {
             this.dispatchEvent(onResize);
         }
     });
-    private readonly viewport: HTMLDivElement;
     private readonly size: ViewportSize = { width: 0, height: 0 };
+    private readonly viewport: HTMLDivElement;
 
     constructor() {
         super();

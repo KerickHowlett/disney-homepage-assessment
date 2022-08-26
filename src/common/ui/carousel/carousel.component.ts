@@ -10,9 +10,6 @@ export const FULLY_VISIBLE = 'fully-visible';
 export const PARTIALLY_VISIBLE = 'partially-visible';
 export const WATCH_TARGET = 'watch-target';
 
-// const LEFT: string[] = ['ArrowLeft', 'KeyA', 'Numpad4'];
-// const RIGHT: string[] = ['ArrowRight', 'KeyD', 'Numpad6'];
-
 type Horizontal = 'LEFT' | 'RIGHT';
 
 @Component({

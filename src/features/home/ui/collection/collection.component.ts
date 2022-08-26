@@ -1,5 +1,5 @@
 import { elementFactory } from '@common/factories';
-import { Component, isEmpty, isNil, isNull, isUndefined } from '@disney/common';
+import { Component, isEmpty, isNil, isNull, isUndefined, toNumber } from '@disney/common';
 import { HomeStore } from '../../state-management/store';
 import type { Collection, CollectionId, Content } from '../../types';
 
@@ -27,8 +27,7 @@ export class CollectionComponent extends HTMLElement {
     connectedCallback(): void {
         const collectionId: CollectionId | null = this.getAttribute('collection-id');
         if (isNull(collectionId)) {
-            console.error('Collection ID is required');
-            return this.hideCollection();
+            return this.hideCollectionOnError('Collection ID is required');
         }
         this.collectionId = collectionId;
         this.render();
@@ -36,8 +35,9 @@ export class CollectionComponent extends HTMLElement {
 
     render(): void {
         this.collection = this.store.getCollection(this.collectionId as string);
+        // @NOTE: First clause needed for non-null type narrowing.
         if (isNil(this.collection) || isUndefined(this.collection.content)) {
-            return this.hideCollection();
+            return this.hideCollectionOnError(`Content not found for Collection ID# ${this.collectionId}.`);
         }
         this.createTemplate(this.collection.title, css);
         this.renderContentTiles(this.collection.content);
@@ -59,15 +59,16 @@ export class CollectionComponent extends HTMLElement {
         return this.element.getElementById('collection-carousel') as HTMLElement;
     }
 
-    private hideCollection(): void {
+    private hideCollectionOnError(message: string): void {
+        if (!isEmpty(message)) console.error(message);
         this.style.display = 'none';
         this.innerHTML = '';
     }
 
     private renderContentTiles(content: ReadonlyArray<Content>): void {
         const carousel: HTMLElement = this.getCarousel();
-        const indexAttribute: string | null = this.getAttribute('collection-index') ?? '0';
-        const collectionIndex: number = isEmpty(indexAttribute) ? 0 : parseInt(indexAttribute);
+        const indexAttribute: string | null = this.getAttribute('collection-index');
+        const collectionIndex: number = toNumber(indexAttribute);
 
         carousel.replaceChildren(
             ...content.map<HTMLElement>(({ title, image }: Readonly<Content>, contentIndex: number): HTMLElement => {
