@@ -3,7 +3,6 @@
     z-index: 1000;
 }
 
-template,
 slot {
     display: inline-block;
     flex-wrap: nowrap;
