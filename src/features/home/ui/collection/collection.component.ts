@@ -1,5 +1,5 @@
 import { elementFactory } from '@common/factories';
-import { Component, isEmpty, isNil, isNull, isUndefined, toNumber } from '@disney/common';
+import { Component, isEmpty, isNull, isUndefined, toNumber } from '@disney/common';
 import { HomeStore } from '../../state-management/store';
 import type { Collection, CollectionId, Content } from '../../types';
 
@@ -22,7 +22,19 @@ export class CollectionComponent extends HTMLElement {
     }
 
     private collectionId?: CollectionId;
-    private collection?: Readonly<Collection>;
+
+    get carousel(): HTMLElement {
+        return this.element.querySelector<HTMLElement>('.collection-carousel')!;
+    }
+
+    get collection(): Readonly<Collection> | undefined {
+        return this.store.getCollection(this.collectionId!);
+    }
+
+    get collectionIndex(): number {
+        const indexAttribute: string | null = this.getAttribute('collection-index');
+        return toNumber(indexAttribute);
+    }
 
     connectedCallback(): void {
         const collectionId: CollectionId | null = this.getAttribute('collection-id');
@@ -34,29 +46,23 @@ export class CollectionComponent extends HTMLElement {
     }
 
     render(): void {
-        this.collection = this.store.getCollection(this.collectionId as string);
-        // @NOTE: First clause needed for non-null type narrowing.
-        if (isNil(this.collection) || isUndefined(this.collection.content)) {
+        if (isUndefined(this.collection?.content)) {
             return this.hideCollectionOnError(`Content not found for Collection ID# ${this.collectionId}.`);
         }
-        this.createTemplate(this.collection.title, css);
-        this.renderContentTiles(this.collection.content);
+        this.createTemplate(this.collection!.title);
+        this.renderContentTiles(this.collection!.content);
     }
 
-    private createTemplate(title: string, styles: string): void {
+    private createTemplate(title: string): void {
         this.element.innerHTML = `
-            <style>${styles}</style>
+            <style>${css}</style>
             <h4>${title}</h4>
             <div class="collection-content">
                 <disney-carousel>
-                    <div id="collection-carousel" slot="carousel-items"></div>
+                    <div class="collection-carousel" slot="carousel-items"></div>
                 </disney-carousel>
             </div>
         `;
-    }
-
-    private getCarousel(): HTMLElement {
-        return this.element.getElementById('collection-carousel') as HTMLElement;
     }
 
     private hideCollectionOnError(message: string): void {
@@ -66,17 +72,13 @@ export class CollectionComponent extends HTMLElement {
     }
 
     private renderContentTiles(content: ReadonlyArray<Content>): void {
-        const carousel: HTMLElement = this.getCarousel();
-        const indexAttribute: string | null = this.getAttribute('collection-index');
-        const collectionIndex: number = toNumber(indexAttribute);
-
-        carousel.replaceChildren(
+        this.carousel.replaceChildren(
             ...content.map<HTMLElement>(({ title, image }: Readonly<Content>, contentIndex: number): HTMLElement => {
                 const contentTile: HTMLElement = elementFactory({
                     attributes: [
                         `content-title: ${title}`,
                         `content-index: ${contentIndex + 1}`,
-                        `collection-index: ${collectionIndex + 1}`,
+                        `collection-index: ${this.collectionIndex + 1}`,
                     ],
                     tagName: 'disney-content-tile',
                 });

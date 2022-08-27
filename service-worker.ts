@@ -52,14 +52,17 @@ const cacheFirstThenNetworkStrategy = (event: FetchEvent): void =>
                 .then((cachedResponse: Response | undefined): Response | Promise<Response> => {
                     return (
                         cachedResponse ||
-                        fetch(event.request.url, NO_CORS).then((networkResponse: Response): Response => {
-                            if (isSuccessful(networkResponse)) {
-                                cache.put(event.request, networkResponse.clone());
-                            }
-                            return networkResponse;
-                        })
+                        (fetch(event.request.url, NO_CORS)
+                            .then((networkResponse: Response): Response => {
+                                if (isSuccessful(networkResponse)) {
+                                    cache.put(event.request, networkResponse.clone());
+                                }
+                                return networkResponse;
+                            })
+                            .catch((): Response => NOT_FOUND_RESPONSE) as Promise<Response>)
                     );
-                });
+                })
+                .catch((): Response => NOT_FOUND_RESPONSE) as Promise<Response>;
         }),
     );
 

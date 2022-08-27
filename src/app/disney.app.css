@@ -7,7 +7,7 @@
 
 .app-background {
     background-color: rgb(26, 29, 41);
-    height: calc(100vh + 100em);
+    height: 100vh;
     position: fixed;
     top: 0px;
     width: 100vw;
@@ -26,10 +26,7 @@
 .container {
     top: 72px;
     display: block;
-    flex-grow: 1;
-    flex-shrink: 0;
-    min-height: calc(100vh + 250px);
     overflow-x: visible;
-    padding: 0 3.5vw;
+    padding: 0 3.5rem;
     position: relative;
 }

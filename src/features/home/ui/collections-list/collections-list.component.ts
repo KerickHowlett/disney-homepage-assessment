@@ -12,11 +12,6 @@ import '../collection';
 
 const COLLECTION_ID = 'collection-id';
 const DISNEY_COLLECTION = 'disney-collection';
-const observerOptions: IntersectionObserverInit = {
-    root: document.getElementById('disney-collections-list'),
-    // rootMargin: '0px',
-    threshold: 0,
-};
 
 @Component({
     selector: 'disney-collections-list',
@@ -35,21 +30,17 @@ export default class CollectionsListComponent extends HTMLElement {
         this.lazyLoadPersonalizationCollection ||= this.store.lazyLoadPersonalCollection();
     }
 
-    appendCollectionsToDOM(collectionIds: CollectionId[]): void {
-        const collectionsList: HTMLElement = this.element.getElementById('home-collections')!;
-        const carousel: HTMLElement = this.element.querySelector(`disney-virtual-scroll`)!;
-        const preRenderedCollections: NodeListOf<Element> = carousel?.querySelectorAll(DISNEY_COLLECTION);
+    get collectionsList(): HTMLElement {
+        return this.element.querySelector<HTMLElement>('.home-collections-list')!;
+    }
 
-        let index: number = preRenderedCollections?.length || 0;
-        for (const collectionId of collectionIds) {
-            const collectionElement: CollectionComponent = this.createCollectionElement(collectionId, index);
-            collectionsList.appendChild(collectionElement);
-            index++;
-        }
+    get preRenderedCollections(): HTMLElement[] {
+        return Array.from(this.element.querySelectorAll<HTMLElement>(DISNEY_COLLECTION));
     }
 
     connectedCallback(): void {
         this.renderTemplate();
+        this.render();
     }
 
     disconnectedCallback(): void {
@@ -63,6 +54,15 @@ export default class CollectionsListComponent extends HTMLElement {
         this.observeLastCollectionElement(this.lastCollectionObserver);
     }
 
+    private appendCollectionsToDOM(collectionIds: CollectionId[]): void {
+        let index: number = this.preRenderedCollections.length;
+        for (const collectionId of collectionIds) {
+            const collectionElement: CollectionComponent = this.createCollectionElement(collectionId, index);
+            this.collectionsList.appendChild(collectionElement);
+            index++;
+        }
+    }
+
     private createCollectionElement(collectionId: CollectionId, index: number): CollectionComponent {
         return elementFactory({
             attributes: [`${COLLECTION_ID}: ${collectionId}`, `collection-index: ${index}`],
@@ -73,8 +73,8 @@ export default class CollectionsListComponent extends HTMLElement {
     private renderTemplate(): void {
         this.element.innerHTML = `
             <style>${css}</style>
-            <disney-virtual-scroll scroll-event-id="HOME-SCROLL">
-                <div id="home-collections" class="home-collections"></div>
+            <disney-virtual-scroll>
+                <div class="home-collections-list" slot="content"></div>
             </disney-virtual-scroll>
         `;
     }
@@ -100,7 +100,7 @@ export default class CollectionsListComponent extends HTMLElement {
 
             this.observeLastCollectionElement(observer);
         },
-        observerOptions,
+        { threshold: 0, root: this },
     );
 
     private observeLastCollectionElement(io: IntersectionObserver): void {

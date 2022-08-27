@@ -1,5 +1,5 @@
 import { Component, Debounce } from '@common/decorators';
-import { clamp, isNil, isNull, isUndefined } from '@common/utils';
+import { clamp, isNil, isNull } from '@common/utils';
 
 import css from './carousel.component.css?inline';
 
@@ -21,7 +21,6 @@ export class CarouselComponent extends HTMLElement {
     private carouselItems: HTMLElement[] = [];
     private observer?: IntersectionObserver;
 
-    // private indexOfFocusedItem = -1;
     private partiallyVisibleItemRatio = 0;
     private totalItems = 0;
     private xPosition = 0;
@@ -32,19 +31,11 @@ export class CarouselComponent extends HTMLElement {
         this.element = this.attachShadow({ mode: 'open' });
     }
 
-    get activeItem(): HTMLElement | undefined {
-        const item: HTMLElement | undefined = this.carouselItems.find((item: HTMLElement): boolean =>
-            isNil(item.shadowRoot?.activeElement),
-        );
-        if (isUndefined(item)) return undefined;
-        return this.getTrueElement(item)!;
-    }
-
-    get carouselTrack(): HTMLDivElement {
+    get track(): HTMLDivElement {
         return this.element.querySelector<HTMLDivElement>(`.${CAROUSEL_TRACK}`)!;
     }
 
-    get carouselViewport(): HTMLDivElement {
+    get viewport(): HTMLDivElement {
         return this.element.querySelector<HTMLDivElement>('.carousel-viewport')!;
     }
 
@@ -68,7 +59,7 @@ export class CarouselComponent extends HTMLElement {
         this.element.innerHTML = `
             <style>${css}</style>
             <div class="carousel-viewport">
-                <div class="carousel-track" style="will-change: transform; transform: translate3d(0px, 0px, 0px);">
+                <div class="carousel-track" style="transform: translate3d(0px, 0px, 0px);">
                     <slot name="carousel-items"></slot>
                 </div>
             </div>
@@ -110,7 +101,7 @@ export class CarouselComponent extends HTMLElement {
         const positionChange: number = direction === 'LEFT' ? this.widthOfItem : -1 * this.widthOfItem;
         const minPosition: number = -1 * this.widthOfItem * this.totalItems;
         this.xPosition = clamp(this.xPosition + positionChange, minPosition, 0);
-        this.carouselTrack.style.transform = `translate3d(${this.xPosition}px, 0px, 0px)`;
+        this.track.style.transform = `translate3d(${this.xPosition}px, 0px, 0px)`;
     }
 
     private measureCarouselElements(): void {
@@ -126,7 +117,7 @@ export class CarouselComponent extends HTMLElement {
 
     private setTrackWidth(): void {
         const maxWidth: number = this.widthOfItem * this.totalItems;
-        this.carouselTrack.style.width = `${maxWidth}px`;
+        this.track.style.width = `${maxWidth}px`;
         this.slotElement.style.width = `${maxWidth}px`;
     }
 
@@ -185,12 +176,12 @@ export class CarouselComponent extends HTMLElement {
         if (isNull(carouselItem)) return;
 
         const { left: leftOfItem, right: rightOfItem } = carouselItem.getBoundingClientRect();
-        const leftOfCarousel: number = this.carouselViewport.getBoundingClientRect().left;
+        const leftOfCarousel: number = this.viewport.getBoundingClientRect().left;
         if (leftOfItem <= leftOfCarousel) {
             return this.moveCarousel('LEFT');
         }
         const widthOfPartiallyVisibleItem: number = this.widthOfItem * this.partiallyVisibleItemRatio;
-        if (rightOfItem > leftOfCarousel + this.carouselViewport.offsetWidth - widthOfPartiallyVisibleItem) {
+        if (rightOfItem > leftOfCarousel + this.viewport.offsetWidth - widthOfPartiallyVisibleItem) {
             return this.moveCarousel('RIGHT');
         }
     }

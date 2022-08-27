@@ -7,14 +7,14 @@
 
 :root {
     --white: #f9f9f9;
-    text-size-adjust: 100%;
     -webkit-font-smoothing: antialiased;
     -webkit-text-size-adjust: 100%;
+    /* cursor: none; */
     background-color: rgb(26 29 41);
     color: var(--white);
-    /* cursor: none; */
-    font-family: Avenir-World-for-Disney-Demi, sans-serif;
+    font-family: "Avenir-World-for-Disney-Demi", sans-serif;
     line-height: 18.4px;
+    text-size-adjust: 100%;
     top: 0;
     user-select: none;
     z-index: -3;
@@ -27,12 +27,12 @@
 }
 
 html {
-    height: calc(100vh + 50px);
     line-height: 1.15;
     margin: 0;
     overflow: hidden;
 }
 
 body {
-    width: calc(100vw + 250px);
+    overflow: hidden;
+    margin: 0;
 }
