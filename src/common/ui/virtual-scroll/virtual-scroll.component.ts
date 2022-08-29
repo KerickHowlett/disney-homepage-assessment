@@ -3,7 +3,8 @@ import { clamp, isNil, isNull, isUndefined } from '@common/utils';
 
 import css from './virtual-scroll.component.css';
 
-const HORIZONTAL_CLASS = 'horizontal';
+const DEFAULT_ORIENTATION = 'vertical';
+
 const LEFT_KEYS: string[] = ['ArrowLeft', 'KeyA', 'Numpad4'];
 const RIGHT_KEYS: string[] = ['ArrowRight', 'KeyD', 'Numpad6'];
 const HORIZONTAL_KEYS: string[] = [...LEFT_KEYS, ...RIGHT_KEYS];
@@ -14,11 +15,12 @@ type Direction = Horizontal | Vertical;
 type Horizontal = 'LEFT' | 'RIGHT';
 type Orientation = 'horizontal' | 'vertical';
 type PositionByAxis = Record<'x' | 'y', number>;
-type ScrollOnFunction = () => void;
+type ScrollOnFocusMethods = (item: HTMLElement) => void;
+type ScrollOnFocusMethodsMap = Readonly<Record<Orientation, ScrollOnFocusMethods>>;
 type Vertical = 'UP' | 'DOWN';
 
-// @TODO: Include means to remove/add elements based on viewport for better
-//        better performance.
+// @TODO: Include means to remove/add elements based on DOMRect of item(s) and
+//        immediate parent viewport for better better performance.
 @Component({
     selector: 'disney-virtual-scroll',
 })
@@ -26,15 +28,16 @@ export class VirtualScroll extends HTMLElement {
     private readonly contentObserver: MutationObserver = new MutationObserver(this.updateVirtualScroll.bind(this));
     private readonly resizeObserver: ResizeObserver = new ResizeObserver(this.updateVirtualScroll.bind(this));
     private readonly element: ShadowRoot;
+    private readonly scrollOnFocusMethod: ScrollOnFocusMethodsMap = {
+        vertical: (item: HTMLElement) => this.scrollVerticallyOnFocus(item),
+        horizontal: (item: HTMLElement) => this.scrollHorizontallyOnFocus(item),
+    };
 
-    private intersectionObserver?: IntersectionObserver;
-    private position: PositionByAxis = {
+    private scrollPosition: PositionByAxis = {
         x: 0,
         y: 0,
     };
-    private orientation: Orientation = 'vertical';
-
-    private partiallyVisibleRatio = 0;
+    private orientation: Orientation = DEFAULT_ORIENTATION;
 
     constructor() {
         super();
@@ -93,35 +96,19 @@ export class VirtualScroll extends HTMLElement {
     }
 
     updateVirtualScroll(): void {
-        this.observeEachItem();
-        this.setTrackDimensions();
+        this.setTrackAndSlotDimensions();
         this.setStylePropertiesIfHorizontal();
     }
 
     private bindEvents(): void {
+        this.resizeObserver.observe(this.viewport);
         this.contentObserver.observe(this.content, { childList: true });
         this.addEventListener('focusin', this.scrollOnFocus.bind(this), true);
-        this.resizeObserver.observe(this.viewport);
-        this.watchForPartiallyVisibleRows();
-    }
-
-    private isPartiallyVisible(visibilityPercentage: number): boolean {
-        return visibilityPercentage > 0 && visibilityPercentage < 1;
     }
 
     private isValidOrientation(orientation: string | null): orientation is Orientation {
         if (isNull(orientation)) return false;
         return orientation === 'horizontal' || orientation === 'vertical';
-    }
-
-    private getPartiallyVisibleRatio(entries: IntersectionObserverEntry[], observer: IntersectionObserver): void {
-        let ratioForPartiallyVisibleItem = 0;
-        for (const { intersectionRatio } of entries) {
-            if (!this.isPartiallyVisible(intersectionRatio)) continue;
-            ratioForPartiallyVisibleItem = intersectionRatio;
-        }
-        this.partiallyVisibleRatio = ratioForPartiallyVisibleItem;
-        observer.disconnect();
     }
 
     private getCorrectAxis(direction: Direction): Axis {
@@ -151,14 +138,9 @@ export class VirtualScroll extends HTMLElement {
         const positionChange: number = this.isLeftOrUp(direction) ? itemMeasurement : -1 * itemMeasurement;
         const minPosition: number = -1 * itemMeasurement * this.items.length;
         const axis: Axis = this.getCorrectAxis(direction);
-        this.position[axis] = clamp(this.position[axis] + positionChange, minPosition, 0);
-        this.track.style.transform = this.getTranslate3dProperty(axis, this.position[axis]);
-    }
 
-    private sameAsPreviousItem(currentItem: HTMLElement): boolean {
-        const previousItem: EventTarget | null | undefined = window.event?.target;
-        if (isNil(previousItem)) return false;
-        return currentItem === previousItem;
+        this.scrollPosition[axis] = clamp(this.scrollPosition[axis] + positionChange, minPosition, 0);
+        this.track.style.transform = this.getTranslate3dProperty(axis, this.scrollPosition[axis]);
     }
 
     private setOrientation(): void {
@@ -166,7 +148,7 @@ export class VirtualScroll extends HTMLElement {
         this.orientation = this.isValidOrientation(orientation) ? orientation : 'vertical';
     }
 
-    private setTrackDimensions(): void {
+    private setTrackAndSlotDimensions(): void {
         const dimension: Dimension = this.orientation === 'vertical' ? 'height' : 'width';
         const itemDimension: number = this.items[0]?.getBoundingClientRect()[dimension] || 0;
 
@@ -179,6 +161,7 @@ export class VirtualScroll extends HTMLElement {
 
     private setStylePropertiesIfHorizontal(): void {
         if (this.orientation !== 'horizontal') return;
+        const HORIZONTAL_CLASS = 'horizontal';
         this.viewport.classList.add(HORIZONTAL_CLASS);
         this.track.classList.add(HORIZONTAL_CLASS);
     }
@@ -189,18 +172,16 @@ export class VirtualScroll extends HTMLElement {
         const item: HTMLElement | null = event.target as HTMLElement;
         if (isNil(item)) return;
 
-        const scrollOn: Record<Orientation, ScrollOnFunction> = {
-            vertical: this.scrollVerticallyOnFocus.bind(this, item),
-            horizontal: this.scrollHorizontallyOnFocus.bind(this, item),
-        };
-        scrollOn[this.orientation]();
+        this.scrollOnFocusMethod[this.orientation](item);
     }
 
-    // @TODO: Need to correct a small bug where when focusing on the last,
-    //        carousel item within the viewport will trigger the horizontal
-    //        scroll prematurely.
+    // @NOTE: This and the following "onFocus" scroll methods could probably be
+    //        combined into a single method, but I'm keeping them separate to
+    //        make it easier to understand what's going on without needing to add
+    //        an additional layer of potentially confusing abstraction.
+    //        This will also better help prevent "crossing the streams" between
+    //        horizontal and vertical navigation actions.
     private scrollHorizontallyOnFocus(item: HTMLElement): void {
-        // if (!this.horizontalKeyWasPressed() || !this.sameAsPreviousItem(item)) return;
         if (!this.horizontalKeyWasPressed()) return;
 
         const { left: leftOfItem, right: rightOfItem, width: itemWidth } = item.getBoundingClientRect();
@@ -210,7 +191,6 @@ export class VirtualScroll extends HTMLElement {
             return;
         }
 
-        const partiallyVisibleWidth: number = itemWidth * this.partiallyVisibleRatio;
         if (rightOfItem > leftOfViewport + this.viewport.offsetWidth) {
             requestAnimationFrame(this.moveScroll.bind(this, 'RIGHT', itemWidth));
         }
@@ -224,30 +204,14 @@ export class VirtualScroll extends HTMLElement {
             return;
         }
 
-        const partiallyVisibleHeight: number = itemHeight * this.partiallyVisibleRatio;
-        if (bottomOfRow > topOfViewport + this.viewport.offsetHeight - partiallyVisibleHeight) {
+        if (bottomOfRow > topOfViewport + this.viewport.offsetHeight) {
             requestAnimationFrame(this.moveScroll.bind(this, 'DOWN', itemHeight));
         }
-    }
-
-    private observeEachItem(): void {
-        this.items.forEach((item: HTMLElement): void => {
-            if (isNull(item)) return;
-            this.intersectionObserver!.observe(item);
-        });
     }
 
     private unbindEvents(): void {
         this.resizeObserver.disconnect();
         this.contentObserver.disconnect();
-        this.intersectionObserver?.disconnect();
         this.removeEventListener('focusin', this.scrollOnFocus.bind(this), true);
-    }
-
-    private watchForPartiallyVisibleRows(): void {
-        this.intersectionObserver = new IntersectionObserver(this.getPartiallyVisibleRatio.bind(this), {
-            root: this.viewport,
-            threshold: [0, 0.2, 0.4, 0.5, 0.6, 0.8, 1],
-        });
     }
 }
