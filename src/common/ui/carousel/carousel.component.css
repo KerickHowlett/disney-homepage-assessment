@@ -1,11 +1,9 @@
 :host {
     display: block;
-    z-index: 1000;
 }
 
 slot {
     flex-wrap: nowrap;
     position: relative;
     overflow: visible;
-    z-index: 100;
 }
