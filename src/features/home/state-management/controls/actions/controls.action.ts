@@ -13,6 +13,8 @@ export type HorizontalPayload = 'LEFT' | 'RIGHT';
 export type VerticalPayload = 'UP' | 'DOWN';
 export type Direction = HorizontalPayload | VerticalPayload;
 
+// @TODO: This needs a robust/dynamic means of memoization that can handle
+//        ResizeObserver and IntersectionObserver events for better performance.
 @Singleton()
 export class HomeControlsActions {
     moveHorizontally(state: HomeControlsState, direction: HorizontalPayload): Readonly<HomeControlsState> {
