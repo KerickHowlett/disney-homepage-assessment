@@ -122,6 +122,7 @@ export class VirtualScroll extends HTMLElement {
         const axis: Axis = this.getCorrectAxis(direction);
         this.position[axis] = clamp(this.position[axis] + positionChange, minPosition, 0);
         this.track.style.transform = this.getTranslate3dProperty(axis, this.position[axis]);
+        requestAnimationFrame(this.moveScroll.bind(this, direction, itemMeasurement));
     }
 
     private getCorrectAxis(direction: Direction): Axis {
@@ -161,11 +162,13 @@ export class VirtualScroll extends HTMLElement {
         const { left: leftOfItem, right: rightOfItem, width: itemWidth } = item.getBoundingClientRect();
         const { left: leftOfViewport } = this.viewport.getBoundingClientRect();
         if (leftOfItem <= leftOfViewport) {
-            return this.moveScroll('LEFT', itemWidth);
+            requestAnimationFrame(this.moveScroll.bind(this, 'LEFT', itemWidth));
+            return;
         }
+
         const widthOfPartiallyVisibleItem: number = itemWidth * this.partiallyVisibleRatio;
         if (rightOfItem > leftOfViewport + this.viewport.offsetWidth - widthOfPartiallyVisibleItem) {
-            return this.moveScroll('RIGHT', itemWidth);
+            requestAnimationFrame(this.moveScroll.bind(this, 'UP', itemWidth));
         }
     }
 
@@ -173,11 +176,13 @@ export class VirtualScroll extends HTMLElement {
         const { bottom: bottomOfRow, height: itemHeight, top: topOfRow } = item.getBoundingClientRect();
         const { top: topOfViewport } = this.viewport.getBoundingClientRect();
         if (topOfRow <= topOfViewport) {
-            return this.moveScroll('UP', itemHeight);
+            requestAnimationFrame(this.moveScroll.bind(this, 'UP', itemHeight));
+            return;
         }
+
         const partiallyVisibleHeight: number = itemHeight * this.partiallyVisibleRatio;
         if (bottomOfRow > topOfViewport + this.viewport.offsetHeight - partiallyVisibleHeight) {
-            return this.moveScroll('DOWN', itemHeight);
+            requestAnimationFrame(this.moveScroll.bind(this, 'DOWN', itemHeight));
         }
     }
 
