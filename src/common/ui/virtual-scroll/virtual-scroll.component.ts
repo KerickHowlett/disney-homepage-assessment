@@ -1,9 +1,12 @@
 import { Component } from '@common/decorators';
-import { clamp, isNil, isNull } from '@common/utils';
+import { clamp, isNil, isNull, isUndefined } from '@common/utils';
 
 import css from './virtual-scroll.component.css';
 
 const HORIZONTAL_CLASS = 'horizontal';
+const LEFT_KEYS: string[] = ['ArrowLeft', 'KeyA', 'Numpad4'];
+const RIGHT_KEYS: string[] = ['ArrowRight', 'KeyD', 'Numpad6'];
+const HORIZONTAL_KEYS: string[] = [...LEFT_KEYS, ...RIGHT_KEYS];
 
 type Axis = 'x' | 'y';
 type Dimension = 'width' | 'height';
@@ -11,6 +14,7 @@ type Direction = Horizontal | Vertical;
 type Horizontal = 'LEFT' | 'RIGHT';
 type Orientation = 'horizontal' | 'vertical';
 type PositionByAxis = Record<'x' | 'y', number>;
+type ScrollOnFunction = () => void;
 type Vertical = 'UP' | 'DOWN';
 
 // @TODO: Include means to remove/add elements based on viewport for better
@@ -129,6 +133,16 @@ export class VirtualScroll extends HTMLElement {
         return `translate3d(0px, ${newPosition}px, 0px)`;
     }
 
+    private horizontalKeyWasPressed(): boolean {
+        const latestEvent: Event | KeyboardEvent | undefined = window.event;
+        if (isUndefined(latestEvent) || !this.isKeyboardEvent(latestEvent)) return false;
+        return HORIZONTAL_KEYS.includes(latestEvent.code);
+    }
+
+    private isKeyboardEvent(event: Event): event is KeyboardEvent {
+        return event instanceof KeyboardEvent;
+    }
+
     private isLeftOrUp(direction: Direction): boolean {
         return direction === 'LEFT' || direction === 'UP';
     }
@@ -139,6 +153,12 @@ export class VirtualScroll extends HTMLElement {
         const axis: Axis = this.getCorrectAxis(direction);
         this.position[axis] = clamp(this.position[axis] + positionChange, minPosition, 0);
         this.track.style.transform = this.getTranslate3dProperty(axis, this.position[axis]);
+    }
+
+    private sameAsPreviousItem(currentItem: HTMLElement): boolean {
+        const previousItem: EventTarget | null | undefined = window.event?.target;
+        if (isNil(previousItem)) return false;
+        return currentItem === previousItem;
     }
 
     private setOrientation(): void {
@@ -159,7 +179,6 @@ export class VirtualScroll extends HTMLElement {
 
     private setStylePropertiesIfHorizontal(): void {
         if (this.orientation !== 'horizontal') return;
-        this.setAttribute('dir', 'ltr');
         this.viewport.classList.add(HORIZONTAL_CLASS);
         this.track.classList.add(HORIZONTAL_CLASS);
     }
@@ -170,19 +189,20 @@ export class VirtualScroll extends HTMLElement {
         const item: HTMLElement | null = event.target as HTMLElement;
         if (isNil(item)) return;
 
-        if (this.orientation === 'vertical') {
-            return this.scrollVerticallyOnFocus(item);
-        }
-        if (this.orientation === 'horizontal') {
-            return this.scrollHorizontallyOnFocus(item);
-        }
-        console.error('Invalid orientation was set.');
+        const scrollOn: Record<Orientation, ScrollOnFunction> = {
+            vertical: this.scrollVerticallyOnFocus.bind(this, item),
+            horizontal: this.scrollHorizontallyOnFocus.bind(this, item),
+        };
+        scrollOn[this.orientation]();
     }
 
     // @TODO: Need to correct a small bug where when focusing on the last,
     //        carousel item within the viewport will trigger the horizontal
     //        scroll prematurely.
     private scrollHorizontallyOnFocus(item: HTMLElement): void {
+        // if (!this.horizontalKeyWasPressed() || !this.sameAsPreviousItem(item)) return;
+        if (!this.horizontalKeyWasPressed()) return;
+
         const { left: leftOfItem, right: rightOfItem, width: itemWidth } = item.getBoundingClientRect();
         const { left: leftOfViewport } = this.viewport.getBoundingClientRect();
         if (leftOfItem <= leftOfViewport) {
@@ -191,7 +211,7 @@ export class VirtualScroll extends HTMLElement {
         }
 
         const partiallyVisibleWidth: number = itemWidth * this.partiallyVisibleRatio;
-        if (rightOfItem > leftOfViewport + this.viewport.offsetWidth - partiallyVisibleWidth) {
+        if (rightOfItem > leftOfViewport + this.viewport.offsetWidth) {
             requestAnimationFrame(this.moveScroll.bind(this, 'RIGHT', itemWidth));
         }
     }

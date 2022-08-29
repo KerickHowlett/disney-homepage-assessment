@@ -11,7 +11,7 @@ Singleton();
 export class HomeControlsReducer {
     constructor(
         private _state: HomeControlsState = getInitialCoordinatesState(),
-        private actions: HomeControlsActions = new HomeControlsActions(),
+        private readonly actions: HomeControlsActions = new HomeControlsActions(),
         public readonly messenger: PubSub = new PubSub(),
     ) {}
 
@@ -22,6 +22,7 @@ export class HomeControlsReducer {
     @Throttle(100)
     onKeydown(event: Readonly<KeyboardEvent>): void {
         this._state = this.dispatch(this._state, event);
+        console.dir(this._state);
         this.messenger.publish(HOME_NAVIGATION_CONTROLS, this._state);
     }
 

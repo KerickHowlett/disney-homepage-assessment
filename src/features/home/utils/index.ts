@@ -1,5 +1,4 @@
 export * from './collection-filter';
-export * from './dom-selectors';
 export * from './get-collection';
 export * from './get-collection-id';
 export * from './get-containers';
@@ -8,4 +7,5 @@ export * from './get-image-url';
 export * from './get-items-from-set-ref-api-response';
 export * from './get-only-key-of-set';
 export * from './get-title';
+export * from './global-scoped-dom-selectors';
 export * from './pluck-content';

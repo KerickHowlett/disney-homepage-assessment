@@ -20,9 +20,11 @@ slot {
     display: inline-block;
     direction: ltr;
     height: min-content;
+    left: 10px;
     margin-bottom: 16px;
     margin-left: 16px;
-    overflow: visible;
+    overflow-x: hidden;
+    overflow-y: visible;
     overscroll-behavior: none;
     position: relative;
     width: 96.2vw;

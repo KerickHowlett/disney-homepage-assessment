@@ -1,6 +1,12 @@
 import { Singleton } from '@common/decorators';
 import { clamp, isNil, updateState } from '@common/utils';
-import { DOMQuery, getCollectionsList, getInteractiveTilesFromFirstCollection } from '@disney/features/home/utils';
+import type { ContentTileComponent } from '@disney/features/home/ui/content-tile';
+import {
+    DOMQuery,
+    getCollectionsList,
+    getContentTilesFromNthCarousel,
+    getFullyVisibleTilesFromNthCarousel,
+} from '@disney/features/home/utils';
 import type { HomeControlsState } from '../state';
 
 export type HorizontalPayload = 'LEFT' | 'RIGHT';
@@ -11,14 +17,20 @@ export type Direction = HorizontalPayload | VerticalPayload;
 export class HomeControlsActions {
     moveHorizontally(state: HomeControlsState, direction: HorizontalPayload): Readonly<HomeControlsState> {
         const moveToColumn: number = state.column + (direction === 'LEFT' ? -1 : 1);
-        const totalTiles: number = this.getTotalInteractiveTilesInFirstCollection();
+        const totalTiles: number = this.getAllTilesInCurrentCollection(state.row);
         return updateState<HomeControlsState>(state, { column: clamp(moveToColumn, 1, totalTiles) });
     }
 
     moveVertically(state: HomeControlsState, direction: VerticalPayload): Readonly<HomeControlsState> {
         const moveToRow: number = state.row + (direction === 'UP' ? -1 : 1);
         const totalCollections: number = this.getTotalRenderedCollections();
-        return updateState<HomeControlsState>(state, { row: clamp(moveToRow, 1, totalCollections) });
+        const targetCollectionIndex: number = clamp(moveToRow, 1, totalCollections);
+
+        const targetContentIndex: number = this.getContentIndexInTargetCollection(moveToRow, state);
+        return updateState<HomeControlsState>(state, {
+            column: targetContentIndex,
+            row: targetCollectionIndex,
+        });
     }
 
     private getTotalRenderedCollections(): number {
@@ -26,9 +38,48 @@ export class HomeControlsActions {
         return collectionsList.querySelectorAll('disney-collection').length;
     }
 
-    private getTotalInteractiveTilesInFirstCollection(): number {
-        const interactiveTilesFromFirstCollection: DOMQuery<HTMLElement[]> = getInteractiveTilesFromFirstCollection();
-        if (isNil(interactiveTilesFromFirstCollection)) return 0;
-        return interactiveTilesFromFirstCollection.length;
+    private getAllTilesInCurrentCollection(collectionIndex: number): number {
+        const totalTilesFromCurrentCollection: DOMQuery<HTMLElement[]> = getContentTilesFromNthCarousel(
+            collectionIndex - 1,
+        );
+        if (isNil(totalTilesFromCurrentCollection)) return 0;
+        return totalTilesFromCurrentCollection.length;
+    }
+
+    private getContentIndexInTargetCollection(targetCollectionIndex: number, state: HomeControlsState): number {
+        const { row: originalCollectionIndex, column: targetContentIndex } = state;
+        const originalCollectionFullyVisibleIndex: number = this.getIndexForFullyVisibleContentTileInNthCollection(
+            originalCollectionIndex,
+            targetContentIndex,
+        );
+        console.log(originalCollectionFullyVisibleIndex);
+
+        const fullyVisibleTilesFromTargetCollection: DOMQuery<ContentTileComponent[]> =
+            getFullyVisibleTilesFromNthCarousel(targetCollectionIndex - 1) as DOMQuery<ContentTileComponent[]>;
+        if (isNil(fullyVisibleTilesFromTargetCollection)) return 0;
+
+        console.dir(fullyVisibleTilesFromTargetCollection);
+
+        const targetContentTile: ContentTileComponent =
+            fullyVisibleTilesFromTargetCollection[originalCollectionFullyVisibleIndex];
+        return targetContentTile.contentIndex;
+    }
+
+    private getIndexForFullyVisibleContentTileInNthCollection(
+        collectionIndex: number,
+        targetContentIndex: number,
+    ): number {
+        const fullyVisibleTilesFromOriginalCollection: DOMQuery<ContentTileComponent[]> =
+            getFullyVisibleTilesFromNthCarousel(collectionIndex - 1) as DOMQuery<ContentTileComponent[]>;
+
+        if (isNil(fullyVisibleTilesFromOriginalCollection)) return 0;
+
+        const index: number = fullyVisibleTilesFromOriginalCollection.findIndex(
+            (contentTile: ContentTileComponent): boolean => {
+                return targetContentIndex === contentTile.contentIndex;
+            },
+        );
+
+        return index === -1 ? 0 : index;
     }
 }

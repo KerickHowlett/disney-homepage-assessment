@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Component } from '@common/decorators/component';
 import { elementFactory } from '@common/factories/element';
-import { INTERACTIVE_TILE } from '@common/ui/carousel';
 import type { ImageComponent } from '@common/ui/image';
 import { changeDetectedBetween, toNumber } from '@common/utils';
 import { HomeControls } from '../../state-management';
 import type { Content } from '../../types';
+import { INTERACTIVE_TILE } from '../collection';
 
 import css from './content-tile.component.css';
 
@@ -29,6 +29,11 @@ export class ContentTileComponent extends HTMLElement {
 
     get collectionIndex(): number {
         const indexAttribute: string | null = this.getAttribute('collection-index');
+        return toNumber(indexAttribute);
+    }
+
+    get contentIndex(): number {
+        const indexAttribute: string | null = this.getAttribute('content-index');
         return toNumber(indexAttribute);
     }
 
@@ -111,12 +116,8 @@ export class ContentTileComponent extends HTMLElement {
     //        target these tiles starts off as -1 since the carousel component
     //        hasn't added the necessary attributes to the tiles yet.
     private focusOnInit(): void {
-        const isFirstContentRenderedOnPage = (): boolean => {
-            const contentIndexAttribute: string | null = this.getAttribute('content-index');
-            const contentIndex: number = toNumber(contentIndexAttribute);
-            return contentIndex === 1 && this.collectionIndex === 1;
-        };
-        if (!isFirstContentRenderedOnPage()) return;
+        const firstContentTileRenderedInView = this.contentIndex === 1 && this.collectionIndex === 1;
+        if (!firstContentTileRenderedInView) return;
         this.imageElement.focus();
     }
 
@@ -130,7 +131,7 @@ export class ContentTileComponent extends HTMLElement {
 
     private isActiveContentTile(): boolean {
         const { column: focusedTile, row: focusedCollection } = this.controls.state;
-        return focusedCollection === this.collectionIndex && focusedTile === this.interactiveIndex;
+        return focusedCollection === this.collectionIndex && focusedTile === this.contentIndex;
     }
 
     private navigationHandler(): void {
