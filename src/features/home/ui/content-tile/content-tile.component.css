@@ -1,5 +1,4 @@
 :host {
-    cursor: none;
     display: block;
     height: 100%;
     float: left;
@@ -38,7 +37,6 @@
     border-radius: 4px;
     box-shadow: rgba(0, 0, 0, 0.69) 0px 26px 30px -10px, rgba(0, 0, 0, 0.73) 0px 16px 10px -10px;
     box-sizing: border-box;
-    cursor: none;
     display: block;
     position: relative;
     transform: scale(1, 1) translateZ(0px);

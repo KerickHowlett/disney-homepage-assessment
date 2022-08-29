@@ -20,12 +20,16 @@ slot {
     display: inline-block;
     direction: ltr;
     height: min-content;
-    left: 10px;
-    margin-bottom: 16px;
+    padding-bottom: 16px;
     margin-left: 16px;
-    overflow-x: hidden;
-    overflow-y: visible;
-    overscroll-behavior: none;
+    /*
+     * @TODO: The following "overflow" property should be set to
+     *        "hidden", as is the very nature of virtual scroll
+     *        viewports, but this is cutting off the box shadow
+     *        of the content tiles within the carousels. So this
+     *        is just a temporary hack until an actual solution can be found.
+     */
+    overflow: visible;
     position: relative;
     width: 96.2vw;
 }
