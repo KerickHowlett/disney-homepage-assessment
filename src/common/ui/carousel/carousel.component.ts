@@ -8,6 +8,7 @@ export const INTERACTIVE_TILE = 'interactive-tile';
 export const CAROUSEL_ITEM = 'carousel-item';
 export const CAROUSEL_TRACK = 'carousel-track';
 export const FULLY_VISIBLE = 'fully-visible';
+export const IS_FULLY_VISIBLE = 'is-fully-visible';
 export const PARTIALLY_VISIBLE = 'partially-visible';
 export const WATCH_TARGET = 'watch-target';
 
@@ -15,9 +16,13 @@ export const WATCH_TARGET = 'watch-target';
     selector: 'disney-carousel',
 })
 export class CarouselComponent extends HTMLElement {
-    private readonly contentObserver: MutationObserver = new MutationObserver(this.watchItemsForStyling.bind(this));
+    private readonly contentObserver: MutationObserver = new MutationObserver(
+        this.watchItemsForLevelsOfVisibility.bind(this),
+    );
     private readonly element: ShadowRoot;
-    private readonly resizeObserver: ResizeObserver = new ResizeObserver(this.watchItemsForStyling.bind(this));
+    private readonly resizeObserver: ResizeObserver = new ResizeObserver(
+        this.watchItemsForLevelsOfVisibility.bind(this),
+    );
     private observer?: IntersectionObserver;
 
     constructor() {
@@ -44,7 +49,7 @@ export class CarouselComponent extends HTMLElement {
     connectedCallback(): void {
         this.render();
         this.bindObservers();
-        this.watchItemsForStyling();
+        this.watchItemsForLevelsOfVisibility();
     }
 
     disconnectCallback(): void {
@@ -85,43 +90,26 @@ export class CarouselComponent extends HTMLElement {
         return visibilityPercentage > 0 && visibilityPercentage < 1;
     }
 
-    // @TODO: This should go into a separate component or service that ties in
-    //        more closely with the content tiles, since this feature is tied in
-    //         with their navigation controls.
-    private setInteractiveAttributeForFullyVisibleItems(): void {
-        const visibleItemElements: HTMLElement[] = this.carouselItems.reduce(
-            (visibleItemElements: HTMLElement[], item: HTMLElement): HTMLElement[] => {
-                const target: HTMLElement | null = this.getTrueElement(item);
-                if (isNull(target) || !target.classList.contains(INTERACTIVE_TILE)) return visibleItemElements;
-                return [...visibleItemElements, target];
-            },
-            [],
-        );
-        visibleItemElements.forEach((item: HTMLElement, index: number): void => {
-            item.setAttribute(INTERACTIVE_TILE, `${index + 1}`);
-        });
-    }
-
     private setVisibilityStylingOnChange(entries: IntersectionObserverEntry[]): void {
         for (const { target, intersectionRatio } of entries) {
             target.classList.add(CAROUSEL_ITEM);
+            target.setAttribute(IS_FULLY_VISIBLE, 'false');
 
             if (this.isPartiallyVisible(intersectionRatio)) {
-                target.removeAttribute(INTERACTIVE_TILE);
-                target.classList.remove(FULLY_VISIBLE, INTERACTIVE_TILE);
+                target.classList.remove(FULLY_VISIBLE);
                 target.classList.add(PARTIALLY_VISIBLE);
                 continue;
             }
 
             if (this.isCompletelyVisible(intersectionRatio)) {
+                target.setAttribute(IS_FULLY_VISIBLE, 'true');
                 target.classList.remove(PARTIALLY_VISIBLE);
-                target.classList.add(FULLY_VISIBLE, INTERACTIVE_TILE);
+                target.classList.add(FULLY_VISIBLE);
             }
         }
-        this.setInteractiveAttributeForFullyVisibleItems();
     }
 
-    private watchItemsForStyling(): void {
+    private watchItemsForLevelsOfVisibility(): void {
         this.observer = new IntersectionObserver(this.setVisibilityStylingOnChange.bind(this), {
             root: this.virtualScroll.viewport,
             threshold: [0, 0.2, 0.4, 0.5, 0.6, 0.8, 1],

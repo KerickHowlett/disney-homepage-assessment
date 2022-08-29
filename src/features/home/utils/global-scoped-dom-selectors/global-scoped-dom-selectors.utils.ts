@@ -71,8 +71,8 @@ export function getFullyVisibleTilesFromNthCarousel(index?: number): DOMQuery<Co
         ContentTileComponent[]
     >;
     if (isNil(contentTiles)) return;
-    return contentTiles.filter(
-        // @NOTE: The 'fully-visible' class is set in the carousel component.
-        (tile: ContentTileComponent): boolean => !isNil(tile.shadowRoot?.querySelector('.fully-visible')),
-    );
+
+    return contentTiles.filter((tile: ContentTileComponent): boolean => {
+        return !isNil(tile.shadowRoot?.querySelector('[is-fully-visible="true"]'));
+    });
 }
