@@ -1,8 +1,8 @@
 import { Singleton } from '@common/decorators';
 import { clamp, isNil, updateState } from '@common/utils';
 import type { ContentTileComponent } from '@disney/features/home/ui/content-tile';
+import type { DOMQuery } from '@disney/features/home/utils';
 import {
-    DOMQuery,
     getCollectionsList,
     getContentTilesFromNthCarousel,
     getFullyVisibleTilesFromNthCarousel,
@@ -52,17 +52,11 @@ export class HomeControlsActions {
             originalCollectionIndex,
             targetContentIndex,
         );
-        console.log(originalCollectionFullyVisibleIndex);
-
-        const fullyVisibleTilesFromTargetCollection: DOMQuery<ContentTileComponent[]> =
-            getFullyVisibleTilesFromNthCarousel(targetCollectionIndex - 1) as DOMQuery<ContentTileComponent[]>;
-        if (isNil(fullyVisibleTilesFromTargetCollection)) return 0;
-
-        console.dir(fullyVisibleTilesFromTargetCollection);
-
-        const targetContentTile: ContentTileComponent =
-            fullyVisibleTilesFromTargetCollection[originalCollectionFullyVisibleIndex];
-        return targetContentTile.contentIndex;
+        const { contentIndex } = this.getVerticallyAligningContentTileFromTargetCollection(
+            targetCollectionIndex,
+            originalCollectionFullyVisibleIndex,
+        );
+        return contentIndex;
     }
 
     private getIndexForFullyVisibleContentTileInNthCollection(
@@ -70,7 +64,7 @@ export class HomeControlsActions {
         targetContentIndex: number,
     ): number {
         const fullyVisibleTilesFromOriginalCollection: DOMQuery<ContentTileComponent[]> =
-            getFullyVisibleTilesFromNthCarousel(collectionIndex - 1) as DOMQuery<ContentTileComponent[]>;
+            getFullyVisibleTilesFromNthCarousel(collectionIndex - 1);
 
         if (isNil(fullyVisibleTilesFromOriginalCollection)) return 0;
 
@@ -81,5 +75,19 @@ export class HomeControlsActions {
         );
 
         return index === -1 ? 0 : index;
+    }
+
+    private getVerticallyAligningContentTileFromTargetCollection(
+        targetCollectionIndex: number,
+        originalCollectionFullyVisibleIndex: number,
+    ): ContentTileComponent {
+        const fullyVisibleTilesFromTargetCollection: DOMQuery<ContentTileComponent[]> =
+            getFullyVisibleTilesFromNthCarousel(targetCollectionIndex - 1);
+
+        if (isNil(fullyVisibleTilesFromTargetCollection)) {
+            return { contentIndex: 0 } as ContentTileComponent;
+        }
+
+        return fullyVisibleTilesFromTargetCollection[originalCollectionFullyVisibleIndex];
     }
 }

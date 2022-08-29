@@ -1,4 +1,5 @@
 import { isNil } from '@common/utils';
+import type { ContentTileComponent } from '@disney/features/home/ui/content-tile';
 
 export type DOMQuery<TBase = ShadowRoot> = TBase | null | undefined;
 
@@ -65,11 +66,13 @@ export function getContentTilesFromNthCarousel(index?: number): DOMQuery<HTMLEle
     return Array.from(assignedSlotElements.children) as HTMLElement[];
 }
 
-export function getFullyVisibleTilesFromNthCarousel(index?: number): DOMQuery<HTMLElement[]> {
-    const contentTiles: DOMQuery<HTMLElement[]> = getContentTilesFromNthCarousel(index);
+export function getFullyVisibleTilesFromNthCarousel(index?: number): DOMQuery<ContentTileComponent[]> {
+    const contentTiles: DOMQuery<ContentTileComponent[]> = getContentTilesFromNthCarousel(index) as DOMQuery<
+        ContentTileComponent[]
+    >;
     if (isNil(contentTiles)) return;
     return contentTiles.filter(
         // @NOTE: The 'fully-visible' class is set in the carousel component.
-        (tile: HTMLElement): boolean => !isNil(tile.shadowRoot?.querySelector('.fully-visible')),
+        (tile: ContentTileComponent): boolean => !isNil(tile.shadowRoot?.querySelector('.fully-visible')),
     );
 }
