@@ -1,6 +1,11 @@
-/* :host {
+:host {
     cursor: none;
-} */
+    display: block;
+    height: 100%;
+    float: left;
+    min-height: 1px;
+    width: min-content;
+}
 
 .content-tile {
     display: block;

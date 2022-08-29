@@ -1,5 +1,6 @@
-import { Component, Debounce } from '@common/decorators';
-import { clamp, isNil, isNull } from '@common/utils';
+import { Component } from '@common/decorators';
+import { isNil, isNull } from '@common/utils';
+import type { VirtualScroll } from '../virtual-scroll';
 
 import css from './carousel.component.css?inline';
 
@@ -10,72 +11,59 @@ export const FULLY_VISIBLE = 'fully-visible';
 export const PARTIALLY_VISIBLE = 'partially-visible';
 export const WATCH_TARGET = 'watch-target';
 
-type Horizontal = 'LEFT' | 'RIGHT';
-
 @Component({
     selector: 'disney-carousel',
 })
 export class CarouselComponent extends HTMLElement {
+    private readonly contentObserver: MutationObserver = new MutationObserver(this.watchItemsForStyling.bind(this));
     private readonly element: ShadowRoot;
-
-    private carouselItems: HTMLElement[] = [];
+    private readonly resizeObserver: ResizeObserver = new ResizeObserver(this.watchItemsForStyling.bind(this));
     private observer?: IntersectionObserver;
-
-    private partiallyVisibleItemRatio = 0;
-    private totalItems = 0;
-    private xPosition = 0;
-    private widthOfItem = 0;
 
     constructor() {
         super();
         this.element = this.attachShadow({ mode: 'open' });
     }
 
+    get carouselItems(): HTMLElement[] {
+        return Array.from(this.content.children) as HTMLElement[];
+    }
+
+    get content(): HTMLElement {
+        return this.slotElement.assignedElements()[0] as HTMLElement;
+    }
+
     get slotElement(): HTMLSlotElement {
-        return this.element.querySelector<HTMLSlotElement>('slot')!;
+        return this.element.querySelector('slot') as HTMLSlotElement;
     }
 
-    get track(): HTMLDivElement {
-        return this.element.querySelector<HTMLDivElement>(`.${CAROUSEL_TRACK}`)!;
-    }
-
-    get viewport(): HTMLDivElement {
-        return this.element.querySelector<HTMLDivElement>('.carousel-viewport')!;
+    get virtualScroll(): VirtualScroll {
+        return this.element.querySelector('disney-virtual-scroll') as VirtualScroll;
     }
 
     connectedCallback(): void {
         this.render();
-        this.bindEvents();
+        this.bindObservers();
+        this.watchItemsForStyling();
     }
 
     disconnectCallback(): void {
         this.observer?.disconnect();
-        window.removeEventListener('resize', this.onResize.bind(this));
-        this.removeEventListener('focusin', this.turnCarouselOnFocus.bind(this), true);
-        this.slotElement.removeEventListener('slotchange', this.updateCarouselItems.bind(this));
+        this.resizeObserver?.disconnect();
     }
 
     render(): void {
         this.element.innerHTML = `
             <style>${css}</style>
-            <div class="carousel-viewport">
-                <div class="carousel-track" style="transform: translate3d(0px, 0px, 0px);">
-                    <slot name="carousel-items"></slot>
-                </div>
-            </div>
+            <disney-virtual-scroll orientation="horizontal">
+                <slot name="carousel-items" slot="content"></slot>
+            </disney-virtual-scroll>
         `;
     }
 
-    updateCarouselItems(): void {
-        this.measureCarouselElements();
-        this.setTrackWidth();
-        this.watchItemsForStyling();
-    }
-
-    private bindEvents(): void {
-        window.addEventListener('resize', this.onResize.bind(this));
-        this.addEventListener('focusin', this.turnCarouselOnFocus.bind(this), true);
-        this.slotElement.addEventListener('slotchange', this.updateCarouselItems.bind(this));
+    private bindObservers(): void {
+        this.contentObserver.observe(this.content, { childList: true });
+        this.resizeObserver.observe(this.slotElement);
     }
 
     // @NOTE: The most outer element can sometimes not register as an element or
@@ -97,30 +85,6 @@ export class CarouselComponent extends HTMLElement {
         return visibilityPercentage > 0 && visibilityPercentage < 1;
     }
 
-    private moveCarousel(direction: Horizontal): void {
-        const positionChange: number = direction === 'LEFT' ? this.widthOfItem : -1 * this.widthOfItem;
-        const minPosition: number = -1 * this.widthOfItem * this.totalItems;
-        this.xPosition = clamp(this.xPosition + positionChange, minPosition, 0);
-        this.track.style.transform = `translate3d(${this.xPosition}px, 0px, 0px)`;
-    }
-
-    private measureCarouselElements(): void {
-        const carouselItemsPlaceholder: HTMLElement = this.slotElement.assignedElements()[0] as HTMLElement;
-        this.carouselItems = Array.from(carouselItemsPlaceholder.children) as HTMLElement[];
-        this.totalItems = this.carouselItems.length;
-
-        const firstTargetElement: HTMLElement | null = this.getTrueElement(this.carouselItems[0]);
-        if (isNull(firstTargetElement)) return;
-
-        this.widthOfItem = firstTargetElement?.offsetWidth || 0;
-    }
-
-    private setTrackWidth(): void {
-        const maxWidth: number = this.widthOfItem * this.totalItems;
-        this.track.style.width = `${maxWidth}px`;
-        this.slotElement.style.width = `${maxWidth}px`;
-    }
-
     // @TODO: This should go into a separate component or service that ties in
     //        more closely with the content tiles, since this feature is tied in
     //         with their navigation controls.
@@ -139,12 +103,10 @@ export class CarouselComponent extends HTMLElement {
     }
 
     private setVisibilityStylingOnChange(entries: IntersectionObserverEntry[]): void {
-        let ratioForPartiallyVIsibleItem = 0;
         for (const { target, intersectionRatio } of entries) {
             target.classList.add(CAROUSEL_ITEM);
 
             if (this.isPartiallyVisible(intersectionRatio)) {
-                ratioForPartiallyVIsibleItem = intersectionRatio;
                 target.removeAttribute(INTERACTIVE_TILE);
                 target.classList.remove(FULLY_VISIBLE, INTERACTIVE_TILE);
                 target.classList.add(PARTIALLY_VISIBLE);
@@ -156,39 +118,12 @@ export class CarouselComponent extends HTMLElement {
                 target.classList.add(FULLY_VISIBLE, INTERACTIVE_TILE);
             }
         }
-        this.partiallyVisibleItemRatio = ratioForPartiallyVIsibleItem;
         this.setInteractiveAttributeForFullyVisibleItems();
-    }
-
-    // @NOTE: Here for performance, and because, for some unknown reason, the event
-    //        that sets the width for the carousel track is not firing on init
-    //        when the debounce decorator is placed on the "updateCarouselItems"
-    //        method directly, but it does so fine here.
-    @Debounce(100)
-    private onResize(): void {
-        this.updateCarouselItems();
-    }
-
-    private turnCarouselOnFocus(event: FocusEvent): void {
-        if (isNull(event.target)) return;
-
-        const carouselItem: HTMLElement | null = this.getTrueElement(event.target as HTMLElement);
-        if (isNull(carouselItem)) return;
-
-        const { left: leftOfItem, right: rightOfItem } = carouselItem.getBoundingClientRect();
-        const leftOfCarousel: number = this.viewport.getBoundingClientRect().left;
-        if (leftOfItem <= leftOfCarousel) {
-            return this.moveCarousel('LEFT');
-        }
-        const widthOfPartiallyVisibleItem: number = this.widthOfItem * this.partiallyVisibleItemRatio;
-        if (rightOfItem > leftOfCarousel + this.viewport.offsetWidth - widthOfPartiallyVisibleItem) {
-            return this.moveCarousel('RIGHT');
-        }
     }
 
     private watchItemsForStyling(): void {
         this.observer = new IntersectionObserver(this.setVisibilityStylingOnChange.bind(this), {
-            root: this,
+            root: this.virtualScroll.viewport,
             threshold: [0, 0.2, 0.4, 0.5, 0.6, 0.8, 1],
         });
         this.carouselItems.forEach((item: HTMLElement): void => {

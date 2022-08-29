@@ -3,6 +3,8 @@ import { clamp, isNil, isNull } from '@common/utils';
 
 import css from './virtual-scroll.component.css';
 
+const HORIZONTAL_CLASS = 'horizontal';
+
 type Axis = 'x' | 'y';
 type Dimension = 'width' | 'height';
 type Direction = Horizontal | Vertical;
@@ -40,12 +42,21 @@ export class VirtualScroll extends HTMLElement {
     }
 
     get items(): HTMLElement[] {
-        const carouselItemsPlaceholder: HTMLElement = this.slotElement.assignedElements()[0] as HTMLElement;
-        return Array.from(carouselItemsPlaceholder.children) as HTMLElement[];
+        if (this.content.tagName !== 'SLOT') {
+            return Array.from(this.content.children) as HTMLElement[];
+        }
+        return Array.from(this.nestedContent.children) as HTMLElement[];
     }
 
     get slotElement(): HTMLSlotElement {
         return this.element.querySelector<HTMLSlotElement>('slot')!;
+    }
+
+    // @NOTE: This is a quick & temporary workaround to get the virtual scroll
+    //        to work correctly with the virtual scroll component. The best
+    //         course of action in the future would be to make this more dynamic.
+    get nestedContent(): HTMLSlotElement {
+        return (this.content as HTMLSlotElement).assignedNodes()[0] as HTMLSlotElement;
     }
 
     get track(): HTMLDivElement {
@@ -80,6 +91,7 @@ export class VirtualScroll extends HTMLElement {
     updateVirtualScroll(): void {
         this.observeEachItem();
         this.setTrackDimensions();
+        this.setStylePropertiesIfHorizontal();
     }
 
     private bindEvents(): void {
@@ -98,13 +110,18 @@ export class VirtualScroll extends HTMLElement {
         return orientation === 'horizontal' || orientation === 'vertical';
     }
 
-    private getPartiallyVisibleRatio(entries: IntersectionObserverEntry[]): void {
+    private getPartiallyVisibleRatio(entries: IntersectionObserverEntry[], observer: IntersectionObserver): void {
         let ratioForPartiallyVisibleItem = 0;
         for (const { intersectionRatio } of entries) {
             if (!this.isPartiallyVisible(intersectionRatio)) continue;
             ratioForPartiallyVisibleItem = intersectionRatio;
         }
         this.partiallyVisibleRatio = ratioForPartiallyVisibleItem;
+        observer.disconnect();
+    }
+
+    private getCorrectAxis(direction: Direction): Axis {
+        return direction === 'LEFT' || direction === 'RIGHT' ? 'x' : 'y';
     }
 
     private getTranslate3dProperty(axis: Axis, newPosition: number): string {
@@ -122,22 +139,15 @@ export class VirtualScroll extends HTMLElement {
         const axis: Axis = this.getCorrectAxis(direction);
         this.position[axis] = clamp(this.position[axis] + positionChange, minPosition, 0);
         this.track.style.transform = this.getTranslate3dProperty(axis, this.position[axis]);
-        requestAnimationFrame(this.moveScroll.bind(this, direction, itemMeasurement));
-    }
-
-    private getCorrectAxis(direction: Direction): Axis {
-        return direction === 'LEFT' || direction === 'RIGHT' ? 'x' : 'y';
     }
 
     private setOrientation(): void {
         const orientation: string | null = this.getAttribute('orientation');
         this.orientation = this.isValidOrientation(orientation) ? orientation : 'vertical';
-        if (this.orientation === 'horizontal') this.setAttribute('dir', 'ltr');
     }
 
     private setTrackDimensions(): void {
         const dimension: Dimension = this.orientation === 'vertical' ? 'height' : 'width';
-        const oppositeDimension: Dimension = this.orientation === 'vertical' ? 'width' : 'height';
         const itemDimension: number = this.items[0]?.getBoundingClientRect()[dimension] || 0;
 
         const maxMeasurementForDimension: number = itemDimension * this.items.length;
@@ -145,7 +155,13 @@ export class VirtualScroll extends HTMLElement {
 
         this.track.style[dimension] = maxMeasurementInPixels;
         this.slotElement.style[dimension] = maxMeasurementInPixels;
-        this.viewport.style[oppositeDimension] = 'auto';
+    }
+
+    private setStylePropertiesIfHorizontal(): void {
+        if (this.orientation !== 'horizontal') return;
+        this.setAttribute('dir', 'ltr');
+        this.viewport.classList.add(HORIZONTAL_CLASS);
+        this.track.classList.add(HORIZONTAL_CLASS);
     }
 
     private scrollOnFocus(event: FocusEvent): void {
@@ -163,6 +179,9 @@ export class VirtualScroll extends HTMLElement {
         console.error('Invalid orientation was set.');
     }
 
+    // @TODO: Need to correct a small bug where when focusing on the last,
+    //        carousel item within the viewport will trigger the horizontal
+    //        scroll prematurely.
     private scrollHorizontallyOnFocus(item: HTMLElement): void {
         const { left: leftOfItem, right: rightOfItem, width: itemWidth } = item.getBoundingClientRect();
         const { left: leftOfViewport } = this.viewport.getBoundingClientRect();
@@ -171,9 +190,9 @@ export class VirtualScroll extends HTMLElement {
             return;
         }
 
-        const widthOfPartiallyVisibleItem: number = itemWidth * this.partiallyVisibleRatio;
-        if (rightOfItem > leftOfViewport + this.viewport.offsetWidth - widthOfPartiallyVisibleItem) {
-            requestAnimationFrame(this.moveScroll.bind(this, 'UP', itemWidth));
+        const partiallyVisibleWidth: number = itemWidth * this.partiallyVisibleRatio;
+        if (rightOfItem > leftOfViewport + this.viewport.offsetWidth - partiallyVisibleWidth) {
+            requestAnimationFrame(this.moveScroll.bind(this, 'RIGHT', itemWidth));
         }
     }
 

@@ -1,11 +1,7 @@
 import { Singleton } from '@common/decorators';
-import { isNil, updateState } from '@common/utils';
+import { clamp, isNil, updateState } from '@common/utils';
 import { DOMQuery, getCollectionsList, getInteractiveTilesFromFirstCollection } from '@disney/features/home/utils';
 import type { HomeControlsState } from '../state';
-
-function clamp(value: number, min?: number, max?: number): number {
-    return Math.max(Math.min(value, max || Number.MAX_SAFE_INTEGER), min || 0);
-}
 
 export type HorizontalPayload = 'LEFT' | 'RIGHT';
 export type VerticalPayload = 'UP' | 'DOWN';

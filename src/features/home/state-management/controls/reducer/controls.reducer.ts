@@ -34,7 +34,7 @@ export class HomeControlsReducer {
     }
 
     private dispatch(state: Readonly<HomeControlsState>, event: Readonly<KeyboardEvent>): Readonly<HomeControlsState> {
-        switch (event.key) {
+        switch (event.code) {
             case 'ArrowUp':
             case 'KeyW':
             case 'Numpad8':
@@ -51,6 +51,11 @@ export class HomeControlsReducer {
             case 'KeyA':
             case 'Numpad4':
                 return this.actions.moveHorizontally(this.state, 'LEFT');
+            case 'Shift':
+            case 'Tab':
+            case 'ControlLeft':
+            case 'ControlRight':
+                return state;
             default:
                 return state;
         }

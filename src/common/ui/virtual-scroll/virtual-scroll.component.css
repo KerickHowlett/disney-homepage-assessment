@@ -1,24 +1,42 @@
 :host {
     display: block;
-    z-index: 1000;
+    z-index: -1000;
+}
+
+slot {
+    display: inline-block;
+    position: relative;
 }
 
 .virtual-scroll-viewport {
-    display: flex;
-    flex-grow: 1;
-    flex-shrink: 0;
-    flex-flow: nowrap;
+    height: 100vh;
     overflow: hidden;
     overscroll-behavior: none;
     position: fixed;
     width: 100%;
 }
 
-.virtual-scroll-track {
+.virtual-scroll-viewport.horizontal {
     display: inline-block;
+    direction: ltr;
+    height: min-content;
+    margin-bottom: 16px;
+    margin-left: 16px;
+    overflow: visible;
+    overscroll-behavior: none;
+    position: relative;
+    width: 96.2vw;
+}
+
+.virtual-scroll-track {
+    float: left;
     overflow: visible;
     position: relative;
     transform-style: flat;
     transition: transform 300ms ease-in 0s;
     will-change: transform;
+}
+
+.virtual-scroll-track.horizontal {
+    display: inline-block;
 }

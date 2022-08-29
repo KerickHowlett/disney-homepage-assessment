@@ -3,18 +3,9 @@
     z-index: 1000;
 }
 
-.carousel-viewport {
-    margin-bottom: 1rem;
-    margin-left: 1rem;
-    overscroll-behavior: none;
+slot {
+    flex-wrap: nowrap;
     position: relative;
-    width: 96.25vw;
-}
-
-.carousel-track {
-    display: inline-block;
     overflow: visible;
-    position: relative;
-    transition: transform 300ms ease-in 0s;
-    will-change: transform;
+    z-index: 100;
 }
