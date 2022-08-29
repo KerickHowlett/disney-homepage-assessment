@@ -2,10 +2,9 @@
 import { Component } from '@common/decorators/component';
 import { elementFactory } from '@common/factories/element';
 import type { ImageComponent } from '@common/ui/image';
-import { changeDetectedBetween, toNumber } from '@common/utils';
+import { toNumber } from '@common/utils';
 import { HomeControls } from '../../state-management';
 import type { Content } from '../../types';
-import { INTERACTIVE_TILE } from '../collection';
 
 import css from './content-tile.component.css';
 
@@ -21,10 +20,6 @@ export class ContentTileComponent extends HTMLElement {
         super();
         this.element = this.attachShadow({ mode: 'open', delegatesFocus: true });
         this.controls.subscribe(this.navigationHandler.bind(this));
-    }
-
-    static get observedAttributes(): string[] {
-        return ['interactive-tile'];
     }
 
     get collectionIndex(): number {
@@ -45,21 +40,11 @@ export class ContentTileComponent extends HTMLElement {
         return this.element.querySelector<ImageComponent>('img')!;
     }
 
-    get interactiveIndex(): number {
-        const indexAttribute: string | null = this.contentTileWrapper.getAttribute(INTERACTIVE_TILE);
-        return toNumber(indexAttribute);
-    }
-
     get tileLink(): HTMLAnchorElement {
         return this.element.querySelector<HTMLAnchorElement>('.content-tile-link')!;
     }
 
     private content: Content = {} as Content;
-
-    attributeChangedCallback(_: string, oldValue: string, newValue: string): void {
-        if (!changeDetectedBetween(oldValue, newValue)) return;
-        this.navigationHandler();
-    }
 
     connectedCallback(): void {
         this.getContentTileAttributes();
@@ -74,7 +59,24 @@ export class ContentTileComponent extends HTMLElement {
         this.renderContentTile();
         this.setImgOnErrorListener();
         this.navigationHandler();
-        this.focusOnInit();
+    }
+
+    private getContentTileAttributes(): void {
+        this.content = {
+            title: this.getAttribute('content-title')!,
+            image: this.getAttribute('content-image-src')!,
+            id: this.getAttribute('content-id')!,
+        };
+    }
+
+    private isFocusedContentTile(): boolean {
+        const { column: focusedTile, row: focusedCollection } = this.controls.state;
+        return focusedCollection === this.collectionIndex && focusedTile === this.contentIndex;
+    }
+
+    private navigationHandler(): void {
+        if (!this.isFocusedContentTile()) return;
+        this.imageElement.focus();
     }
 
     private renderContentTile(): void {
@@ -108,35 +110,6 @@ export class ContentTileComponent extends HTMLElement {
             body: this.content.title,
         });
         this.imageElement.insertAdjacentElement('afterend', titleElement);
-    }
-
-    // @NOTE: This is a small hack to focus on the first tile on the homepage's
-    //        top-left-hand corner when the page is first loaded.
-    //        This was necessary because the interactive index that is used to
-    //        target these tiles starts off as -1 since the carousel component
-    //        hasn't added the necessary attributes to the tiles yet.
-    private focusOnInit(): void {
-        const firstContentTileRenderedInView = this.contentIndex === 1 && this.collectionIndex === 1;
-        if (!firstContentTileRenderedInView) return;
-        this.imageElement.focus();
-    }
-
-    private getContentTileAttributes(): void {
-        this.content = {
-            title: this.getAttribute('content-title')!,
-            image: this.getAttribute('content-image-src')!,
-            id: this.getAttribute('content-id')!,
-        };
-    }
-
-    private isActiveContentTile(): boolean {
-        const { column: focusedTile, row: focusedCollection } = this.controls.state;
-        return focusedCollection === this.collectionIndex && focusedTile === this.contentIndex;
-    }
-
-    private navigationHandler(): void {
-        if (!this.isActiveContentTile()) return;
-        this.imageElement.focus();
     }
 
     private setImgOnErrorListener(): void {

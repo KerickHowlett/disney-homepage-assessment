@@ -8,8 +8,6 @@ import css from './collection.component.css?inline';
 import '@common/ui/carousel';
 import '../content-tile';
 
-export const INTERACTIVE_TILE = 'interactive-tile';
-
 @Component({
     selector: 'disney-collection',
 })
