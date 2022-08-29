@@ -1,11 +1,18 @@
 import { Component } from '@common/decorators';
-import { clamp, isEmpty, isNil, isNull, isUndefined } from '@common/utils';
+import { clamp, isNil, isNull } from '@common/utils';
 
 import css from './virtual-scroll.component.css';
 
+type Axis = 'x' | 'y';
+type Dimension = 'width' | 'height';
+type Direction = Horizontal | Vertical;
+type Horizontal = 'LEFT' | 'RIGHT';
+type Orientation = 'horizontal' | 'vertical';
+type PositionByAxis = Record<'x' | 'y', number>;
 type Vertical = 'UP' | 'DOWN';
 
-// @TODO: Include means to remove/add elements based on viewport.
+// @TODO: Include means to remove/add elements based on viewport for better
+//        better performance.
 @Component({
     selector: 'disney-virtual-scroll',
 })
@@ -15,12 +22,13 @@ export class VirtualScroll extends HTMLElement {
     private readonly element: ShadowRoot;
 
     private intersectionObserver?: IntersectionObserver;
-    private rows: HTMLElement[] = [];
+    private position: PositionByAxis = {
+        x: 0,
+        y: 0,
+    };
+    private orientation: Orientation = 'vertical';
 
-    private heightOfPartiallyVisibleRow = 0;
-    private rowHeight = 0;
-    private totalRows = 0;
-    private yPosition = 0;
+    private partiallyVisibleRatio = 0;
 
     constructor() {
         super();
@@ -29,6 +37,11 @@ export class VirtualScroll extends HTMLElement {
 
     get content(): HTMLElement {
         return this.slotElement.assignedElements()[0] as HTMLElement;
+    }
+
+    get items(): HTMLElement[] {
+        const carouselItemsPlaceholder: HTMLElement = this.slotElement.assignedElements()[0] as HTMLElement;
+        return Array.from(carouselItemsPlaceholder.children) as HTMLElement[];
     }
 
     get slotElement(): HTMLSlotElement {
@@ -44,14 +57,13 @@ export class VirtualScroll extends HTMLElement {
     }
 
     connectedCallback(): void {
+        this.setOrientation();
         this.render();
         this.bindEvents();
     }
 
     disconnectCallback(): void {
-        this.resizeObserver.disconnect();
-        this.contentObserver.disconnect();
-        this.removeEventListener('focusin', this.scrollOnFocus.bind(this), true);
+        this.unbindEvents();
     }
 
     render(): void {
@@ -66,7 +78,7 @@ export class VirtualScroll extends HTMLElement {
     }
 
     updateVirtualScroll(): void {
-        this.measureVirtualScrollElements();
+        this.observeEachItem();
         this.setTrackHeight();
     }
 
@@ -77,78 +89,114 @@ export class VirtualScroll extends HTMLElement {
         this.watchForPartiallyVisibleRows();
     }
 
-    // @NOTE: The most outer element can sometimes not register as an element or
-    //        even as one with actual "mass" (i.e., height & width), so this was
-    //        written to serve as a tool to find a usable element much easier.
-    //        This may be due to the nature of ShadowDOMs -- additional research
-    //        is needed.
-    private getTrueElement(item: Element): HTMLElement | null {
-        const itemRoot: HTMLElement | ShadowRoot = isNil(item?.shadowRoot) ? (item as HTMLElement) : item.shadowRoot;
-        if (isNil(itemRoot)) return null;
-        return itemRoot.querySelector('div');
-    }
-
     private isPartiallyVisible(visibilityPercentage: number): boolean {
         return visibilityPercentage > 0 && visibilityPercentage < 1;
     }
 
-    private moveScroll(direction: Vertical): void {
-        const positionChange: number = direction === 'UP' ? this.rowHeight : -1 * this.rowHeight;
-        const minPosition: number = -1 * this.rowHeight * this.totalRows;
-        this.yPosition = clamp(this.yPosition + positionChange, minPosition, 0);
-        this.track.style.transform = `translate3d(0px, ${this.yPosition}px, 0px)`;
+    private isValidOrientation(orientation: string | null): orientation is Orientation {
+        if (isNull(orientation)) return false;
+        return orientation === 'horizontal' || orientation === 'vertical';
     }
 
-    private measureVirtualScrollElements(): void {
-        const carouselItemsPlaceholder: HTMLElement = this.slotElement.assignedElements()[0] as HTMLElement;
-        this.rows = Array.from(carouselItemsPlaceholder.children) as HTMLElement[];
-        this.totalRows = this.rows.length;
-        if (isEmpty(this.rows)) return;
+    private getPartiallyVisibleRatio(entries: IntersectionObserverEntry[]): void {
+        let ratioForPartiallyVisibleItem = 0;
+        for (const { intersectionRatio } of entries) {
+            if (!this.isPartiallyVisible(intersectionRatio)) continue;
+            ratioForPartiallyVisibleItem = intersectionRatio;
+        }
+        this.partiallyVisibleRatio = ratioForPartiallyVisibleItem;
+    }
 
-        const firstTargetElement: HTMLElement | undefined = this.rows[0];
-        if (isUndefined(firstTargetElement)) return;
+    private getTranslate3dProperty(axis: Axis, newPosition: number): string {
+        if (axis === 'x') return `translate3d(${newPosition}px, 0px, 0px)`;
+        return `translate3d(0px, ${newPosition}px, 0px)`;
+    }
 
-        this.rowHeight = firstTargetElement?.offsetHeight || 0;
+    private isLeftOrUp(direction: Direction): boolean {
+        return direction === 'LEFT' || direction === 'UP';
+    }
+
+    private moveScroll(direction: Direction, itemMeasurement: number): void {
+        const positionChange: number = this.isLeftOrUp(direction) ? itemMeasurement : -1 * itemMeasurement;
+        const minPosition: number = -1 * itemMeasurement * this.items.length;
+        const axis: Axis = this.getCorrectAxis(direction);
+        this.position[axis] = clamp(this.position[axis] + positionChange, minPosition, 0);
+        this.track.style.transform = this.getTranslate3dProperty(axis, this.position[axis]);
+    }
+
+    private getCorrectAxis(direction: Direction): Axis {
+        return direction === 'LEFT' || direction === 'RIGHT' ? 'x' : 'y';
+    }
+
+    private setOrientation(): void {
+        const orientation: string | null = this.getAttribute('orientation');
+        this.orientation = this.isValidOrientation(orientation) ? orientation : 'vertical';
     }
 
     private setTrackHeight(): void {
-        const maxHeight: number = this.rowHeight * this.totalRows;
-        this.track.style.height = `${maxHeight}px`;
-        this.slotElement.style.height = `${maxHeight}px`;
+        const dimension: Dimension = this.orientation === 'vertical' ? 'height' : 'width';
+        const itemDimension: number = this.items[0]?.getBoundingClientRect()[dimension] || 0;
+        const maxMeasurementForDimension: number = itemDimension * this.items.length;
+        const maxMeasurementInPixels = `${maxMeasurementForDimension}px`;
+        this.track.style[dimension] = maxMeasurementInPixels;
+        this.slotElement.style[dimension] = maxMeasurementInPixels;
     }
 
     private scrollOnFocus(event: FocusEvent): void {
         if (isNull(event.target)) return;
 
-        const row: HTMLElement | null = this.getTrueElement(event.target as HTMLElement);
-        if (isNil(row)) return;
+        const item: HTMLElement | null = event.target as HTMLElement;
+        if (isNil(item)) return;
 
-        const { bottom: bottomOfRow, top: topOfRow } = row.getBoundingClientRect();
-        const { top: topOfViewport } = this.viewport.getBoundingClientRect();
-        if (topOfRow <= topOfViewport) {
-            return this.moveScroll('UP');
+        if (this.orientation === 'vertical') {
+            return this.scrollVerticallyOnFocus(item);
         }
-        if (bottomOfRow > topOfViewport + this.viewport.offsetHeight - this.heightOfPartiallyVisibleRow) {
-            return this.moveScroll('DOWN');
+        if (this.orientation === 'horizontal') {
+            return this.scrollHorizontallyOnFocus(item);
+        }
+        console.error('Invalid orientation was set.');
+    }
+
+    private scrollHorizontallyOnFocus(item: HTMLElement): void {
+        const { left: leftOfItem, right: rightOfItem, width: itemWidth } = item.getBoundingClientRect();
+        const { left: leftOfViewport } = this.viewport.getBoundingClientRect();
+        if (leftOfItem <= leftOfViewport) {
+            return this.moveScroll('LEFT', itemWidth);
+        }
+        const widthOfPartiallyVisibleItem: number = itemWidth * this.partiallyVisibleRatio;
+        if (rightOfItem > leftOfViewport + this.viewport.offsetWidth - widthOfPartiallyVisibleItem) {
+            return this.moveScroll('RIGHT', itemWidth);
         }
     }
 
-    private measurePartiallyVisibleRow(entries: IntersectionObserverEntry[]): void {
-        let ratioForPartiallyVIsibleItem = 0;
-        for (const { intersectionRatio } of entries) {
-            if (!this.isPartiallyVisible(intersectionRatio)) continue;
-            ratioForPartiallyVIsibleItem = intersectionRatio;
+    private scrollVerticallyOnFocus(item: HTMLElement): void {
+        const { bottom: bottomOfRow, height: itemHeight, top: topOfRow } = item.getBoundingClientRect();
+        const { top: topOfViewport } = this.viewport.getBoundingClientRect();
+        if (topOfRow <= topOfViewport) {
+            return this.moveScroll('UP', itemHeight);
         }
-        this.heightOfPartiallyVisibleRow = ratioForPartiallyVIsibleItem * this.rowHeight;
+        const partiallyVisibleHeight: number = itemHeight * this.partiallyVisibleRatio;
+        if (bottomOfRow > topOfViewport + this.viewport.offsetHeight - partiallyVisibleHeight) {
+            return this.moveScroll('DOWN', itemHeight);
+        }
+    }
+
+    private observeEachItem(): void {
+        this.items.forEach((item: HTMLElement): void => {
+            if (isNull(item)) return;
+            this.intersectionObserver!.observe(item);
+        });
+    }
+
+    private unbindEvents(): void {
+        this.resizeObserver.disconnect();
+        this.contentObserver.disconnect();
+        this.intersectionObserver?.disconnect();
+        this.removeEventListener('focusin', this.scrollOnFocus.bind(this), true);
     }
 
     private watchForPartiallyVisibleRows(): void {
-        this.rows.forEach((item: HTMLElement): void => {
-            const targetElement: HTMLElement | null = this.getTrueElement(item);
-            if (isNull(targetElement)) return;
-            this.intersectionObserver!.observe(targetElement);
-        });
-        this.intersectionObserver = new IntersectionObserver(this.measurePartiallyVisibleRow.bind(this), {
+        this.intersectionObserver = new IntersectionObserver(this.getPartiallyVisibleRatio.bind(this), {
             root: this.viewport,
             threshold: [0, 0.2, 0.4, 0.5, 0.6, 0.8, 1],
         });

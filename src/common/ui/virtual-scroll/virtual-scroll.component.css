@@ -3,16 +3,15 @@
 }
 
 .virtual-scroll-viewport {
-    display: flex;
     height: 100vh;
-    flex-flow: nowrap;
     overflow: hidden;
     overscroll-behavior: none;
-    position: relative;
+    position: fixed;
     width: 100vw;
 }
 
 .virtual-scroll-track {
+    transform-style: flat;
     transition: transform 300ms ease-in 0s;
     will-change: transform;
 }

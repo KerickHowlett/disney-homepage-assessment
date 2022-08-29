@@ -31,16 +31,16 @@ export class CarouselComponent extends HTMLElement {
         this.element = this.attachShadow({ mode: 'open' });
     }
 
+    get slotElement(): HTMLSlotElement {
+        return this.element.querySelector<HTMLSlotElement>('slot')!;
+    }
+
     get track(): HTMLDivElement {
         return this.element.querySelector<HTMLDivElement>(`.${CAROUSEL_TRACK}`)!;
     }
 
     get viewport(): HTMLDivElement {
         return this.element.querySelector<HTMLDivElement>('.carousel-viewport')!;
-    }
-
-    get slotElement(): HTMLSlotElement {
-        return this.element.querySelector<HTMLSlotElement>('slot')!;
     }
 
     connectedCallback(): void {
