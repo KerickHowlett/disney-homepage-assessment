@@ -79,7 +79,7 @@ export class VirtualScroll extends HTMLElement {
 
     updateVirtualScroll(): void {
         this.observeEachItem();
-        this.setTrackHeight();
+        this.setTrackDimensions();
     }
 
     private bindEvents(): void {
@@ -132,15 +132,20 @@ export class VirtualScroll extends HTMLElement {
     private setOrientation(): void {
         const orientation: string | null = this.getAttribute('orientation');
         this.orientation = this.isValidOrientation(orientation) ? orientation : 'vertical';
+        if (this.orientation === 'horizontal') this.setAttribute('dir', 'ltr');
     }
 
-    private setTrackHeight(): void {
+    private setTrackDimensions(): void {
         const dimension: Dimension = this.orientation === 'vertical' ? 'height' : 'width';
+        const oppositeDimension: Dimension = this.orientation === 'vertical' ? 'width' : 'height';
         const itemDimension: number = this.items[0]?.getBoundingClientRect()[dimension] || 0;
+
         const maxMeasurementForDimension: number = itemDimension * this.items.length;
         const maxMeasurementInPixels = `${maxMeasurementForDimension}px`;
+
         this.track.style[dimension] = maxMeasurementInPixels;
         this.slotElement.style[dimension] = maxMeasurementInPixels;
+        this.viewport.style[oppositeDimension] = 'auto';
     }
 
     private scrollOnFocus(event: FocusEvent): void {

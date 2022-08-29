@@ -3,38 +3,18 @@
     z-index: 1000;
 }
 
-slot {
-    display: inline-block;
-    flex-wrap: nowrap;
-    position: relative;
-}
-
 .carousel-viewport {
-    direction: ltr;
-    display: flex;
-    flex-grow: 1;
-    flex-shrink: 0;
-    flex-flow: nowrap;
-    margin-bottom: 16px;
-    margin-left: 16px;
-    overflow: hidden;
+    margin-bottom: 1rem;
+    margin-left: 1rem;
     overscroll-behavior: none;
     position: relative;
     width: 96.25vw;
 }
 
 .carousel-track {
+    display: inline-block;
     overflow: visible;
     position: relative;
-    top: 0px;
-    left: 0px;
-    display: inline-block;
     transition: transform 300ms ease-in 0s;
     will-change: transform;
-}
-
-.carousel-item {
-    display: inline-block;
-    height: 100%;
-    position: absolute;
 }

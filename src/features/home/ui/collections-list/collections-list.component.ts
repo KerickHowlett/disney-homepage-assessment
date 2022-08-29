@@ -26,7 +26,7 @@ export default class CollectionsListComponent extends HTMLElement {
     ) {
         super();
         this.element = this.attachShadow({ mode: 'open' });
-        this.store.subscribe(this.render.bind(this));
+        this.store.subscribe(this.renderCollections.bind(this));
         this.lazyLoadPersonalizationCollection ||= this.store.lazyLoadPersonalCollection();
     }
 
@@ -39,19 +39,16 @@ export default class CollectionsListComponent extends HTMLElement {
     }
 
     connectedCallback(): void {
-        this.renderTemplate();
         this.render();
     }
 
     disconnectedCallback(): void {
-        this.store.unsubscribe(this.render.bind(this));
+        this.store.unsubscribe(this.renderCollections.bind(this));
     }
 
     render(): void {
-        const unrenderedCollections: CollectionId[] = this.fetchUnrenderedCollections();
-        if (isEmpty(unrenderedCollections)) return;
-        this.appendCollectionsToDOM(unrenderedCollections);
-        this.observeLastCollectionElement(this.lastCollectionObserver);
+        this.renderTemplate();
+        this.renderCollections();
     }
 
     private appendCollectionsToDOM(collectionIds: CollectionId[]): void {
@@ -68,6 +65,13 @@ export default class CollectionsListComponent extends HTMLElement {
             attributes: [`${COLLECTION_ID}: ${collectionId}`, `collection-index: ${index}`],
             tagName: DISNEY_COLLECTION,
         });
+    }
+
+    private renderCollections(): void {
+        const unrenderedCollections: CollectionId[] = this.fetchUnrenderedCollections();
+        if (isEmpty(unrenderedCollections)) return;
+        this.appendCollectionsToDOM(unrenderedCollections);
+        this.observeLastCollectionElement(this.lastCollectionObserver);
     }
 
     private renderTemplate(): void {
