@@ -2,7 +2,7 @@
 import { Component } from '@common/decorators/component';
 import { elementFactory } from '@common/factories/element';
 import type { ImageComponent } from '@common/ui/image';
-import { isUndefined, toNumber } from '@common/utils';
+import { changeDetectedBetween, isUndefined, toNumber } from '@common/utils';
 import { HomeControls, HomeStore } from '../../state-management';
 import type { Content } from '../../types';
 
@@ -23,6 +23,7 @@ export class ContentTileComponent extends HTMLElement {
         super();
         this.element = this.attachShadow({ mode: 'open', delegatesFocus: true });
         this.controls.subscribe(this.navigationHandler.bind(this));
+        this.store.subscribe(this.render.bind(this));
     }
 
     get collectionIndex(): number {
@@ -82,7 +83,7 @@ export class ContentTileComponent extends HTMLElement {
 
     private renderContentTile(): void {
         const { image, title } = this.content;
-        this.element.innerHTML = `
+        const html = `
             <style>${css}</style>
             <div class="content-tile">
                 <div class="content-tile-container" aria-hidden="false">
@@ -103,6 +104,8 @@ export class ContentTileComponent extends HTMLElement {
                 </div>
             </div>
         `;
+        if (!changeDetectedBetween(this.element.innerHTML, html)) return;
+        this.element.innerHTML = html;
     }
 
     private renderTitleOverlay(): void {
