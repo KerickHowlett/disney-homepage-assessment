@@ -1,8 +1,17 @@
+:host {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
 .app-body {
     align-items: stretch;
     display: flex;
     flex-direction: column;
+    height: 100vh;
     min-height: 100vh;
+    width: 100vw;
 }
 
 .app-background {

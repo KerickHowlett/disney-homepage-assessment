@@ -118,3 +118,8 @@
 .fully-visible img {
     opacity: 1;
 }
+
+#preview-content {
+    width: 500px;
+    z-index: 100;
+}
