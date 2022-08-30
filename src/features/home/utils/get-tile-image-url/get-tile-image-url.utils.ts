@@ -8,7 +8,7 @@ const DEFAULT_ASPECT_RATIO = '1.78';
  * @NOTE: Ideally, the aspectRation would have a means to feed this argument,
  *        dynamically.
  */
-export function getImageUrl(
+export function getTileImageURL(
     image: ContentImageTile,
     aspectRatio: keyof ContentImageTileAspectRatio = DEFAULT_ASPECT_RATIO,
 ): string {

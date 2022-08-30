@@ -82,7 +82,7 @@ export class ContentTileComponent extends HTMLElement {
     }
 
     private renderContentTile(): void {
-        const { image, title } = this.content;
+        const { tileImage: image, title } = this.content;
         const html = `
             <style>${css}</style>
             <div class="content-tile">
