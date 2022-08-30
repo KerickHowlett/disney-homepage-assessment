@@ -179,12 +179,6 @@ export class VirtualScroll extends HTMLElement {
         this.scrollOnFocusMethod[this.orientation](item);
     }
 
-    // @NOTE: This and the following "scrollOnFocus" methods could probably be
-    //        combined into a single method, but I'm keeping them separate to
-    //        make it easier to understand what's going on without needing to add
-    //        an additional layer of potentially confusing abstraction.
-    //        This will also better help prevent "crossing the streams" between
-    //        horizontal and vertical navigation actions.
     private scrollHorizontallyOnFocus(item: HTMLElement): void {
         if (!this.keyWasPressed(HORIZONTAL_KEYS)) return;
 
@@ -200,7 +194,6 @@ export class VirtualScroll extends HTMLElement {
         }
     }
 
-    // @NOTE: Read comment written above "scrollHorizontallyOnFocus" method.
     private scrollVerticallyOnFocus(item: HTMLElement): void {
         if (!this.keyWasPressed(VERTICAL_KEYS)) return;
 
