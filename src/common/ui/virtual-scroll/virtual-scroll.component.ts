@@ -124,18 +124,18 @@ export class VirtualScroll extends HTMLElement {
         return `translate3d(0px, ${newPosition}px, 0px)`;
     }
 
-    private keyWasPressed(keys: ReadonlyArray<KeyCode>): boolean {
-        const latestEvent: Event | KeyboardEvent | undefined = window.event;
-        if (isUndefined(latestEvent) || !this.isKeyboardEvent(latestEvent)) return false;
-        return keys.includes(latestEvent.code);
+    private isLeftOrUp(direction: Direction): boolean {
+        return direction === 'LEFT' || direction === 'UP';
     }
 
     private isKeyboardEvent(event: Event): event is KeyboardEvent {
         return event instanceof KeyboardEvent;
     }
 
-    private isLeftOrUp(direction: Direction): boolean {
-        return direction === 'LEFT' || direction === 'UP';
+    private keyWasPressed(keys: ReadonlyArray<KeyCode>): boolean {
+        const latestEvent: Event | KeyboardEvent | undefined = window.event;
+        if (isUndefined(latestEvent) || !this.isKeyboardEvent(latestEvent)) return false;
+        return keys.includes(latestEvent.code);
     }
 
     private moveScroll(direction: Direction, itemMeasurement: number): void {
