@@ -43,6 +43,7 @@ export class HomeStore {
     getContent(id: ContentStateKey): Readonly<Content> | undefined {
         const content: Readonly<Content> | undefined = this.state.content.get(id);
         if (isUndefined(content)) {
+            console.dir(this.state);
             console.error(`[Content Not Found]: ${id}`);
         }
         return content;

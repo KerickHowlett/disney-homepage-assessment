@@ -38,7 +38,8 @@ export interface Content {
 }
 
 export interface ContainerItem {
-    readonly contentId: string;
+    readonly contentId?: string;
+    readonly collectionId?: string;
     readonly image: ContentImageTile;
     readonly ratings: ReadonlyArray<Rating>;
     readonly text: ItemText;

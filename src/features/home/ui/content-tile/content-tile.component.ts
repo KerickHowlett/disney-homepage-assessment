@@ -2,7 +2,7 @@
 import { Component } from '@common/decorators/component';
 import { elementFactory } from '@common/factories/element';
 import type { ImageComponent } from '@common/ui/image';
-import { toNumber } from '@common/utils';
+import { isUndefined, toNumber } from '@common/utils';
 import { HomeControls, HomeStore } from '../../state-management';
 import type { Content } from '../../types';
 
@@ -64,6 +64,7 @@ export class ContentTileComponent extends HTMLElement {
     }
 
     render(): void {
+        if (isUndefined(this.content)) return;
         this.renderContentTile();
         this.setImgOnErrorListener();
         this.navigationHandler();
