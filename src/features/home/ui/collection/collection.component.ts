@@ -1,7 +1,7 @@
 import { elementFactory } from '@common/factories';
 import { Component, isEmpty, isNull, isUndefined, toNumber } from '@disney/common';
 import { HomeStore } from '../../state-management/store';
-import type { Collection, CollectionId, Content } from '../../types';
+import type { Collection, CollectionId, ContentStateKey } from '../../types';
 
 import css from './collection.component.css?inline';
 
@@ -69,22 +69,19 @@ export class CollectionComponent extends HTMLElement {
         this.innerHTML = '';
     }
 
-    private renderContentTiles(content: ReadonlyArray<Content>): void {
+    private renderContentTiles(contentIds: ContentStateKey[]): void {
         this.carousel.replaceChildren(
-            ...content.map<HTMLElement>(({ title, image }: Readonly<Content>, contentIndex: number): HTMLElement => {
-                const contentTile: HTMLElement = elementFactory({
-                    attributes: [
-                        `content-title: ${title}`,
-                        `content-index: ${contentIndex + 1}`,
-                        `collection-index: ${this.collectionIndex + 1}`,
-                    ],
-                    tagName: 'disney-content-tile',
-                });
-                // @TODO: The elementFactory() function cannot handle URLs (https://)
-                //        at this time, because of the colon parsing.
-                contentTile.setAttribute('content-image-src', image);
-                return contentTile;
-            }),
+            ...contentIds.map<HTMLElement>(
+                (contentId: ContentStateKey, contentIndex: number): HTMLElement =>
+                    elementFactory({
+                        attributes: [
+                            `content-id: ${contentId}`,
+                            `content-index: ${contentIndex + 1}`,
+                            `collection-index: ${this.collectionIndex + 1}`,
+                        ],
+                        tagName: 'disney-content-tile',
+                    }),
+            ),
         );
     }
 }

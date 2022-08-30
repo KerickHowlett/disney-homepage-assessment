@@ -3,7 +3,7 @@ import { Component } from '@common/decorators/component';
 import { elementFactory } from '@common/factories/element';
 import type { ImageComponent } from '@common/ui/image';
 import { toNumber } from '@common/utils';
-import { HomeControls } from '../../state-management';
+import { HomeControls, HomeStore } from '../../state-management';
 import type { Content } from '../../types';
 
 import css from './content-tile.component.css';
@@ -16,7 +16,10 @@ import '@common/ui/image';
 export class ContentTileComponent extends HTMLElement {
     private readonly element: ShadowRoot;
 
-    constructor(private readonly controls: HomeControls = new HomeControls()) {
+    constructor(
+        private readonly controls: HomeControls = new HomeControls(),
+        private readonly store: HomeStore = new HomeStore(),
+    ) {
         super();
         this.element = this.attachShadow({ mode: 'open', delegatesFocus: true });
         this.controls.subscribe(this.navigationHandler.bind(this));
@@ -25,6 +28,14 @@ export class ContentTileComponent extends HTMLElement {
     get collectionIndex(): number {
         const indexAttribute: string | null = this.getAttribute('collection-index');
         return toNumber(indexAttribute);
+    }
+
+    get content(): Readonly<Content> {
+        return this.store.getContent(this.contentId!)!;
+    }
+
+    get contentId(): string | null {
+        return this.getAttribute('content-id');
     }
 
     get contentIndex(): number {
@@ -44,10 +55,7 @@ export class ContentTileComponent extends HTMLElement {
         return this.element.querySelector<HTMLAnchorElement>('.content-tile-link')!;
     }
 
-    private content: Content = {} as Content;
-
     connectedCallback(): void {
-        this.getContentTileAttributes();
         this.render();
     }
 
@@ -59,14 +67,6 @@ export class ContentTileComponent extends HTMLElement {
         this.renderContentTile();
         this.setImgOnErrorListener();
         this.navigationHandler();
-    }
-
-    private getContentTileAttributes(): void {
-        this.content = {
-            title: this.getAttribute('content-title')!,
-            image: this.getAttribute('content-image-src')!,
-            id: this.getAttribute('content-id')!,
-        };
     }
 
     private isFocusedContentTile(): boolean {
@@ -107,7 +107,7 @@ export class ContentTileComponent extends HTMLElement {
     private renderTitleOverlay(): void {
         const titleElement: HTMLDivElement = elementFactory<HTMLDivElement>({
             classes: ['image-failsafe-title'],
-            body: this.content.title,
+            body: this.content?.title,
         });
         this.imageElement.insertAdjacentElement('afterend', titleElement);
     }

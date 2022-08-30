@@ -56,7 +56,7 @@ export interface ContainerSet {
 export interface Collection {
     readonly id: CollectionId;
     readonly title: string;
-    readonly content?: Content[];
+    readonly content?: ContentStateKey[];
     readonly type: CollectionSetType;
 }
 
@@ -71,6 +71,9 @@ export interface SaveContentStateParams {
 
 export type CollectionStateKey = Collection['id'];
 export type CollectionsState = ReadonlyMap<CollectionStateKey, Collection>;
+
+export type MutableCollections = Map<CollectionStateKey, Collection>;
+export type MutableContent = Map<ContentStateKey, Content>;
 
 export type ContentStateKey = Content['id'];
 export type ContentState = ReadonlyMap<ContentStateKey, Content>;
