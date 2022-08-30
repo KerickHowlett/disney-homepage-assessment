@@ -1,5 +1,7 @@
 :host {
     display: block;
+    height: 100%;
+    width: 100%;
 }
 
 slot {
@@ -8,17 +10,24 @@ slot {
 }
 
 .virtual-scroll-viewport {
-    height: 100vh;
+    /*
+     * @TODO: Ideally, the height should by set dynamically in accordance to
+     *        that of the parent element's height. This is just a quick fix
+     *        for the sake of time and simplicity.
+     */
+    height: 54vh;
+    min-height: 505px;
     overflow: hidden;
     overscroll-behavior: none;
     position: fixed;
-    width: 100%;
+    width: min-content;
 }
 
 .virtual-scroll-viewport.horizontal {
     display: inline-block;
     direction: ltr;
     height: min-content;
+    min-height: min-content;
     padding-bottom: 16px;
     margin-left: 16px;
     /*

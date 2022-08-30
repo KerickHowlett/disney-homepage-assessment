@@ -5,14 +5,18 @@ import css from './virtual-scroll.component.css';
 
 const DEFAULT_ORIENTATION = 'vertical';
 
-const LEFT_KEYS: string[] = ['ArrowLeft', 'KeyA', 'Numpad4'];
-const RIGHT_KEYS: string[] = ['ArrowRight', 'KeyD', 'Numpad6'];
-const HORIZONTAL_KEYS: string[] = [...LEFT_KEYS, ...RIGHT_KEYS];
+const UP_KEYS: ReadonlyArray<KeyCode> = ['ArrowUp', 'KeyW', 'Up'];
+const DOWN_KEYS: ReadonlyArray<KeyCode> = ['ArrowDown', 'KeyS', 'Down'];
+const VERTICAL_KEYS: ReadonlyArray<KeyCode> = [...UP_KEYS, ...DOWN_KEYS];
+const LEFT_KEYS: ReadonlyArray<KeyCode> = ['ArrowLeft', 'KeyA', 'Numpad4'];
+const RIGHT_KEYS: ReadonlyArray<KeyCode> = ['ArrowRight', 'KeyD', 'Numpad6'];
+const HORIZONTAL_KEYS: ReadonlyArray<KeyCode> = [...LEFT_KEYS, ...RIGHT_KEYS];
 
 type Axis = 'x' | 'y';
 type Dimension = 'width' | 'height';
 type Direction = Horizontal | Vertical;
 type Horizontal = 'LEFT' | 'RIGHT';
+type KeyCode = KeyboardEvent['code'];
 type Orientation = 'horizontal' | 'vertical';
 type PositionByAxis = Record<'x' | 'y', number>;
 type ScrollOnFocusMethods = (item: HTMLElement) => void;
@@ -120,10 +124,10 @@ export class VirtualScroll extends HTMLElement {
         return `translate3d(0px, ${newPosition}px, 0px)`;
     }
 
-    private horizontalKeyWasPressed(): boolean {
+    private keyWasPressed(keys: ReadonlyArray<KeyCode>): boolean {
         const latestEvent: Event | KeyboardEvent | undefined = window.event;
         if (isUndefined(latestEvent) || !this.isKeyboardEvent(latestEvent)) return false;
-        return HORIZONTAL_KEYS.includes(latestEvent.code);
+        return keys.includes(latestEvent.code);
     }
 
     private isKeyboardEvent(event: Event): event is KeyboardEvent {
@@ -175,36 +179,41 @@ export class VirtualScroll extends HTMLElement {
         this.scrollOnFocusMethod[this.orientation](item);
     }
 
-    // @NOTE: This and the following "onFocus" scroll methods could probably be
+    // @NOTE: This and the following "scrollOnFocus" methods could probably be
     //        combined into a single method, but I'm keeping them separate to
     //        make it easier to understand what's going on without needing to add
     //        an additional layer of potentially confusing abstraction.
     //        This will also better help prevent "crossing the streams" between
     //        horizontal and vertical navigation actions.
     private scrollHorizontallyOnFocus(item: HTMLElement): void {
-        if (!this.horizontalKeyWasPressed()) return;
+        if (!this.keyWasPressed(HORIZONTAL_KEYS)) return;
 
         const { left: leftOfItem, right: rightOfItem, width: itemWidth } = item.getBoundingClientRect();
         const { left: leftOfViewport } = this.viewport.getBoundingClientRect();
-        if (leftOfItem <= leftOfViewport) {
+        if (Math.floor(leftOfItem) < Math.floor(leftOfViewport)) {
             requestAnimationFrame(this.moveScroll.bind(this, 'LEFT', itemWidth));
             return;
         }
 
-        if (rightOfItem > leftOfViewport + this.viewport.offsetWidth) {
+        if (Math.floor(rightOfItem) > Math.floor(leftOfViewport + this.viewport.offsetWidth)) {
             requestAnimationFrame(this.moveScroll.bind(this, 'RIGHT', itemWidth));
         }
     }
 
+    // @NOTE: Read comment written above "scrollHorizontallyOnFocus" method.
     private scrollVerticallyOnFocus(item: HTMLElement): void {
-        const { bottom: bottomOfRow, height: itemHeight, top: topOfRow } = item.getBoundingClientRect();
+        if (!this.keyWasPressed(VERTICAL_KEYS)) return;
+
+        const { bottom: bottomOfTrack } = this.track.getBoundingClientRect();
+        const { height: itemHeight, top: topOfRow } = item.getBoundingClientRect();
         const { top: topOfViewport } = this.viewport.getBoundingClientRect();
-        if (topOfRow <= topOfViewport) {
+
+        if (Math.floor(topOfRow) < Math.floor(topOfViewport)) {
             requestAnimationFrame(this.moveScroll.bind(this, 'UP', itemHeight));
             return;
         }
 
-        if (bottomOfRow > topOfViewport + this.viewport.offsetHeight) {
+        if (Math.floor(bottomOfTrack) > Math.floor(topOfViewport + this.viewport.offsetHeight)) {
             requestAnimationFrame(this.moveScroll.bind(this, 'DOWN', itemHeight));
         }
     }

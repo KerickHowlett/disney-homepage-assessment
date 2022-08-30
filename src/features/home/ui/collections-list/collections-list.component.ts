@@ -31,7 +31,7 @@ export default class CollectionsListComponent extends HTMLElement {
     }
 
     get collectionsList(): HTMLElement {
-        return this.element.querySelector<HTMLElement>('.home-collections-list')!;
+        return this.element.querySelector<HTMLElement>('.collections-list')!;
     }
 
     get preRenderedCollections(): HTMLElement[] {
@@ -77,9 +77,11 @@ export default class CollectionsListComponent extends HTMLElement {
     private renderTemplate(): void {
         this.element.innerHTML = `
             <style>${css}</style>
-            <disney-virtual-scroll>
-                <div class="home-collections-list" slot="content"></div>
-            </disney-virtual-scroll>
+            <div class="collections-list-container">
+                <disney-virtual-scroll>
+                    <div class="collections-list" slot="content"></div>
+                </disney-virtual-scroll>
+            </div>
         `;
     }
 

@@ -1,6 +1,8 @@
 import { Component } from '@disney/common';
 import { HomeControls, HomeStore } from '../state-management';
 
+import css from './home.shell.css';
+
 import '../ui/collections-list';
 
 @Component({
@@ -25,6 +27,7 @@ export default class HomeShell extends HTMLElement {
 
     render(): void {
         this.element.innerHTML = `
+            <style>${css}</style>
             <disney-collections-list></disney-collections-list>
         `;
     }

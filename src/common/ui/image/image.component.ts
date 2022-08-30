@@ -6,15 +6,15 @@ import { isNull } from '@common/utils';
     options: { extends: 'img' },
 })
 export class ImageComponent extends HTMLImageElement {
-    constructor() {
-        super();
-    }
-
     private readonly failsafeImage: string | null = this.getAttribute('failsafe-src');
     private readonly failsafeTitle: string | null = this.getAttribute('alt');
 
     connectedCallback(): void {
         this.onerror = this.renderFailsafeImage.bind(this);
+    }
+
+    disconnectCallback(): void {
+        this.onerror = null;
     }
 
     renderFailsafeImage(): void {

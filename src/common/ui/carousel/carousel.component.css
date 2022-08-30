@@ -1,9 +1,10 @@
 :host {
     display: block;
+    height: min-content;
+    width: min-content;
 }
 
 slot {
-    flex-wrap: nowrap;
     position: relative;
     overflow: visible;
 }
