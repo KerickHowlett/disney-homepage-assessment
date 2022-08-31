@@ -64,7 +64,9 @@ export interface Collection {
 }
 
 export type DataPayloadWithStandardCollection = Readonly<Record<'StandardCollection', StandardCollection>>;
-export type DataPayloadWithPersonalizedCuratedSet = Readonly<Record<'CuratedSet', ContainerSet>>;
+
+export type PersonalizedSetKeys = 'CuratedSet' | 'TrendingSet';
+export type DataPayloadWithPersonalizedCuratedSet = Readonly<Record<PersonalizedSetKeys, ContainerSet>>;
 
 export interface SaveContentStateParams {
     aspectRatio: keyof ContentImageTileAspectRatio;

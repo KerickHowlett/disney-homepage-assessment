@@ -15,3 +15,4 @@ const BY_COLLECTION_TYPE = 'type';
 export const byPersonalizedCollections = collectionFilterCurry(BY_COLLECTION_TYPE, CollectionType.PERSONALIZED);
 export const byStandardCollections = collectionFilterCurry(BY_COLLECTION_TYPE, CollectionType.STANDARD);
 export const byHavingContent = ({ content }: Collection): boolean => !isEmpty(content);
+export const byHavingNoContent = ({ content }: Collection): boolean => isEmpty(content);

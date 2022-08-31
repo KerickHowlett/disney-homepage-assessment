@@ -71,7 +71,6 @@ export function getFullyVisibleTilesFromNthCarousel(index?: number): DOMQuery<Co
         ContentTileComponent[]
     >;
     if (isNil(contentTiles)) return;
-
     return contentTiles.filter((tile: ContentTileComponent): boolean => {
         return !isNil(tile.shadowRoot?.querySelector('[is-fully-visible="true"]'));
     });

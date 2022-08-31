@@ -13,7 +13,6 @@ export function Debounce(delay?: number): MethodDecorator {
         let timeoutId: Timeout | undefined;
         descriptor.value = function debounce(...args: any[]): void {
             clearTimeout(timeoutId);
-            console.log('debouncing');
             timeoutId = setTimeout((): void => {
                 original.apply(this, args);
             }, delay || DEFAULT_TIMEOUT);

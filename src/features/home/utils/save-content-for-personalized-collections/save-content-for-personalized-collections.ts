@@ -25,9 +25,7 @@ export function saveContentForPersonalizedCollection(
         { content: contentIds },
         originalState.collections,
     );
-
-    const originalContentState: MutableContent = structuredClone(originalState.content) as MutableContent;
-    const contentState: ContentState = mapOutContentState(pluckedContent, originalContentState);
+    const contentState: ContentState = mapOutContentState(pluckedContent, originalState.content as MutableContent);
 
     return Object.freeze({
         content: contentState,

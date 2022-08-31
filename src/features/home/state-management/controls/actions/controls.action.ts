@@ -1,5 +1,5 @@
 import { Singleton } from '@common/decorators';
-import { clamp, isNil, updateState } from '@common/utils';
+import { clamp, isNil, isUndefined, updateState } from '@common/utils';
 import type { ContentTileComponent } from '@disney/features/home/ui/content-tile';
 import type { DOMQuery } from '@disney/features/home/utils';
 import {
@@ -8,6 +8,8 @@ import {
     getFullyVisibleTilesFromNthCarousel,
 } from '@disney/features/home/utils';
 import type { HomeControlsState } from '../state';
+
+const DEFAULT_CONTENT_ID: ContentTileComponent = { contentIndex: 1 } as ContentTileComponent;
 
 export type HorizontalPayload = 'LEFT' | 'RIGHT';
 export type VerticalPayload = 'UP' | 'DOWN';
@@ -54,6 +56,7 @@ export class HomeControlsActions {
             originalCollectionIndex,
             targetContentIndex,
         );
+
         const { contentIndex } = this.getVerticallyAligningContentTileFromTargetCollection(
             targetCollectionIndex,
             originalCollectionFullyVisibleIndex,
@@ -86,9 +89,11 @@ export class HomeControlsActions {
         const fullyVisibleTilesFromTargetCollection: DOMQuery<ContentTileComponent[]> =
             getFullyVisibleTilesFromNthCarousel(targetCollectionIndex - 1);
 
-        if (isNil(fullyVisibleTilesFromTargetCollection)) {
-            return { contentIndex: 0 } as ContentTileComponent;
-        }
+        if (isNil(fullyVisibleTilesFromTargetCollection)) return DEFAULT_CONTENT_ID;
+
+        const selectedContentElement: ContentTileComponent =
+            fullyVisibleTilesFromTargetCollection[originalCollectionFullyVisibleIndex];
+        if (isUndefined(selectedContentElement)) return DEFAULT_CONTENT_ID;
 
         return fullyVisibleTilesFromTargetCollection[originalCollectionFullyVisibleIndex];
     }

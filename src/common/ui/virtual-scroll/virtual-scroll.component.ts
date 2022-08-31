@@ -36,7 +36,6 @@ export class VirtualScroll extends HTMLElement {
         vertical: (item: HTMLElement) => this.scrollVerticallyOnFocus(item),
         horizontal: (item: HTMLElement) => this.scrollHorizontallyOnFocus(item),
     };
-
     private scrollPosition: PositionByAxis = {
         x: 0,
         y: 0,
@@ -206,14 +205,14 @@ export class VirtualScroll extends HTMLElement {
             return;
         }
 
-        if (Math.floor(bottomOfTrack) > Math.floor(topOfViewport + this.viewport.offsetHeight)) {
+        if (Math.floor(bottomOfTrack) > Math.floor(topOfViewport + this.viewport.offsetHeight + 1)) {
             requestAnimationFrame(this.moveScroll.bind(this, 'DOWN', itemHeight));
         }
     }
 
     private unbindEvents(): void {
-        this.resizeObserver.disconnect();
-        this.contentObserver.disconnect();
+        this.resizeObserver?.disconnect();
+        this.contentObserver?.disconnect();
         this.removeEventListener('focusin', this.scrollOnFocus.bind(this), true);
     }
 }

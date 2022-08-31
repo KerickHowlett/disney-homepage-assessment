@@ -1,12 +1,10 @@
-import { Content, ContentState, ContentStateKey, MutableContent } from '../../types';
+import { isUndefined } from '@common/utils';
+import { Content, ContentState, MutableContent } from '../../types';
 
-export function mapOutContentState(
-    contentSet: Content[],
-    contentState: MutableContent = new Map<ContentStateKey, Content>(),
-): ContentState {
+export function mapOutContentState(contentSet: Content[], contentState?: MutableContent): ContentState {
+    const outputMap: MutableContent = isUndefined(contentState) ? new Map() : structuredClone(contentState);
     for (const content of new Set(contentSet)) {
-        if (contentState.has(content.id)) continue;
-        contentState.set(content.id, content);
+        outputMap.set(content.id, content);
     }
-    return contentState;
+    return outputMap;
 }

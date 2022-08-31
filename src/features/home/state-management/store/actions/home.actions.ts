@@ -25,13 +25,13 @@ export class HomeActions {
 
     async fetchHomeAPI(originalState: Readonly<HomeState>): Promise<Readonly<HomeState>> {
         const response: HomeAPIResponse | null = await this.effects.fetchHomeJSON();
-        const updatedState: Readonly<HomeState> = saveCollections(response);
-        return updateState<HomeState>(originalState, updatedState);
+        const payload: Readonly<HomeState> = saveCollections(response);
+        return updateState<HomeState>(originalState, payload);
     }
 
     async fetchPersonalizedCuratedSet(originalState: Readonly<HomeState>, refId: RefId): Promise<Readonly<HomeState>> {
         const response: SetRefAPIResponse | null = await this.effects.fetchHomeJSONByRefId(refId);
-        const updatedState: HomeState = saveContentForPersonalizedCollection(originalState, refId, response);
-        return updateState<HomeState>(originalState, updatedState);
+        const payload: HomeState = saveContentForPersonalizedCollection(originalState, refId, response);
+        return updateState<HomeState>(originalState, payload);
     }
 }

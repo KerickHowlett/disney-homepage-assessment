@@ -71,17 +71,16 @@ export class CollectionComponent extends HTMLElement {
 
     private renderContentTiles(contentIds: ContentStateKey[]): void {
         this.carousel.replaceChildren(
-            ...contentIds.map<HTMLElement>(
-                (contentId: ContentStateKey, contentIndex: number): HTMLElement =>
-                    elementFactory({
-                        attributes: [
-                            `content-id: ${contentId}`,
-                            `content-index: ${contentIndex + 1}`,
-                            `collection-index: ${this.collectionIndex + 1}`,
-                        ],
-                        tagName: 'disney-content-tile',
-                    }),
-            ),
+            ...contentIds.map<HTMLElement>((contentId: ContentStateKey, contentIndex: number): HTMLElement => {
+                return elementFactory({
+                    attributes: [
+                        `content-id: ${contentId}`,
+                        `content-index: ${contentIndex + 1}`,
+                        `collection-index: ${this.collectionIndex + 1}`,
+                    ],
+                    tagName: 'disney-content-tile',
+                });
+            }),
         );
     }
 }

@@ -2,7 +2,7 @@ import { Singleton } from '@common/decorators';
 import type { Callback } from '@common/types';
 import { isUndefined } from '@common/utils';
 import type { Collection, CollectionStateKey, Content, ContentStateKey, HomeState } from '../../types';
-import { byHavingContent, byPersonalizedCollections, byStandardCollections } from '../../utils';
+import { byHavingContent, byHavingNoContent, byPersonalizedCollections, byStandardCollections } from '../../utils';
 import { OnHomeAction } from './actions';
 import { HomeReducer } from './reducer';
 
@@ -18,6 +18,10 @@ export class HomeStore {
 
     get collectionsWithContent(): Collection[] {
         return this.collections.filter(byHavingContent);
+    }
+
+    get collectionsWithNoContent(): Collection[] {
+        return this.collections.filter(byHavingNoContent);
     }
 
     get personalizedCollections(): Collection[] {
@@ -43,17 +47,13 @@ export class HomeStore {
     getContent(id: ContentStateKey): Readonly<Content> | undefined {
         const content: Readonly<Content> | undefined = this.state.content.get(id);
         if (isUndefined(content)) {
-            console.dir(this.state);
             console.error(`[Content Not Found]: ${id}`);
         }
         return content;
     }
 
-    *lazyLoadPersonalCollection(): Generator<void, void, void> {
-        for (const { id: refId } of this.personalizedCollections) {
-            this.reducer.on(LOAD_PERSONALIZED_COLLECTION, refId);
-            yield;
-        }
+    loadPersonalizedContent(refId: string): void {
+        this.reducer.on(LOAD_PERSONALIZED_COLLECTION, refId);
     }
 
     loadStandardCollections(): void {

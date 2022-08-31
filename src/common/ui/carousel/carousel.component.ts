@@ -1,16 +1,13 @@
 import { Component } from '@common/decorators';
-import { isNil, isNull } from '@common/utils';
+import { isEmpty, isNil, isNull } from '@common/utils';
 import type { VirtualScroll } from '../virtual-scroll';
 
 import css from './carousel.component.css?inline';
 
-export const INTERACTIVE_TILE = 'interactive-tile';
-export const CAROUSEL_ITEM = 'carousel-item';
-export const CAROUSEL_TRACK = 'carousel-track';
-export const FULLY_VISIBLE = 'fully-visible';
-export const IS_FULLY_VISIBLE = 'is-fully-visible';
-export const PARTIALLY_VISIBLE = 'partially-visible';
-export const WATCH_TARGET = 'watch-target';
+const CAROUSEL_ITEM = 'carousel-item';
+const FULLY_VISIBLE = 'fully-visible';
+const IS_FULLY_VISIBLE = 'is-fully-visible';
+const PARTIALLY_VISIBLE = 'partially-visible';
 
 @Component({
     selector: 'disney-carousel',
@@ -39,11 +36,11 @@ export class CarouselComponent extends HTMLElement {
     }
 
     get slotElement(): HTMLSlotElement {
-        return this.element.querySelector('slot') as HTMLSlotElement;
+        return this.element.querySelector<HTMLSlotElement>('slot')!;
     }
 
     get virtualScroll(): VirtualScroll {
-        return this.element.querySelector('disney-virtual-scroll') as VirtualScroll;
+        return this.element.querySelector<VirtualScroll>('disney-virtual-scroll')!;
     }
 
     connectedCallback(): void {
@@ -55,13 +52,14 @@ export class CarouselComponent extends HTMLElement {
     disconnectCallback(): void {
         this.observer?.disconnect();
         this.resizeObserver?.disconnect();
+        this.contentObserver?.disconnect();
     }
 
     render(): void {
         this.element.innerHTML = `
             <style>${css}</style>
             <disney-virtual-scroll orientation="horizontal">
-                <slot name="carousel-items" slot="content"></slot>
+                <slot class="carousel-items" name="carousel-items" slot="content"></slot>
             </disney-virtual-scroll>
         `;
     }
@@ -69,6 +67,11 @@ export class CarouselComponent extends HTMLElement {
     private bindObservers(): void {
         this.contentObserver.observe(this.content, { childList: true });
         this.resizeObserver.observe(this.slotElement);
+        this.observer = new IntersectionObserver(this.setVisibilityStylingOnChange.bind(this), {
+            root: this.virtualScroll.viewport,
+            threshold: [0, 0.1, 0.2, 0.4, 0.5, 0.6, 0.7, 0.8, 1],
+            rootMargin: '0px 0px 0px 0px',
+        });
     }
 
     // @NOTE: The most outer element can sometimes not register as an element or
@@ -77,9 +80,8 @@ export class CarouselComponent extends HTMLElement {
     //        This may be due to the nature of ShadowDOMs -- additional research
     //        is needed.
     private getTrueElement(item: Element): HTMLElement | null {
-        const itemRoot: HTMLElement | ShadowRoot = isNil(item?.shadowRoot) ? (item as HTMLElement) : item.shadowRoot;
-        if (isNil(itemRoot)) return null;
-        return itemRoot.querySelector('div');
+        if (isNil(item.shadowRoot)) return null;
+        return item.shadowRoot.querySelector('div');
     }
 
     private isCompletelyVisible(visibilityPercentage: number): boolean {
@@ -112,12 +114,13 @@ export class CarouselComponent extends HTMLElement {
     private watchItemsForLevelsOfVisibility(): void {
         this.observer = new IntersectionObserver(this.setVisibilityStylingOnChange.bind(this), {
             root: this.virtualScroll.viewport,
-            threshold: [0, 0.2, 0.4, 0.5, 0.6, 0.8, 1],
+            threshold: [0, 0.1, 0.2, 0.4, 0.5, 0.6, 0.7, 0.8, 1],
         });
-        this.carouselItems.forEach((item: HTMLElement): void => {
+        if (isEmpty(this.carouselItems)) return;
+        for (const item of this.carouselItems) {
             const targetElement: HTMLElement | null = this.getTrueElement(item);
-            if (isNull(targetElement)) return;
-            this.observer!.observe(targetElement);
-        });
+            if (isNull(targetElement)) continue;
+            this.observer?.observe(targetElement);
+        }
     }
 }

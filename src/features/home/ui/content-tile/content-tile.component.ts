@@ -2,7 +2,7 @@
 import { Component } from '@common/decorators/component';
 import { elementFactory } from '@common/factories/element';
 import type { ImageComponent } from '@common/ui/image';
-import { changeDetectedBetween, isUndefined, toNumber } from '@common/utils';
+import { changeDetectedBetween, isNull, isUndefined, toNumber } from '@common/utils';
 import { HomeControls, HomeStore } from '../../state-management';
 import type { Content } from '../../types';
 
@@ -10,20 +10,23 @@ import css from './content-tile.component.css';
 
 import '@common/ui/image';
 
+const NULL_CONTENT: Content = { tileImage: '', title: '' } as Content;
+
 @Component({
     selector: 'disney-content-tile',
 })
 export class ContentTileComponent extends HTMLElement {
     private readonly element: ShadowRoot;
+    private previousContent?: Content;
 
     constructor(
         private readonly controls: HomeControls = new HomeControls(),
         private readonly store: HomeStore = new HomeStore(),
     ) {
         super();
-        this.element = this.attachShadow({ mode: 'open', delegatesFocus: true });
         this.controls.subscribe(this.navigationHandler.bind(this));
-        this.store.subscribe(this.render.bind(this));
+        this.store.subscribe(this.updateContentAttributes.bind(this));
+        this.element = this.attachShadow({ mode: 'open', delegatesFocus: true });
     }
 
     get collectionIndex(): number {
@@ -83,7 +86,7 @@ export class ContentTileComponent extends HTMLElement {
 
     private renderContentTile(): void {
         const { tileImage: image, title } = this.content;
-        const html = `
+        this.element.innerHTML = `
             <style>${css}</style>
             <div class="content-tile">
                 <div class="content-tile-container" aria-hidden="false">
@@ -104,8 +107,7 @@ export class ContentTileComponent extends HTMLElement {
                 </div>
             </div>
         `;
-        if (!changeDetectedBetween(this.element.innerHTML, html)) return;
-        this.element.innerHTML = html;
+        this.previousContent = this.content;
     }
 
     private renderTitleOverlay(): void {
@@ -122,5 +124,34 @@ export class ContentTileComponent extends HTMLElement {
             this.imageElement.classList.add('image-failsafe');
             this.renderTitleOverlay();
         };
+    }
+
+    private updateContentAttributes(): void {
+        const { tileImage: oldTileImage, title: oldTitle } = this.previousContent || NULL_CONTENT;
+        const { tileImage: newTileImage, title: newTitle } = this.content || NULL_CONTENT;
+        this.updateImageAltAndAriaLabel(oldTitle, newTitle);
+        this.updateImage(oldTileImage, newTileImage);
+    }
+
+    private updateImageAltAndAriaLabel(oldTitle: string, newTitle: string): void {
+        if (!changeDetectedBetween(oldTitle, newTitle)) return;
+        this.imageElement.setAttribute('alt', newTitle);
+        this.imageElement.setAttribute('aria-label', newTitle);
+    }
+
+    private updateImage(oldTileImage: string, newTileImage: string): void {
+        if (!changeDetectedBetween(oldTileImage, newTileImage)) return;
+
+        this.imageElement.src = newTileImage;
+        const titleElement: HTMLDivElement | null = this.element.querySelector('.image-failsafe-title');
+
+        if (!isNull(titleElement)) {
+            this.imageElement.classList.remove('image-failsafe');
+            titleElement.remove();
+        }
+
+        if (!isNull(this.imageElement.onerror)) return;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (this.imageElement as any).onerror();
     }
 }
