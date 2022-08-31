@@ -1,5 +1,4 @@
-import { elementFactory } from '@common/factories';
-import { Component, isEmpty, isNull, isUndefined, toNumber } from '@disney/common';
+import { Component, elementFactory, isEmpty, isNull, isUndefined, toNumber } from '@disney/common';
 import { HomeStore } from '../../state-management/store';
 import type { Collection, CollectionId, ContentStateKey } from '../../types';
 

@@ -11,7 +11,7 @@ export class HomeControls {
         return this.reducer.state;
     }
 
-    public destroy(): void {
+    destroy(): void {
         document.removeEventListener('mousedown', (e: MouseEvent) => e.preventDefault());
         document.removeEventListener('mouseup', (e: MouseEvent) => e.preventDefault());
         document.removeEventListener('mousemove', (e: MouseEvent) => e.preventDefault());
@@ -23,7 +23,7 @@ export class HomeControls {
         });
     }
 
-    public init(): void {
+    init(): void {
         this.stubAllMouseEvents();
         this.bindKeyboardEvents();
     }
