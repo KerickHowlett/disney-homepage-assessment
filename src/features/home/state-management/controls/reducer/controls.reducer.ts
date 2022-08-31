@@ -19,7 +19,7 @@ export class HomeControlsReducer {
         return Object.freeze<HomeControlsState>(this._state);
     }
 
-    @Throttle(100)
+    @Throttle(250)
     onKeydown(event: Readonly<KeyboardEvent>): void {
         this._state = this.dispatch(this._state, event);
         this.messenger.publish(HOME_NAVIGATION_CONTROLS, this._state);
@@ -34,6 +34,8 @@ export class HomeControlsReducer {
     }
 
     private dispatch(state: Readonly<HomeControlsState>, event: Readonly<KeyboardEvent>): Readonly<HomeControlsState> {
+        if (event.repeat) return state;
+
         switch (event.code) {
             case 'ArrowUp':
             case 'KeyW':
