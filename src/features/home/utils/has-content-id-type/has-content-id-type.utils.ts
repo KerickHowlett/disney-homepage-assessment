@@ -1,6 +1,8 @@
 import { isNil } from '@common/utils';
 import type { ContainerItem } from '../../types';
 
-export function hasContentIdType(idType: 'contentId' | 'collectionId', item: ContainerItem): boolean {
+export type ContentIDType = 'contentId' | 'collectionId';
+
+export function hasContentIdType(idType: ContentIDType, item: ContainerItem): boolean {
     return idType in item && !isNil(item[idType]);
 }

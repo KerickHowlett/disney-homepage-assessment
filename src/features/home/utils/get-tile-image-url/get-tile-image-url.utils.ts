@@ -1,4 +1,4 @@
-import type { ContentImageTile, ContentImageTileAspectRatio, ContentTileType } from '@disney/features/home/types';
+import type { ContentImage, ContentImageTileAspectRatio, ContentTileType } from '@disney/features/home/types';
 import { getOnlyKeyOfSet } from '../get-only-key-of-set';
 
 const DEFAULT_ASPECT_RATIO = '1.78';
@@ -9,7 +9,7 @@ const DEFAULT_ASPECT_RATIO = '1.78';
  *        dynamically.
  */
 export function getTileImageURL(
-    image: ContentImageTile,
+    image: ContentImage,
     aspectRatio: keyof ContentImageTileAspectRatio = DEFAULT_ASPECT_RATIO,
 ): string {
     const targetSizedTile: ContentTileType = image.tile[aspectRatio];

@@ -5,8 +5,8 @@ export type ContentDefaultMetaData = Readonly<Record<'url', string>>;
 export type ContentDefault = DefaultData<ContentDefaultMetaData>;
 export type EntityTypes = 'series' | 'program' | 'set' | 'default';
 export type ContentTileType = Readonly<Record<EntityTypes, ContentDefault>>;
-export type ContentImageKeys = 'tile' | 'title_treatment';
-export type ContentImageTile = Readonly<Record<ContentImageKeys, ContentImageTileAspectRatio>>;
+export type ContentImageKeys = 'logo' | 'tile' | 'title_treatment';
+export type ContentImage = Readonly<Record<ContentImageKeys, ContentImageTileAspectRatio>>;
 
 export type ContentImageTileAspectRatio = Readonly<Record<'1.78', ContentTileType>>;
 export type TextSet = DefaultData<DefaultText>;
@@ -42,7 +42,7 @@ export interface Content {
 export interface ContainerItem {
     readonly contentId?: string;
     readonly collectionId?: string;
-    readonly image: ContentImageTile;
+    readonly image: ContentImage;
     readonly ratings: ReadonlyArray<Rating>;
     readonly text: ItemText;
     readonly videoArt: ReadonlyArray<MediaMetadata>;
