@@ -7,6 +7,7 @@ import css from './marquee-content-preview.component.css?inline';
 })
 export class MarqueeContentPreviewComponent extends HTMLElement {
     private readonly element: ShadowRoot;
+    private videoPlaying?: Promise<void>;
 
     constructor() {
         super();
@@ -47,7 +48,7 @@ export class MarqueeContentPreviewComponent extends HTMLElement {
     render(): void {
         this.element.innerHTML = `
             <style>${css}</style>
-            <video id="video-preview" class="video-preview" muted loop crossorigin="anonymous">
+            <video id="video-preview" class="video-preview" muted loop>
                 <source src="" type="video/mp4">
             </video>
         `;
@@ -59,6 +60,6 @@ export class MarqueeContentPreviewComponent extends HTMLElement {
         this.videoSourceElement.setAttribute('src', videoSrc);
         this.videoSourceElement.setAttribute('type', 'video/mp4');
         this.videoElement.load();
-        this.videoElement.play();
+        this.videoElement.play().catch(() => this.videoElement.pause());
     }
 }
