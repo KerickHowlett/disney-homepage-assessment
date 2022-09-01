@@ -8,15 +8,18 @@ export function getAppRoot(): DOMQuery {
 }
 
 export function getHomeShellRoot(): DOMQuery {
-    return getAppRoot()?.querySelector('disney-home')?.shadowRoot;
+    const app: DOMQuery = getAppRoot();
+    return app?.querySelector('disney-home')?.shadowRoot;
 }
 
 export function getCollectionsList(): DOMQuery {
-    return getHomeShellRoot()?.querySelector('disney-collections-list')?.shadowRoot;
+    const homeShell: DOMQuery = getHomeShellRoot();
+    return homeShell?.querySelector('disney-collections-list')?.shadowRoot;
 }
 
-export function getVirtualScrollRoot(): DOMQuery {
-    return getCollectionsList()?.querySelector('disney-virtual-scroll')?.shadowRoot;
+export function getVirtualScrollRootOfCollectionsList(): DOMQuery {
+    const collectionsList = getCollectionsList();
+    return collectionsList?.querySelector('disney-virtual-scroll')?.shadowRoot;
 }
 
 export function getCollections(): HTMLElement[] | undefined {
@@ -64,6 +67,15 @@ export function getContentTilesFromNthCarousel(index?: number): DOMQuery<HTMLEle
     const assignedSlotElements: DOMQuery<HTMLElement> = getAssignedSlotElementsFromNthCollection(index);
     if (isNil(assignedSlotElements)) return;
     return Array.from(assignedSlotElements.children) as HTMLElement[];
+}
+
+export function getNthContentTileFromNthCollection(
+    collectionIndex: number,
+    contentIndex: number,
+): ContentTileComponent | undefined {
+    const contentTiles: DOMQuery<HTMLElement[]> = getContentTilesFromNthCarousel(collectionIndex);
+    if (isNil(contentTiles)) return;
+    return contentTiles[contentIndex] as ContentTileComponent;
 }
 
 export function getFullyVisibleTilesFromNthCarousel(index?: number): DOMQuery<ContentTileComponent[]> {

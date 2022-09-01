@@ -1,23 +1,19 @@
 import { Singleton } from '@common/decorators';
-import { clamp, isNil, isUndefined, updateState } from '@common/utils';
-import type { ContentStateKey } from '@disney/features/home/types';
+import { changeDetectedBetween, clamp, isNil, isUndefined, updateState } from '@common/utils';
 import type { ContentTileComponent } from '@disney/features/home/ui/content-tile';
-import type { DOMQuery } from '@disney/features/home/utils';
 import {
+    DOMQuery,
     getCollectionsList,
     getContentTilesFromNthCarousel,
     getFullyVisibleTilesFromNthCarousel,
+    getNthContentTileFromNthCollection,
 } from '@disney/features/home/utils';
 import type { HomeControlsState } from '../state';
 
 const DEFAULT_CONTENT_ID: ContentTileComponent = { contentIndex: 1 } as ContentTileComponent;
 
-export type Column = HomeControlsState['column'];
-export type Direction = HorizontalPayload | VerticalPayload;
-export type HorizontalPayload = 'LEFT' | 'RIGHT';
-export type Row = HomeControlsState['row'];
-export type SelectedContentId = HomeControlsState['selectedContentId'];
-export type VerticalPayload = 'UP' | 'DOWN';
+type HorizontalPayload = 'LEFT' | 'RIGHT';
+type VerticalPayload = 'UP' | 'DOWN';
 
 // @TODO: This needs a robust/dynamic means of memoization that can handle
 //        ResizeObserver and IntersectionObserver events for better performance.
@@ -27,13 +23,8 @@ export class HomeControlsActions {
         const moveToColumn: number = state.column + (direction === 'LEFT' ? -1 : 1);
         const totalTiles: number = this.getAllTilesInCurrentCollection(state.row);
 
-        const targetColumn: Column = clamp(moveToColumn, 1, totalTiles);
-        const selectedContentId: SelectedContentId = this.getSelectedContentId(state.row, targetColumn);
-
-        return updateState<HomeControlsState>(state, {
-            column: targetColumn,
-            selectedContentId,
-        });
+        const targetColumn: number = clamp(moveToColumn, 1, totalTiles);
+        return this.selectElement(state, state.row, targetColumn);
     }
 
     moveVertically(state: HomeControlsState, direction: VerticalPayload): Readonly<HomeControlsState> {
@@ -41,13 +32,29 @@ export class HomeControlsActions {
         const totalCollections: number = this.getTotalRenderedCollections();
         const targetCollectionIndex: number = clamp(moveToRow, 1, totalCollections);
 
+        if (!changeDetectedBetween(targetCollectionIndex, state.row) && targetCollectionIndex === 1) return state;
+
         const targetContentIndex: number = this.getContentIndexInTargetCollection(moveToRow, state);
-        const selectedContentId: SelectedContentId = this.getSelectedContentId(state.row, targetContentIndex);
+        return this.selectElement(state, targetCollectionIndex, targetContentIndex);
+    }
+
+    selectElement(state: HomeControlsState, collectionIndex: number, contentIndex: number): HomeControlsState {
+        const targetTile: ContentTileComponent = getNthContentTileFromNthCollection(
+            collectionIndex - 1,
+            contentIndex - 1,
+        )!;
+
+        if (isUndefined(targetTile)) {
+            console.error('Could not find content tile.');
+            return state;
+        }
+
+        targetTile.imageElement.focus();
 
         return updateState<HomeControlsState>(state, {
-            column: targetContentIndex,
-            row: targetCollectionIndex,
-            selectedContentId,
+            column: contentIndex,
+            row: collectionIndex,
+            selectedContentId: targetTile.contentId,
         });
     }
 
@@ -65,7 +72,6 @@ export class HomeControlsActions {
             originalCollectionIndex,
             targetContentIndex,
         );
-
         const { contentIndex } = this.getVerticallyAligningContentTileFromTargetCollection(
             targetCollectionIndex,
             originalCollectionFullyVisibleIndex,
@@ -88,18 +94,6 @@ export class HomeControlsActions {
         );
 
         return index === -1 ? 0 : index;
-    }
-
-    private getSelectedContentId(row: Row, column: Column): ContentStateKey | null {
-        const contentTiles: DOMQuery<ContentTileComponent[]> = getContentTilesFromNthCarousel(row - 1) as DOMQuery<
-            ContentTileComponent[]
-        >;
-        if (isNil(contentTiles)) return null;
-
-        const selectedContentElement: ContentTileComponent = contentTiles[column - 1];
-        if (isNil(selectedContentElement)) return null;
-
-        return selectedContentElement.contentId;
     }
 
     private getTotalRenderedCollections(): number {

@@ -1,0 +1,8 @@
+.preview-poster,
+.video-preview {
+    min-height: 100%;
+    min-width: 100%;
+    position: fixed;
+    right: 0;
+    top: 0;
+}

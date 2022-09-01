@@ -1,18 +1,16 @@
 import { Component } from '@common/decorators';
+import { elementFactory } from '@common/factories';
+import type { VirtualScroll } from '@common/ui/virtual-scroll';
 import { getContrastBetween, isEmpty, isNull, isUndefined } from '@common/utils';
-import { HomeStore } from '../../state-management/store';
+
+import { HomeStore } from '../../state-management';
 import type { Collection, CollectionId } from '../../types';
 import type { CollectionComponent } from '../collection';
 
 import css from './collections-list.component.css?inline';
 
-import { elementFactory } from '@common/factories';
 import '@common/ui/virtual-scroll';
-import { VirtualScroll } from '@common/ui/virtual-scroll';
 import '../collection';
-
-const COLLECTION_ID = 'collection-id';
-const DISNEY_COLLECTION = 'disney-collection';
 
 @Component({
     selector: 'disney-collections-list',
@@ -43,7 +41,7 @@ export default class CollectionsListComponent extends HTMLElement {
     }
 
     get preRenderedCollections(): CollectionComponent[] {
-        return Array.from(this.element.querySelectorAll<CollectionComponent>(DISNEY_COLLECTION));
+        return Array.from(this.element.querySelectorAll<CollectionComponent>('disney-collection'));
     }
 
     get virtualScroll(): VirtualScroll {
@@ -67,20 +65,18 @@ export default class CollectionsListComponent extends HTMLElement {
         this.renderCollections();
     }
 
-    private updateCollectionsList(): void {
-        this.bindLazyLoaderObserver();
-        this.lazyLoadObserver?.observe(this.lastCollection);
-    }
-
     private appendCollectionsToDOM(collectionIds: CollectionId[]): void {
         let index: number = this.preRenderedCollections.length;
         for (const collectionId of collectionIds) {
-            const collectionElement: CollectionComponent = elementFactory({
-                attributes: [`${COLLECTION_ID}: ${collectionId}`, `collection-index: ${index}`],
-                tagName: DISNEY_COLLECTION,
-            });
-            this.collectionsList.appendChild(collectionElement);
-            index++;
+            this.collectionsList.appendChild(
+                elementFactory({
+                    attributes: {
+                        'collection-id': collectionId,
+                        'collection-index': `${index++}`,
+                    },
+                    tagName: 'disney-collection',
+                }),
+            );
         }
         this.lazyLoadObserver?.observe(this.lastCollection);
     }
@@ -136,5 +132,10 @@ export default class CollectionsListComponent extends HTMLElement {
                 </disney-virtual-scroll>
             </div>
         `;
+    }
+
+    private updateCollectionsList(): void {
+        this.bindLazyLoaderObserver();
+        this.lazyLoadObserver?.observe(this.lastCollection);
     }
 }

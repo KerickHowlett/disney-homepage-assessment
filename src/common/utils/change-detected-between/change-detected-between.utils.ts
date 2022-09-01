@@ -1,3 +1,3 @@
-export function changeDetectedBetween(newTemplate: string, currentTemplate: string): boolean {
+export function changeDetectedBetween(newTemplate: string | number, currentTemplate: string | number): boolean {
     return currentTemplate !== newTemplate;
 }

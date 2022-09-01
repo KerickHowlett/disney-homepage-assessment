@@ -4,6 +4,7 @@ import { HomeControls, HomeStore } from '../state-management';
 import css from './home.shell.css';
 
 import '../ui/collections-list';
+import '../ui/marquee';
 
 @Component({
     selector: 'disney-home',
@@ -28,6 +29,7 @@ export default class HomeShell extends HTMLElement {
     render(): void {
         this.element.innerHTML = `
             <style>${css}</style>
+            <disney-marquee></disney-marquee>
             <disney-collections-list></disney-collections-list>
         `;
     }

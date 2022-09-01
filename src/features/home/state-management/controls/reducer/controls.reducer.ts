@@ -26,6 +26,11 @@ export class HomeControlsReducer {
         this.messenger.publish(HOME_NAVIGATION_CONTROLS, this._state);
     }
 
+    selectFirstContentTile(): void {
+        this._state = this.actions.selectElement(this._state, this._state.row, this._state.column);
+        this.messenger.publish(HOME_NAVIGATION_CONTROLS, this._state);
+    }
+
     subscribe(callback: Callback): void {
         this.messenger.subscribe(HOME_NAVIGATION_CONTROLS, callback);
     }
@@ -36,7 +41,6 @@ export class HomeControlsReducer {
 
     private dispatch(state: Readonly<HomeControlsState>, event: Readonly<KeyboardEvent>): Readonly<HomeControlsState> {
         if (event.repeat) return state;
-
         switch (event.code) {
             case 'ArrowUp':
             case 'KeyW':

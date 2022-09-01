@@ -1,6 +1,6 @@
 import { isNull, isUndefined } from '@common/utils';
-import type { ContentImage, ContentImageTileAspectRatio, ContentTileType } from '@disney/features/home/types';
-import { getOnlyKeyOfSet } from '../get-only-key-of-set';
+import type { ContentImage, ContentImageTileAspectRatio, ContentImageTypes } from '@disney/features/home/types';
+import { getFirstPropertyValueOfSet } from '../get-first-property-value-of-set';
 import { getTitleTreatmentType } from '../get-title-treatment-type';
 import { TitleImageType } from '../has-title-image-type';
 
@@ -18,13 +18,15 @@ export function getTitleTreatmentImageURL(
     const titleTreatmentType: TitleImageType | null = getTitleTreatmentType(image);
     if (isNull(titleTreatmentType)) return '';
 
-    let targetSizedImage: ContentTileType = image[titleTreatmentType][aspectRatio];
+    let targetSizedImage: ContentImageTypes = image[titleTreatmentType][aspectRatio];
     if (isUndefined(targetSizedImage)) {
-        const fallbackAspectRation: keyof ContentImageTileAspectRatio = getOnlyKeyOfSet(image[titleTreatmentType]);
-        targetSizedImage = image[titleTreatmentType][fallbackAspectRation];
+        const fallbackAspectRatio: keyof ContentImageTileAspectRatio = getFirstPropertyValueOfSet(
+            image[titleTreatmentType],
+        );
+        targetSizedImage = image[titleTreatmentType][fallbackAspectRatio];
     }
 
-    const imageTypeKey: keyof ContentTileType = getOnlyKeyOfSet(targetSizedImage);
+    const imageTypeKey: keyof ContentImageTypes = getFirstPropertyValueOfSet(targetSizedImage);
     const jpegURL: string = targetSizedImage[imageTypeKey].default.url;
 
     return jpegURL.replace('format=jpeg', 'format=png');

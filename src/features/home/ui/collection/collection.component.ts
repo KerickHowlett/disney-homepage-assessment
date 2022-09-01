@@ -7,6 +7,11 @@ import css from './collection.component.css?inline';
 import '@common/ui/carousel';
 import '../content-tile';
 
+const FALLBACK_COLLECTION: Pick<Collection, 'title' | 'content'> = {
+    title: '',
+    content: [],
+};
+
 @Component({
     selector: 'disney-collection',
 })
@@ -46,8 +51,9 @@ export class CollectionComponent extends HTMLElement {
         if (isUndefined(this.collection?.content)) {
             return this.hideCollectionOnError(`Content not found for Collection ID# ${this.collectionId}.`);
         }
-        this.createTemplate(this.collection!.title);
-        this.renderContentTiles(this.collection!.content);
+        const { title, content } = this.collection || FALLBACK_COLLECTION;
+        this.createTemplate(title);
+        this.renderContentTiles(content as ContentStateKey[]);
     }
 
     private createTemplate(title: string): void {
@@ -70,16 +76,17 @@ export class CollectionComponent extends HTMLElement {
 
     private renderContentTiles(contentIds: ContentStateKey[]): void {
         this.carousel.replaceChildren(
-            ...contentIds.map<HTMLElement>((contentId: ContentStateKey, contentIndex: number): HTMLElement => {
-                return elementFactory({
-                    attributes: [
-                        `content-id: ${contentId}`,
-                        `content-index: ${contentIndex + 1}`,
-                        `collection-index: ${this.collectionIndex + 1}`,
-                    ],
-                    tagName: 'disney-content-tile',
-                });
-            }),
+            ...contentIds.map<HTMLElement>(
+                (contentId: ContentStateKey, contentIndex: number): HTMLElement =>
+                    elementFactory({
+                        attributes: {
+                            'collection-index': `${this.collectionIndex + 1}`,
+                            'content-id': contentId,
+                            'content-index': `${contentIndex + 1}`,
+                        },
+                        tagName: 'disney-content-tile',
+                    }),
+            ),
         );
     }
 }

@@ -1,14 +1,14 @@
 export type CollectionSetType = 'CuratedSet' | 'SetRef';
 export type DefaultData<T> = Readonly<Record<'default', T>>;
 
-export type ContentDefaultMetaData = Readonly<Record<'url', string>>;
-export type ContentDefault = DefaultData<ContentDefaultMetaData>;
+export type DefaultContent = DefaultData<DefaultContentMetaData>;
+export type DefaultContentMetaData = Readonly<Record<'url' | 'masterId', string>>;
 export type EntityTypes = 'series' | 'program' | 'set' | 'default';
-export type ContentTileType = Readonly<Record<EntityTypes, ContentDefault>>;
-export type ContentImageKeys = 'logo' | 'tile' | 'title_treatment';
+export type ContentImageTypes = Readonly<Record<EntityTypes, DefaultContent>>;
+export type ContentImageKeys = 'hero_collection' | 'logo' | 'tile' | 'title_treatment';
 export type ContentImage = Readonly<Record<ContentImageKeys, ContentImageTileAspectRatio>>;
 
-export type ContentImageTileAspectRatio = Readonly<Record<'1.78', ContentTileType>>;
+export type ContentImageTileAspectRatio = Readonly<Record<'1.78', ContentImageTypes>>;
 export type TextSet = DefaultData<DefaultText>;
 export type FullText = Readonly<Record<EntityTypes, TextSet>>;
 export type Title = Readonly<Record<'full', FullText>>;
@@ -32,10 +32,11 @@ export type MediaMetadata = Readonly<Record<'mediaMetadata', MediaURLs>>;
 export interface Content {
     readonly contentType: string;
     readonly id: string;
+    readonly rating?: string;
+    readonly marqueePosterImage: string;
     readonly tileImage: string;
     readonly titleTreatmentImage: string;
     readonly title: string;
-    readonly rating?: string;
     readonly video?: string;
 }
 

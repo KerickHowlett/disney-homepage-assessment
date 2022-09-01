@@ -7,8 +7,6 @@ import { getInitialHomeStoreState } from '../state';
 
 export const HOME_STATE_EVENTS = 'HOME_STORE_UPDATED';
 
-// @NOTE: This current design pattern is too limiting and should
-//        be refactored to allow for better scalability.
 @Singleton()
 export class HomeReducer {
     constructor(

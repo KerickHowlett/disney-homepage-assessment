@@ -3,7 +3,7 @@ import { Component } from '@common/decorators/component';
 import { elementFactory } from '@common/factories/element';
 import type { ImageComponent } from '@common/ui/image';
 import { changeDetectedBetween, isNull, isUndefined, toNumber } from '@common/utils';
-import { HomeControls, HomeStore } from '../../state-management';
+import { HomeStore } from '../../state-management';
 import type { Content } from '../../types';
 
 import css from './content-tile.component.css';
@@ -19,12 +19,8 @@ export class ContentTileComponent extends HTMLElement {
     private readonly element: ShadowRoot;
     private previousContent?: Content;
 
-    constructor(
-        private readonly controls: HomeControls = new HomeControls(),
-        private readonly store: HomeStore = new HomeStore(),
-    ) {
+    constructor(private readonly store: HomeStore = new HomeStore()) {
         super();
-        this.controls.subscribe(this.navigationHandler.bind(this));
         this.store.subscribe(this.updateContentAttributes.bind(this));
         this.element = this.attachShadow({ mode: 'open', delegatesFocus: true });
     }
@@ -64,24 +60,13 @@ export class ContentTileComponent extends HTMLElement {
     }
 
     disconnectedCallback(): void {
-        this.controls.unsubscribe(this.navigationHandler);
+        this.store.unsubscribe(this.updateContentAttributes.bind(this));
     }
 
     render(): void {
         if (isUndefined(this.content)) return;
         this.renderContentTile();
         this.setImgOnErrorListener();
-        this.navigationHandler();
-    }
-
-    private isFocusedContentTile(): boolean {
-        const { column: focusedTile, row: focusedCollection } = this.controls.state;
-        return focusedCollection === this.collectionIndex && focusedTile === this.contentIndex;
-    }
-
-    private navigationHandler(): void {
-        if (!this.isFocusedContentTile()) return;
-        this.imageElement.focus();
     }
 
     private renderContentTile(): void {
@@ -111,11 +96,13 @@ export class ContentTileComponent extends HTMLElement {
     }
 
     private renderTitleOverlay(): void {
-        const titleElement: HTMLDivElement = elementFactory<HTMLDivElement>({
-            classes: ['image-failsafe-title'],
-            body: this.content?.title,
-        });
-        this.imageElement.insertAdjacentElement('afterend', titleElement);
+        this.imageElement.insertAdjacentElement(
+            'afterend',
+            elementFactory({
+                classes: ['image-failsafe-title'],
+                body: this.content?.title,
+            }),
+        );
     }
 
     private setImgOnErrorListener(): void {

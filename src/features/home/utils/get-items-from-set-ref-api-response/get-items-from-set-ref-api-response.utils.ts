@@ -1,12 +1,12 @@
 import { isNil } from '@common/utils';
 import type { ContainerItem, PersonalizedSetKeys, SetRefAPIResponse } from '../../types';
-import { getOnlyKeyOfSet } from '../get-only-key-of-set';
+import { getFirstPropertyValueOfSet } from '../get-first-property-value-of-set';
 
 export function getItemsFromSetRefAPIResponse(response: SetRefAPIResponse | null): ContainerItem[] {
     if (isNil(response)) return [];
 
     const { data } = response;
-    const setKey: PersonalizedSetKeys = getOnlyKeyOfSet(data);
+    const setKey: PersonalizedSetKeys = getFirstPropertyValueOfSet(data);
     if (isNil(response?.data[setKey])) return [];
 
     const { items } = response.data[setKey];

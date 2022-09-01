@@ -1,9 +1,9 @@
-/// <reference types="vite/client" />
-
 // This is a hack to redefine the typing of "self", since there doesn't appear
 // to be an official means of doing so in native TypeScript (without a library)
 // yet.
 type ClientsClaimOverride = { clients: { claim: () => Promise<void> } };
+
+// @TODO: Save Videos to IndexedDB instead of Cache.
 
 // @NOTE: Will need to apply a dotenv implementation to these hard-coded
 //        variables.
