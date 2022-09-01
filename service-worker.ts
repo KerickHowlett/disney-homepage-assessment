@@ -37,7 +37,9 @@ const isSuccessful = (response: Response): boolean => response.ok && response.st
 const matchesWithACacheStoreName = (cacheName: string): boolean => {
     return cacheName === CACHE_STATIC_FILES_STORE_NAME || cacheName === CACHE_FETCH_RESPONSES_STORE_NAME;
 };
-const imageRequest = (event: FetchEvent): boolean => event.request.destination === 'image';
+type RequestType = FetchEvent['request']['destination'];
+const isRequestType = (requestType: RequestType, event: FetchEvent): boolean =>
+    event.request.destination === requestType;
 const requestForPreCachedFile = (event: FetchEvent): boolean => {
     const { pathname: requestUrl } = new URL(event.request.url);
     return PRE_CACHED_STATIC_FILES.includes(requestUrl);
@@ -95,6 +97,8 @@ const networkFirstWithCacheFallbackStrategy = (event: FetchEvent): void =>
             .catch((): Response => NOT_FOUND_RESPONSE) as Promise<Response>,
     );
 
+const networkOnlyStrategy = (event: FetchEvent): void => event.respondWith(fetch(event.request));
+
 const preCacheEssentialStaticFilesStrategy = (event: ExtendableEvent): void =>
     event.waitUntil(
         caches.open(CACHE_STATIC_FILES_STORE_NAME).then((cache: Cache): Promise<void> => {
@@ -134,7 +138,10 @@ self.addEventListener('fetch', (event: Event): void => {
     if (requestForPreCachedFile(fetchEvent)) {
         return cacheOnlyStrategy(fetchEvent);
     }
-    if (imageRequest(fetchEvent) && isCallToAssetAPI(fetchEvent)) {
+    if (isRequestType('video', fetchEvent)) {
+        return networkOnlyStrategy(fetchEvent);
+    }
+    if (isRequestType('image', fetchEvent) && isCallToAssetAPI(fetchEvent)) {
         return cacheFirstThenNetworkStrategy(fetchEvent);
     }
     if (isNetworkCall(fetchEvent)) {
