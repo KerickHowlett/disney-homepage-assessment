@@ -1,16 +1,15 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Component } from '@common/decorators/component';
-import { elementFactory } from '@common/factories/element';
-import type { ImageComponent } from '@common/ui/image';
 import { changeDetectedBetween, isNull, isUndefined, toNumber } from '@common/utils';
 import { HomeStore } from '../../state-management';
 import type { Content } from '../../types';
+import type { ContentTileImageComponent } from '../content-tile-image';
 
 import css from './content-tile.component.css';
 
-import '@common/ui/image';
+import '../content-tile-image';
 
-const NULL_CONTENT: Content = { tileImage: '', title: '' } as Content;
+const DEFAULT_CONTENT_TILE: Content = { title: '', tileImage: '' } as Content;
+const DEFAULT_TILE_IMAGE = '/default-content-tile.jpeg';
 
 @Component({
     selector: 'disney-content-tile',
@@ -18,10 +17,12 @@ const NULL_CONTENT: Content = { tileImage: '', title: '' } as Content;
 export class ContentTileComponent extends HTMLElement {
     private readonly element: ShadowRoot;
     private previousContent?: Content;
+    private _contentId: string | null = null;
+    private _contentIndex = 1;
 
     constructor(private readonly store: HomeStore = new HomeStore()) {
         super();
-        this.store.subscribe(this.updateContentAttributes.bind(this));
+        this.store.subscribe(this.updateTileImageAttributes.bind(this));
         this.element = this.attachShadow({ mode: 'open', delegatesFocus: true });
     }
 
@@ -31,28 +32,43 @@ export class ContentTileComponent extends HTMLElement {
     }
 
     get content(): Readonly<Content> {
-        return this.store.getContent(this.contentId!)!;
+        if (!isNull(this.contentId)) return this.store.getContent(this.contentId)!;
+        console.error('Content ID was not set for tile:', this);
+        return DEFAULT_CONTENT_TILE;
     }
 
+    set contentId(contentId: string | null) {
+        this._contentId = contentId;
+    }
     get contentId(): string | null {
-        return this.getAttribute('content-id');
+        return this._contentId;
     }
 
     get contentIndex(): number {
-        const indexAttribute: string | null = this.getAttribute('content-index');
-        return toNumber(indexAttribute);
+        return this._contentIndex;
+    }
+    set contentIndex(index: number) {
+        this._contentIndex = index;
     }
 
-    get contentTileWrapper(): HTMLElement {
-        return this.element.querySelector('.content-tile')!;
+    get imageElement(): ContentTileImageComponent {
+        return this.element.querySelector<ContentTileImageComponent>('img')!;
     }
 
-    get imageElement(): ImageComponent {
-        return this.element.querySelector<ImageComponent>('img')!;
+    static get observedAttributes(): string[] {
+        return ['content-id', 'content-index'];
     }
 
-    get tileLink(): HTMLAnchorElement {
-        return this.element.querySelector<HTMLAnchorElement>('.content-tile-link')!;
+    attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
+        if (!changeDetectedBetween(oldValue, newValue)) return;
+        switch (name) {
+            case 'content-id':
+                this.contentId = newValue;
+                break;
+            case 'content-index':
+                this.contentIndex = toNumber(newValue);
+                break;
+        }
     }
 
     connectedCallback(): void {
@@ -60,13 +76,12 @@ export class ContentTileComponent extends HTMLElement {
     }
 
     disconnectedCallback(): void {
-        this.store.unsubscribe(this.updateContentAttributes.bind(this));
+        this.store.unsubscribe(this.updateTileImageAttributes.bind(this));
     }
 
     render(): void {
         if (isUndefined(this.content)) return;
         this.renderContentTile();
-        this.setImgOnErrorListener();
     }
 
     private renderContentTile(): void {
@@ -78,11 +93,10 @@ export class ContentTileComponent extends HTMLElement {
                     <a class="content-tile-link">
                         <div class="image-container">
                             <img
-                                alt="${title}"
-                                aria-label="${title}"
                                 class="content-image-tile"
-                                failsafe-src="/default-content-tile.jpeg"
-                                is="disney-image"
+                                content-title="${title}"
+                                failsafe-src="${DEFAULT_TILE_IMAGE}"
+                                is="disney-content-tile-image"
                                 loading="lazy"
                                 src="${image}"
                                 tabindex="0"
@@ -95,50 +109,12 @@ export class ContentTileComponent extends HTMLElement {
         this.previousContent = this.content;
     }
 
-    private renderTitleOverlay(): void {
-        this.imageElement.insertAdjacentElement(
-            'afterend',
-            elementFactory({
-                classes: ['image-failsafe-title'],
-                body: this.content?.title,
-            }),
-        );
-    }
-
-    private setImgOnErrorListener(): void {
-        this.imageElement.onerror = (): void => {
-            this.imageElement.renderFailsafeImage();
-            this.imageElement.classList.add('image-failsafe');
-            this.renderTitleOverlay();
-        };
-    }
-
-    private updateContentAttributes(): void {
-        const { tileImage: oldTileImage, title: oldTitle } = this.previousContent || NULL_CONTENT;
-        const { tileImage: newTileImage, title: newTitle } = this.content || NULL_CONTENT;
-        this.updateImageAltAndAriaLabel(oldTitle, newTitle);
-        this.updateImage(oldTileImage, newTileImage);
-    }
-
-    private updateImageAltAndAriaLabel(oldTitle: string, newTitle: string): void {
-        if (!changeDetectedBetween(oldTitle, newTitle)) return;
-        this.imageElement.setAttribute('alt', newTitle);
-        this.imageElement.setAttribute('aria-label', newTitle);
-    }
-
-    private updateImage(oldTileImage: string, newTileImage: string): void {
-        if (!changeDetectedBetween(oldTileImage, newTileImage)) return;
-
-        this.imageElement.src = newTileImage;
-        const titleElement: HTMLDivElement | null = this.element.querySelector('.image-failsafe-title');
-
-        if (!isNull(titleElement)) {
-            this.imageElement.classList.remove('image-failsafe');
-            titleElement.remove();
+    private updateTileImageAttributes(): void {
+        if (changeDetectedBetween(this.previousContent?.title, this.content?.title)) {
+            this.imageElement.setAttribute('content-title', this.content?.title);
         }
-
-        if (!isNull(this.imageElement.onerror)) return;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (this.imageElement as any).onerror();
+        if (changeDetectedBetween(this.previousContent?.tileImage, this.content?.tileImage)) {
+            this.imageElement.setAttribute('src', this.content?.tileImage);
+        }
     }
 }

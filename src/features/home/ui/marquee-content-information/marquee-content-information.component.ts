@@ -2,6 +2,8 @@ import { changeDetectedBetween, Component, isEmpty, isNil, isNull } from '@disne
 
 import css from './marquee-content-information.component.css?inline';
 
+type DisplayStyle = 'none' | 'inline-block';
+
 @Component({
     selector: 'disney-marquee-content-information',
 })
@@ -93,8 +95,8 @@ export class MarqueeContentInformationComponent extends HTMLElement {
         this.toggleDisplayBasedOnAttributeValue(image, this.contentTitleImageElement);
     }
 
-    private toggleDisplayBasedOnAttributeValue(value: string | null, eleement: HTMLElement): void {
-        const displayStyle: 'none' | 'inline-block' = isNull(value) || isEmpty(value) ? 'none' : 'inline-block';
-        eleement.style.display = displayStyle;
+    private toggleDisplayBasedOnAttributeValue(value: string | null, element: HTMLElement): void {
+        const displayStyle: DisplayStyle = isNull(value) || isEmpty(value) ? 'none' : 'inline-block';
+        element.style.display = displayStyle;
     }
 }
