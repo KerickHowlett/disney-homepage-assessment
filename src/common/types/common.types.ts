@@ -10,6 +10,8 @@ export type ComponentParams = {
     options?: ElementDefinitionOptions;
 };
 
+export type Mutable<T extends Record<PropertyKey, unknown>> = { -readonly [P in keyof T]-?: T[P] };
+
 export type ComponentDecoratorFunc = (target: CustomElementConstructor) => void;
 export type InternalStoreEvents = Map<string, ReadonlyArray<Callback>>;
 export type PubSubEvents = ReadonlyMap<string, ReadonlyArray<Callback>>;
@@ -24,5 +26,4 @@ export interface Action<A extends string, P = never> {
     payload: P | null;
 }
 export type OnAction<A extends string> = Record<A, A>;
-
 export type State<V = any> = Record<string | number, V>;

@@ -1,12 +1,14 @@
 import { isHTMLChildren, isString, isUndefined } from '@common/utils';
-import { addAttributes, addClasses, addStyles, appendChildren, HTMLProperty, setID, setTextContent } from './utils';
+import { addEventHandlers, HTMLProperties } from './utils';
+import { addAttributes, addClasses, addStyles, appendChildren, setID, setTextContent } from './utils';
 
 export interface ElementFactoryInit {
-    readonly attributes?: HTMLProperty[];
+    readonly attributes?: HTMLProperties;
     readonly classes?: string[];
+    readonly eventHandlers?: Partial<GlobalEventHandlers>;
     readonly id?: string;
     readonly body?: HTMLTemplateElement | Array<HTMLElement | Node> | string;
-    readonly styles?: HTMLProperty[];
+    readonly styles?: HTMLProperties;
     readonly tagName?: string;
 }
 
@@ -17,6 +19,7 @@ export function elementFactory<T extends HTMLElement = HTMLDivElement>(options: 
     addClasses(element, options.classes);
     addStyles(element, options.styles);
     addAttributes(element, options.attributes);
+    addEventHandlers(element, options.eventHandlers);
 
     if (isUndefined(options.body)) {
         return element;

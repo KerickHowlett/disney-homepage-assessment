@@ -1,19 +1,16 @@
 import type { Callback } from '@common/types';
 import { isEmpty, isUndefined } from '@common/utils';
 
-export type HTMLProperty = `${string}: ${string};` | `${string}:${string}`;
+export type HTMLProperties = Record<string, string>;
 
-const addHTMLProperties = <T extends HTMLElement>(callback: Callback) => {
-    const trimPropertyAndValue = (string: string): string => string.trim();
-
-    return (element: T, properties?: HTMLProperty[]): void => {
-        if (isUndefined(properties) || isEmpty(properties)) return;
-        for (const property of properties) {
-            const [propertyName, ...propertyValue] = property.split(':').map(trimPropertyAndValue);
+const addHTMLProperties =
+    <T extends HTMLElement>(callback: Callback) =>
+    (element: T, properties?: HTMLProperties): void => {
+        if (isUndefined(properties) || isEmpty(Object.keys(properties))) return;
+        for (const [propertyName, propertyValue] of Object.entries(properties)) {
             callback(element, propertyName, propertyValue);
         }
     };
-};
 
 const _addStyles = <T extends HTMLElement>(element: T, property: string, value: string): void => {
     element.style.setProperty(property, value);
@@ -22,7 +19,5 @@ const _addAttributes = <T extends HTMLElement>(element: T, property: string, val
     element.setAttribute(property, value);
 };
 
-// @TODO: Need to debug how "addAttributes" sets "http(s)://" URLs as
-//        an attribute.
 export const addAttributes = addHTMLProperties(_addAttributes);
 export const addStyles = addHTMLProperties(_addStyles);
