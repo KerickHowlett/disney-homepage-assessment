@@ -1,4 +1,12 @@
-import { Component, elementFactory, isEmpty, isNull, isUndefined, toNumber } from '@disney/common';
+import {
+    changeDetectedBetween,
+    Component,
+    elementFactory,
+    isEmpty,
+    isNull,
+    isUndefined,
+    toNumber,
+} from '@disney/common';
 import { HomeStore } from '../../state-management/store';
 import type { Collection, CollectionId, ContentStateKey } from '../../types';
 
@@ -23,7 +31,12 @@ export class CollectionComponent extends HTMLElement {
         this.element = this.attachShadow({ mode: 'open' });
     }
 
-    private collectionId?: CollectionId;
+    private _collectionId: CollectionId | null = null;
+    private _collectionIndex?: number;
+
+    static get observedAttributes(): string[] {
+        return ['collection-id', 'collection-index'];
+    }
 
     get carousel(): HTMLElement {
         return this.element.querySelector<HTMLElement>('.collection-carousel')!;
@@ -33,17 +46,36 @@ export class CollectionComponent extends HTMLElement {
         return this.store.getCollection(this.collectionId!);
     }
 
+    get collectionId(): CollectionId | null {
+        return this._collectionId;
+    }
+    set collectionId(id: CollectionId | null) {
+        if (isNull(id)) {
+            this.hideCollectionOnError('Collection ID is required');
+        }
+        this._collectionId = id;
+    }
+
     get collectionIndex(): number {
-        const indexAttribute: string | null = this.getAttribute('collection-index');
-        return toNumber(indexAttribute);
+        return this._collectionIndex ?? -1;
+    }
+    set collectionIndex(index: number) {
+        this._collectionIndex = index;
+    }
+
+    attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
+        if (!changeDetectedBetween(oldValue, newValue)) return;
+        switch (name) {
+            case 'collection-id':
+                this.collectionId = newValue;
+                break;
+            case 'collection-index':
+                this.collectionIndex = toNumber(newValue);
+                break;
+        }
     }
 
     connectedCallback(): void {
-        const collectionId: CollectionId | null = this.getAttribute('collection-id');
-        if (isNull(collectionId)) {
-            return this.hideCollectionOnError('Collection ID is required');
-        }
-        this.collectionId = collectionId;
         this.render();
     }
 
