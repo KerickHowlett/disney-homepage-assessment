@@ -1,14 +1,14 @@
-// This is a hack to redefine the typing of "self", since there doesn't appear
-// to be an official means of doing so in native TypeScript (without a library)
-// yet.
+// @NOTE: This is a hack to redefine the typing of "self", since there doesn't
+//        appear to be an official means of doing so in native TypeScript
+//         (without any third-party libraries) yet.
 type ClientsClaimOverride = { clients: { claim: () => Promise<void> } };
+type RequestType = FetchEvent['request']['destination'];
 
-// @TODO: Save Videos to IndexedDB instead of Cache.
-
-// @NOTE: Will need to apply a dotenv implementation to these hard-coded
+// @TODO: Will need to apply a dotenv implementation to these hard-coded
 //        variables.
-const CACHE_STATIC_FILES_STORE_NAME = 'disney-v1-static';
-const CACHE_FETCH_RESPONSES_STORE_NAME = 'disney-v1-fetch-responses';
+const CACHE_VERSION = 'v1';
+const CACHE_STATIC_FILES_STORE_NAME = `disney-${CACHE_VERSION}-static`;
+const CACHE_FETCH_RESPONSES_STORE_NAME = `disney-${CACHE_VERSION}-fetch-responses`;
 const ASSET_API_DOMAIN = 'https://prod-ripcut-delivery.disney-plus.net/v1/variant/disney';
 const NO_CORS: RequestInit = { mode: 'no-cors' };
 const NOT_FOUND = 404;
@@ -37,7 +37,6 @@ const isSuccessful = (response: Response): boolean => response.ok && response.st
 const matchesWithACacheStoreName = (cacheName: string): boolean => {
     return cacheName === CACHE_STATIC_FILES_STORE_NAME || cacheName === CACHE_FETCH_RESPONSES_STORE_NAME;
 };
-type RequestType = FetchEvent['request']['destination'];
 const isRequestType = (requestType: RequestType, event: FetchEvent): boolean =>
     event.request.destination === requestType;
 const requestForPreCachedFile = (event: FetchEvent): boolean => {
@@ -138,6 +137,7 @@ self.addEventListener('fetch', (event: Event): void => {
     if (requestForPreCachedFile(fetchEvent)) {
         return cacheOnlyStrategy(fetchEvent);
     }
+    // @TODO: Need to add function to store Video blobs into IndexedDB.
     if (isRequestType('video', fetchEvent)) {
         return networkOnlyStrategy(fetchEvent);
     }
