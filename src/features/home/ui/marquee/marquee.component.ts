@@ -1,4 +1,4 @@
-import { changeDetectedBetween, Component, isNil, isNull, isUndefined } from '@disney/common';
+import { changeDetectedBetween, Component, Debounce, isNil, isNull, isUndefined } from '@disney/common';
 import { HomeControls, HomeStore } from '../../state-management';
 import type { Content, ContentStateKey } from '../../types';
 import type { MarqueeContentInformationComponent } from '../marquee-content-information';
@@ -6,7 +6,7 @@ import type { MarqueeContentPreviewComponent } from '../marquee-content-preview'
 
 import css from './marquee.component.css?inline';
 
-// import '../marquee-content-information';
+import '../marquee-content-information';
 import '../marquee-content-preview';
 
 @Component({
@@ -55,12 +55,10 @@ export class MarqueeComponent extends HTMLElement {
     render(): void {
         this.element.innerHTML = `
             <style>${css}</style>
-            <div id="marque" class="marquee-container">
-                <div id="content-information" class="content-information">
-                    <disney-marquee-content-information></disney-marquee-content-information>
-                </div>
-                <disney-marquee-content-preview></disney-marquee-content-preview>
+            <div id="content-information" class="content-information">
+                <disney-marquee-content-information></disney-marquee-content-information>
             </div>
+            <disney-marquee-content-preview></disney-marquee-content-preview>
         `;
     }
 
@@ -68,6 +66,7 @@ export class MarqueeComponent extends HTMLElement {
         return changeDetectedBetween(this.currentContentId ?? '', this.contentId ?? '');
     }
 
+    @Debounce(300)
     private updateAttributes(): void {
         if (!this.contentIdChangeDetected()) return;
         this.currentContentId = this.contentId;

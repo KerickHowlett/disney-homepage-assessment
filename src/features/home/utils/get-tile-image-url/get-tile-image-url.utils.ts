@@ -6,6 +6,7 @@ import type {
     ContentImageTypes,
 } from '@disney/features/home/types';
 import { getFirstPropertyValueOfSet } from '../get-first-property-value-of-set';
+import { getTitleTreatmentType } from '../get-title-treatment-type';
 
 type ImageFormat = 'jpeg' | 'png';
 
@@ -58,7 +59,7 @@ export function getTargetAspectRatio(
 //        uses "logo" instead of "title_treatment" for the title image property.
 export function getTargetImageType(images: ContentImage, imageType: ContentImageKeys): ContentImageKeys | null {
     if (imageType !== 'title_treatment') return imageType;
-    return getFirstPropertyValueOfSet(images);
+    return getTitleTreatmentType(images);
 }
 
 /**

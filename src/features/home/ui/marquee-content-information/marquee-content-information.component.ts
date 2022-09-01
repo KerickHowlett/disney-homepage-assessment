@@ -1,5 +1,4 @@
-import { Component } from '@disney/common';
-// import { Component, elementFactory } from '@disney/common';
+import { changeDetectedBetween, Component, isEmpty, isNil, isNull } from '@disney/common';
 
 import css from './marquee-content-information.component.css?inline';
 
@@ -15,65 +14,87 @@ export class MarqueeContentInformationComponent extends HTMLElement {
     }
 
     static get observedAttributes(): string[] {
-        return ['content-title', 'title-treatment-layer', 'rating'];
+        return ['content-title', 'title-treatment-image', 'rating'];
     }
 
-    get contentPreviewDisplayElement(): HTMLElement {
-        return this.element.getElementById('content-preview-display')!;
+    get contentTitleImageElement(): HTMLImageElement {
+        return this.element.querySelector<HTMLImageElement>('.title-image')!;
     }
 
-    get contentTitle(): string {
-        return this.getAttribute('content-title')!;
+    get contentRatingElement(): HTMLParagraphElement {
+        return this.element.querySelector<HTMLParagraphElement>('.content-rating')!;
     }
 
-    get rating(): string | null {
-        return this.getAttribute('rating');
+    get failsafeTitleElement(): HTMLHeadingElement {
+        return this.element.querySelector<HTMLHeadingElement>('.failsafe-title')!;
     }
 
-    get titleTreatmentImage(): string {
-        return this.getAttribute('title-treatment-image')!;
+    attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
+        if (isNil(this.contentTitleImageElement) || !changeDetectedBetween(oldValue, newValue)) return;
+        switch (name) {
+            case 'content-title':
+                return this.setContentTitle(newValue);
+            case 'title-treatment-image':
+                this.setTitleTreatmentImage(newValue);
+                break;
+            case 'rating':
+                this.setRating(newValue);
+                break;
+        }
     }
-
-    // attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
-    //    if (name === 'video' && !changeDetectedBetween(oldValue, newValue)) return;
-    // }
 
     connectedCallback(): void {
         this.render();
+        this.bindImageEventHandlers();
     }
 
     render(): void {
         this.element.innerHTML = `
             <style>${css}</style>
-            <div id="content-information" class="content-information">
-                <div id="content-title" class="content-title"></div>
-                <p id="content-rating" class="content-rating"></p>
+            <div id="content-title" class="content-title">
+                <img loading="eager" id="title-image" class="title-image">
+                <h2 id="failsafe-title" class="failsafe-title" style="display: none;"></h2>
+            </div>
+            <div id="content-preview-metadata" class="content-preview-metadata">
+                <h3 id="content-rating" class="content-rating" style="display: none;"></h3>
             </div>
         `;
     }
 
-    // private createFailsafeTitleElement(): HTMLHeadingElement {
-    //     return elementFactory({
-    //         body: this.contentTitle,
-    //         classes: ['failsafe-title'],
-    //         id: 'failsafe-title',
-    //         tagName: 'h2',
-    //     });
-    // }
+    private bindImageEventHandlers(): void {
+        this.contentTitleImageElement.onload = this.onImageLoad.bind(this);
+        this.contentTitleImageElement.onerror = this.onImageError.bind(this);
+    }
 
-    // private createTitleTreatmentImageElement(): HTMLImageElement {
-    //     return elementFactory({
-    //         attributes: {
-    //             alt: this.contentTitle,
-    //             'failsafe-src': '/default-content-tile.jpeg',
-    //             is: 'disney-image',
-    //             loading: 'eager',
-    //             src: this.titleTreatmentImage,
-    //             tabindex: '-1',
-    //         },
-    //         classes: ['title-image'],
-    //         id: 'title-image',
-    //         tagName: 'img',
-    //     });
-    // }
+    private onImageError(): void {
+        this.contentTitleImageElement.style.display = 'none';
+        this.failsafeTitleElement.style.display = 'block';
+    }
+
+    private onImageLoad(): void {
+        this.contentTitleImageElement.style.display = 'block';
+        this.failsafeTitleElement.style.display = 'none';
+    }
+
+    private setContentTitle(title: string): void {
+        if (isNull(this.contentTitleImageElement)) return;
+        this.failsafeTitleElement.textContent = title;
+        this.contentTitleImageElement.alt = title ?? '';
+        this.contentTitleImageElement.ariaLabel = title ?? '';
+    }
+
+    private setRating(rating: string | null): void {
+        this.contentRatingElement.innerText = rating ?? '';
+        this.toggleDisplayBasedOnAttributeValue(rating, this.contentRatingElement);
+    }
+
+    private setTitleTreatmentImage(image: string): void {
+        this.contentTitleImageElement.src = image ?? '';
+        this.toggleDisplayBasedOnAttributeValue(image, this.contentTitleImageElement);
+    }
+
+    private toggleDisplayBasedOnAttributeValue(value: string | null, eleement: HTMLElement): void {
+        const displayStyle: 'none' | 'inline-block' = isNull(value) || isEmpty(value) ? 'none' : 'inline-block';
+        eleement.style.display = displayStyle;
+    }
 }

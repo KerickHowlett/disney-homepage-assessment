@@ -22,7 +22,6 @@ export class HomeControlsReducer {
     @Throttle(250)
     onKeydown(event: Readonly<KeyboardEvent>): void {
         this._state = this.dispatch(this._state, event);
-        console.dir(this._state);
         this.messenger.publish(HOME_NAVIGATION_CONTROLS, this._state);
     }
 

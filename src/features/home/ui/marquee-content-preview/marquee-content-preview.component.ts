@@ -1,4 +1,4 @@
-import { changeDetectedBetween, Component, Debounce } from '@disney/common';
+import { changeDetectedBetween, Component } from '@disney/common';
 
 import css from './marquee-content-preview.component.css?inline';
 
@@ -48,12 +48,11 @@ export class MarqueeContentPreviewComponent extends HTMLElement {
         this.element.innerHTML = `
             <style>${css}</style>
             <video id="video-preview" class="video-preview" muted loop>
-                <source src="" type="video/mp4">
+                <source type="video/mp4">
             </video>
         `;
     }
 
-    @Debounce(1500)
     private onVideoSrcChange(videoSrc: string): void {
         this.videoElement.pause();
         this.videoSourceElement.setAttribute('src', videoSrc);
