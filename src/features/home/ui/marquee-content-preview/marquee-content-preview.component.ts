@@ -7,7 +7,6 @@ import css from './marquee-content-preview.component.css?inline';
 })
 export class MarqueeContentPreviewComponent extends HTMLElement {
     private readonly element: ShadowRoot;
-    private videoPlaying?: Promise<void>;
 
     constructor() {
         super();
@@ -58,7 +57,6 @@ export class MarqueeContentPreviewComponent extends HTMLElement {
     private onVideoSrcChange(videoSrc: string): void {
         this.videoElement.pause();
         this.videoSourceElement.setAttribute('src', videoSrc);
-        this.videoSourceElement.setAttribute('type', 'video/mp4');
         this.videoElement.load();
         this.videoElement.play().catch(() => this.videoElement.pause());
     }
