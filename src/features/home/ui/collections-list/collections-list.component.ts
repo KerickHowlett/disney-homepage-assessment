@@ -16,8 +16,8 @@ import '../collection';
     selector: 'disney-collections-list',
 })
 export default class CollectionsListComponent extends HTMLElement {
-    private readonly listObserver: MutationObserver = new MutationObserver(this.updateCollectionsList.bind(this));
     private readonly element: ShadowRoot;
+    private readonly listObserver: MutationObserver;
     private readonly renderedCollectionIds: CollectionId[] = [];
 
     private lazyLoadObserver?: IntersectionObserver;
@@ -26,14 +26,11 @@ export default class CollectionsListComponent extends HTMLElement {
         super();
         this.element = this.attachShadow({ mode: 'open' });
         this.store.subscribe(this.renderCollections.bind(this));
+        this.listObserver = new MutationObserver(this.updateCollectionsList.bind(this));
     }
 
     get collectionsList(): HTMLElement {
         return this.element.querySelector<HTMLElement>('.collections-list')!;
-    }
-
-    get slotElement(): HTMLSlotElement {
-        return this.collectionsList.querySelector<HTMLSlotElement>('slot')!;
     }
 
     get lastCollection(): HTMLElement {

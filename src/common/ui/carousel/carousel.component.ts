@@ -13,18 +13,17 @@ const PARTIALLY_VISIBLE = 'partially-visible';
     selector: 'disney-carousel',
 })
 export class CarouselComponent extends HTMLElement {
-    private readonly contentObserver: MutationObserver = new MutationObserver(
-        this.watchItemsForLevelsOfVisibility.bind(this),
-    );
     private readonly element: ShadowRoot;
-    private readonly resizeObserver: ResizeObserver = new ResizeObserver(
-        this.watchItemsForLevelsOfVisibility.bind(this),
-    );
+    private readonly contentObserver: MutationObserver;
+    private readonly resizeObserver: ResizeObserver;
+
     private observer?: IntersectionObserver;
 
     constructor() {
         super();
         this.element = this.attachShadow({ mode: 'open' });
+        this.contentObserver = new MutationObserver(this.watchItemsForLevelsOfVisibility.bind(this));
+        this.resizeObserver = new ResizeObserver(this.watchItemsForLevelsOfVisibility.bind(this));
     }
 
     get carouselItems(): HTMLElement[] {

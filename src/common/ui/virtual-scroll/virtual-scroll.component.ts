@@ -29,14 +29,15 @@ type Vertical = 'UP' | 'DOWN';
     selector: 'disney-virtual-scroll',
 })
 export class VirtualScroll extends HTMLElement {
-    private readonly contentObserver: MutationObserver = new MutationObserver(this.updateVirtualScroll.bind(this));
-    private readonly resizeObserver: ResizeObserver = new ResizeObserver(this.updateVirtualScroll.bind(this));
     private readonly element: ShadowRoot;
+    private readonly contentObserver: MutationObserver;
+    private readonly resizeObserver: ResizeObserver;
+
     private readonly scrollOnFocusMethod: ScrollOnFocusMethodsMap = {
         vertical: (item: HTMLElement) => this.scrollVerticallyOnFocus(item),
         horizontal: (item: HTMLElement) => this.scrollHorizontallyOnFocus(item),
     };
-    private scrollPosition: PositionByAxis = {
+    private readonly scrollPosition: PositionByAxis = {
         x: 0,
         y: 0,
     };
@@ -45,6 +46,8 @@ export class VirtualScroll extends HTMLElement {
     constructor() {
         super();
         this.element = this.attachShadow({ mode: 'open' });
+        this.resizeObserver = new ResizeObserver(this.updateVirtualScroll.bind(this));
+        this.contentObserver = new MutationObserver(this.updateVirtualScroll.bind(this));
     }
 
     get content(): HTMLElement {
