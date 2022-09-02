@@ -26,13 +26,5 @@
     "yaml.schemaStore.enable": true,
     "yaml.validate": true,
     "testing.automaticallyOpenPeekView": "never",
-    "exportall.config.folderListener": [
-        "/src/shared/utils/decorators",
-        "/src/shared/utils",
-        "/src/common/functions",
-        "/src/features/home/ui",
-        "/src/common",
-        "/src/features/home/helpers"
-    ],
-    "cSpell.words": ["crossorigin", "lanczos", "serviceworker", "slotchange"]
+    "cSpell.words": ["crossorigin", "lanczos", "serviceworker", "slotchange", "Webcomponents"]
 }

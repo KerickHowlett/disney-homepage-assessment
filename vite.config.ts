@@ -1,8 +1,6 @@
 import { VitePWA } from 'vite-plugin-pwa';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import { defineConfig } from 'vitest/config';
-
-const TEST_FILES: string[] = ['**/*.spec.ts'];
+import { defineConfig } from 'vite';
 
 export default defineConfig({
     build: {
@@ -11,7 +9,7 @@ export default defineConfig({
         sourcemap: 'hidden',
         target: 'ESNext',
     },
-    cacheDir: '.cache/vite',
+    cacheDir: '.cache',
     css: {
         devSourcemap: true,
     },
@@ -31,17 +29,5 @@ export default defineConfig({
     server: {
         hmr: true,
         port: 3000,
-    },
-    test: {
-        cache: { dir: '.cache/vitest' },
-        restoreMocks: true,
-        coverage: {
-            reporter: ['text', 'json', 'html'],
-        },
-        environment: 'jsdom',
-        include: TEST_FILES,
-        globals: true,
-        reporters: 'default',
-        root: 'src',
     },
 });

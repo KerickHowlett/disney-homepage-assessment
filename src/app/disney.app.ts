@@ -1,7 +1,8 @@
-import { Component } from '@disney/common';
-import '@disney/features/home';
+import { Component } from '@disney/shared';
 
 import css from './disney.app.css?inline';
+
+import '../home';
 
 @Component({
     selector: 'disney-app',

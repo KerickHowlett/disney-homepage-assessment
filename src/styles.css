@@ -9,7 +9,7 @@
     --white: #f9f9f9;
     -webkit-font-smoothing: antialiased;
     -webkit-text-size-adjust: 100%;
-    /* cursor: none; */
+    cursor: none;
     background-color: rgb(26 29 41);
     color: var(--white);
     font-family: "Avenir-World-for-Disney-Demi", sans-serif;
@@ -23,6 +23,7 @@
 *::before,
 *::after {
     box-sizing: border-box;
+    cursor: none;
     outline: 0;
 }
 

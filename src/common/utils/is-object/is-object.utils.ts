@@ -1,5 +1,0 @@
-import { isNil } from '../is-nill';
-
-export function isObject(value: unknown): value is object {
-    return !isNil(value) && !Array.isArray(value) && typeof value === 'object';
-}

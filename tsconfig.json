@@ -20,16 +20,15 @@
         "noImplicitReturns": true,
         "paths": {
             "@app/*": ["src/app/*"],
-            "@common/*": ["src/common/*"],
             "@disney/*": ["src/*"],
-            "@features/*": ["src/features/*"],
-            "@home": ["src/features/home/*"]
+            "@home": ["src/home/*"],
+            "@shared/*": ["src/shared/*"]
         },
         "skipLibCheck": true,
-        "types": ["node", "vitest/globals"]
+        "types": ["node"]
     },
-    "include": ["src/**/*", "service-worker.ts"],
-    "exclude": ["node_modules", "dist", "vite.config.ts", "/service-worker.ts"],
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "dist", "vite.config.ts", "service-worker.ts"],
     "references": [
         {
             "path": "tsconfig.vite.json"
