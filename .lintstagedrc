@@ -6,5 +6,9 @@
     "src/**/*.{js,ts}": [
         "node_modules/.bin/eslint --fix",
         "node_modules/.bin/eslint"
+    ],
+    "src/**/*.css": [
+        "node_modules/.bin/stylelint",
+        "node_modules/.bin/stylelint --fix"
     ]
 }

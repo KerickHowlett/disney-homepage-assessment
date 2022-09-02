@@ -1,18 +1,18 @@
 /* Fonts */
 @font-face {
-    font-family: "Avenir-World-for-Disney-Demi";
-    src: url(https://static-assets.bamgrid.com/fonts/avenir-world-for-disney/AvenirWorldforDisneyv2-Demi.c737f3bb45822159626cd7952dc1636e.woff2);
-    src: url(https://static-assets.bamgrid.com/fonts/avenir-world-for-disney/AvenirWorldforDisneyv2.d63aa1080e072dcb10992153d5ebd496.woff2);
+    font-family: Avenir-World-for-Disney-Demi;
+    src: url("https://static-assets.bamgrid.com/fonts/avenir-world-for-disney/AvenirWorldforDisneyv2-Demi.c737f3bb45822159626cd7952dc1636e.woff2");
+    src: url("https://static-assets.bamgrid.com/fonts/avenir-world-for-disney/AvenirWorldforDisneyv2.d63aa1080e072dcb10992153d5ebd496.woff2");
 }
 
 :root {
     --white: #f9f9f9;
+
     -webkit-font-smoothing: antialiased;
-    -webkit-text-size-adjust: 100%;
     cursor: none;
     background-color: rgb(26 29 41);
     color: var(--white);
-    font-family: "Avenir-World-for-Disney-Demi", sans-serif;
+    font-family: Avenir-World-for-Disney-Demi, sans-serif;
     line-height: 18.4px;
     text-size-adjust: 100%;
     top: 0;
@@ -34,6 +34,6 @@ html {
 }
 
 body {
-    overflow: hidden;
     margin: 0;
+    overflow: hidden;
 }

@@ -10,6 +10,7 @@
         "redhat.vscode-yaml",
         "rohit-gohri.format-code-action",
         "streetsidesoftware.code-spell-checker",
+        "stylelint.vscode-stylelint",
         "yzhang.markdown-all-in-one"
     ]
 }

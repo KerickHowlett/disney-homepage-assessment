@@ -13,13 +13,14 @@
                 "davidanson.vscode-markdownlint",
                 "dbaeumer.vscode-eslint",
                 "editorconfig.editorconfig",
+                "eliostruyf.vscode-typescript-exportallmodules",
                 "ms-azuretools.vscode-docker",
                 "ms-vscode-remote.remote-containers",
                 "redhat.vscode-yaml",
                 "rohit-gohri.format-code-action",
                 "streetsidesoftware.code-spell-checker",
-                "yzhang.markdown-all-in-one",
-                "eliostruyf.vscode-typescript-exportallmodules"
+                "stylelint.vscode-stylelint",
+                "yzhang.markdown-all-in-one"
             ]
         }
     },

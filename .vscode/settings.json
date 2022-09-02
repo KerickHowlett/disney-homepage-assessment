@@ -7,6 +7,7 @@
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.formatOnSave": false
     },
+    "cSpell.words": ["crossorigin", "lanczos", "serviceworker", "slotchange", "stylelintcache", "Webcomponents"],
     "css.validate": false,
     "debug.javascript.defaultRuntimeExecutable": {
         "pwa-node": "node"
@@ -16,6 +17,7 @@
     "javascript.validate.enable": false,
     "less.validate": false,
     "scss.validate": false,
+    "testing.automaticallyOpenPeekView": "never",
     "typescript.tsdk": "node_modules/typescript/lib",
     "typescript.validate.enable": true,
     "yaml.completion": true,
@@ -24,7 +26,5 @@
     "yaml.format.singleQuote": true,
     "yaml.hover": true,
     "yaml.schemaStore.enable": true,
-    "yaml.validate": true,
-    "testing.automaticallyOpenPeekView": "never",
-    "cSpell.words": ["crossorigin", "lanczos", "serviceworker", "slotchange", "Webcomponents"]
+    "yaml.validate": true
 }
