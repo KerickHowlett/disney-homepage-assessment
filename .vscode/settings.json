@@ -7,7 +7,17 @@
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.formatOnSave": false
     },
-    "cSpell.words": ["crossorigin", "lanczos", "serviceworker", "slotchange", "stylelintcache", "Webcomponents"],
+    "cSpell.words": [
+        "crossorigin",
+        "lanczos",
+        "Mouseless",
+        "numpad",
+        "serviceworker",
+        "slotchange",
+        "Spacebar",
+        "stylelintcache",
+        "Webcomponents"
+    ],
     "css.validate": false,
     "debug.javascript.defaultRuntimeExecutable": {
         "pwa-node": "node"

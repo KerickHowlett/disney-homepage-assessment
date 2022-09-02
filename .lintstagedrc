@@ -1,5 +1,5 @@
 {
-    "*": [
+    "src/**/*.{js,json,css,ts}": [
         "node_modules/.bin/prettier --ignore-unknown --write",
         "node_modules/.bin/prettier --ignore-unknown --check"
     ],

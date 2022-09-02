@@ -6,3 +6,5 @@ line-length:
     tables: false
 no-trailing-punctuation:
     punctuation: ".,;:!。，；：！？"
+ol-prefix:
+    style: zero

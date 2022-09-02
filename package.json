@@ -7,13 +7,6 @@
         "url": "https://github.com/KerickHowlett"
     },
     "description": "A recreation of the Disney+ homepage written in pure TypeScript.",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/KerickHowlett/disney-homepage-assessment.git"
-    },
-    "bugs": {
-        "url": "https://github.com/KerickHowlett/disney-homepage-assessment/issues"
-    },
     "license": "UNLICENSED",
     "keywords": [
         "disney",
