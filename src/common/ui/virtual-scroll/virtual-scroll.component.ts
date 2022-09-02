@@ -1,5 +1,5 @@
 import { Component } from '@common/decorators';
-import { clamp, isNil, isNull, isUndefined } from '@common/utils';
+import { changeDetectedBetween, clamp, isNil, isNull, isUndefined } from '@common/utils';
 
 import css from './virtual-scroll.component.css';
 
@@ -80,8 +80,16 @@ export class VirtualScroll extends HTMLElement {
         return this.element.querySelector<HTMLDivElement>('.virtual-scroll-viewport')!;
     }
 
+    static get observedAttributes(): string[] {
+        return ['orientation'];
+    }
+
+    attributeChangedCallback(_name: string, oldValue: string, newValue: string): void {
+        if (!changeDetectedBetween(oldValue, newValue)) return;
+        this.setOrientation(newValue);
+    }
+
     connectedCallback(): void {
-        this.setOrientation();
         this.render();
         this.bindEvents();
     }
@@ -108,7 +116,7 @@ export class VirtualScroll extends HTMLElement {
 
     private bindEvents(): void {
         this.resizeObserver.observe(this.viewport);
-        this.contentObserver.observe(this.content, { childList: true });
+        this.contentObserver.observe(this.content, { attributes: true, childList: true });
         this.addEventListener('focusin', this.scrollOnFocus.bind(this), true);
     }
 
@@ -149,8 +157,7 @@ export class VirtualScroll extends HTMLElement {
         this.track.style.transform = this.getTranslate3dProperty(axis, this.scrollPosition[axis]);
     }
 
-    private setOrientation(): void {
-        const orientation: string | null = this.getAttribute('orientation');
+    private setOrientation(orientation: string): void {
         this.orientation = this.isValidOrientation(orientation) ? orientation : 'vertical';
     }
 
