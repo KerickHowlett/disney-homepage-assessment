@@ -6,6 +6,8 @@ type RequestType = FetchEvent['request']['destination'];
 
 // @TODO: Will need to apply a dotenv implementation to these hard-coded
 //        variables.
+// @TODO: Find a way to convert/compress images into webp format right before
+//        being cached.
 const CACHE_VERSION = 'v1';
 const CACHE_STATIC_FILES_STORE_NAME = `disney-${CACHE_VERSION}-static`;
 const CACHE_FETCH_RESPONSES_STORE_NAME = `disney-${CACHE_VERSION}-fetch-responses`;
@@ -16,10 +18,15 @@ const NOT_FOUND_RESPONSE: Response = new Response(null, { status: NOT_FOUND });
 const PRE_CACHED_STATIC_FILES: string[] = [
     '/',
     'index.html',
+    'manifest.json',
     'src/assets/default-content-tile.jpeg',
     'src/styles.css',
     'src/favicon.ico',
     'src/main.ts',
+    'src/assets/icon-192x192.png',
+    'src/assets/icon-256x256.png',
+    'src/assets/icon-384x384.png',
+    'src/assets/icon-512x512.png',
 ];
 
 // Helpers

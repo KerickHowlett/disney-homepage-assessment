@@ -10,10 +10,6 @@ export default defineConfig({
         outDir: 'dist/disney-homepage-assessment',
         sourcemap: 'hidden',
         target: 'ESNext',
-        watch: {
-            include: 'src/**/*',
-            exclude: TEST_FILES,
-        },
     },
     cacheDir: '.cache/vite',
     css: {
@@ -25,6 +21,7 @@ export default defineConfig({
         VitePWA({
             injectRegister: 'inline',
             registerType: 'autoUpdate',
+            manifestFilename: 'manifest.json',
         }),
     ],
     preview: {

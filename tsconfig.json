@@ -28,7 +28,7 @@
         "skipLibCheck": true,
         "types": ["node", "vitest/globals"]
     },
-    "include": ["src/**/*"],
+    "include": ["src/**/*", "service-worker.ts"],
     "exclude": ["node_modules", "dist", "vite.config.ts", "/service-worker.ts"],
     "references": [
         {
