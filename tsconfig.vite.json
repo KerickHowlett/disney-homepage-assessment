@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "allowSyntheticDefaultImports": true,
+        "composite": true,
+        "module": "ESNext",
+        "moduleResolution": "Node",
+        "outDir": "dist/vite",
+        "skipLibCheck": true
+    },
+    "exclude": ["dist", "node_modules", "service-worker.ts", "src/**/*.ts"],
+    "include": ["vite.config.ts"]
+}

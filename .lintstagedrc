@@ -1,0 +1,18 @@
+{
+    "src/**/*.{js,json,css,ts}": [
+        "node_modules/.bin/prettier --ignore-unknown --write",
+        "node_modules/.bin/prettier --ignore-unknown --check"
+    ],
+    "src/**/*.{js,ts}": [
+        "node_modules/.bin/eslint --fix",
+        "node_modules/.bin/eslint"
+    ],
+    "src/**/*.css": [
+        "node_modules/.bin/stylelint --fix",
+        "node_modules/.bin/stylelint"
+    ],
+    "README.md": [
+        "node_modules/.bin/markdownlint README.md --fix",
+        "node_modules/.bin/markdownlint README.md"
+    ]
+}

@@ -1,0 +1,59 @@
+:host {
+    display: block;
+    min-height: 200px;
+    height: 100%;
+    width: 100%;
+}
+
+slot {
+    display: inline-block;
+    min-height: 200px;
+    position: relative;
+}
+
+.virtual-scroll-viewport {
+    /*
+     * @TODO: Ideally, the height should by set dynamically in accordance to
+     *        that of the parent element's height. This is just a quick fix
+     *        for the sake of time and simplicity.
+     */
+    height: 54vh;
+    min-height: 505px;
+    overflow: hidden;
+    overscroll-behavior: none;
+    position: fixed;
+    width: min-content;
+}
+
+.virtual-scroll-viewport.horizontal {
+    display: inline-block;
+    direction: ltr;
+    height: min-content;
+    min-height: 200px;
+    min-height: min-content;
+    padding-bottom: 16px;
+    margin-left: 16px;
+    /*
+     * @TODO: The following "overflow" property should be set to
+     *        "hidden", as is the very nature of virtual scroll
+     *        viewports, but this is cutting off the box shadow
+     *        of the content tiles within the carousels. So this
+     *        is just a temporary hack until an actual solution can be found.
+     */
+    overflow: visible;
+    position: relative;
+    width: 97vw;
+}
+
+.virtual-scroll-track {
+    float: left;
+    overflow: visible;
+    position: relative;
+    transform-style: flat;
+    transition: transform 300ms ease-in 0s;
+    will-change: transform;
+}
+
+.virtual-scroll-track.horizontal {
+    display: inline-block;
+}

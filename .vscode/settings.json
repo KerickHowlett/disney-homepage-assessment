@@ -1,0 +1,40 @@
+{
+    "[typescript]": {
+        "editor.codeActionsOnSave": {
+            "source.fixAll": true,
+            "source.format": true
+        },
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": false
+    },
+    "cSpell.words": [
+        "crossorigin",
+        "lanczos",
+        "Mouseless",
+        "numpad",
+        "serviceworker",
+        "slotchange",
+        "Spacebar",
+        "stylelintcache",
+        "Webcomponents"
+    ],
+    "css.validate": false,
+    "debug.javascript.defaultRuntimeExecutable": {
+        "pwa-node": "node"
+    },
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "javascript.validate.enable": false,
+    "less.validate": false,
+    "scss.validate": false,
+    "testing.automaticallyOpenPeekView": "never",
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "typescript.validate.enable": true,
+    "yaml.completion": true,
+    "yaml.format.bracketSpacing": true,
+    "yaml.format.enable": true,
+    "yaml.format.singleQuote": true,
+    "yaml.hover": true,
+    "yaml.schemaStore.enable": true,
+    "yaml.validate": true
+}

@@ -1,0 +1,40 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "target": "ESNext",
+        "useDefineForClassFields": true,
+        "module": "ESNext",
+        "lib": ["ESNext", "DOM"],
+        "moduleResolution": "Node",
+        "strict": true,
+        "sourceMap": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "importHelpers": true,
+        "esModuleInterop": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "noEmit": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitReturns": true,
+        "paths": {
+            "@app/*": ["src/app/*"],
+            "@disney/*": ["src/*"],
+            "@home": ["src/home/*"],
+            "@shared/*": ["src/shared/*"]
+        },
+        "skipLibCheck": true,
+        "types": ["node"]
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "dist", "vite.config.ts", "service-worker.ts"],
+    "references": [
+        {
+            "path": "tsconfig.vite.json"
+        },
+        {
+            "path": "tsconfig.sw.json"
+        }
+    ]
+}

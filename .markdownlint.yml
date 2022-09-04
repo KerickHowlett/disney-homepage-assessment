@@ -1,0 +1,10 @@
+no-duplicate-headings:
+    siblings_only: true
+line-length:
+    code_blocks: false
+    line_length: 100
+    tables: false
+no-trailing-punctuation:
+    punctuation: ".,;:!。，；：！？"
+ol-prefix:
+    style: zero

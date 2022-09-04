@@ -1,0 +1,21 @@
+:host {
+    display: block;
+    height: 100%;
+    width: 100%;
+}
+
+.collections-list,
+.collections-list-container {
+    height: 53.9vh;
+    margin-top: 0px;
+}
+
+.collections-list {
+    width: 100%;
+}
+
+.collections-list-container {
+    position: relative;
+    top: 46.75vh;
+    width: 100vw;
+}

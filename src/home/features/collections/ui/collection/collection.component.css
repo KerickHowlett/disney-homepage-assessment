@@ -1,0 +1,15 @@
+:host {
+    display: inline-block;
+    height: min-content;
+    width: min-content;
+}
+
+h4 {
+    font-size: 20px;
+    height: auto;
+    letter-spacing: 0.11px;
+    line-height: 1.4;
+    margin: 0 0 0 1.5rem;
+    padding: 0;
+    position: relative;
+}

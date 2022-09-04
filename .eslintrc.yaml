@@ -1,0 +1,56 @@
+root: true
+env:
+    browser: true
+    es2021: true
+    node: true
+extends:
+    - eslint:recommended
+    - plugin:sonarjs/recommended
+    - plugin:wc/recommended
+plugins:
+    - simple-import-sort
+parserOptions:
+    ecmaVersion: latest
+    ecmaFeatures:
+        impliedStrict: true
+    sourceType: module
+rules:
+    indent:
+        - error
+        - 4
+        - SwitchCase: 1
+    linebreak-style:
+        - error
+        - unix
+    semi:
+        - error
+        - always
+overrides:
+    - files: "**/*.ts"
+      extends:
+          - eslint:recommended
+          - plugin:@typescript-eslint/recommended
+          - plugin:sonarjs/recommended
+      rules:
+          indent: off
+          "@typescript-eslint/no-explicit-any":
+              - warn
+              - ignoreRestArgs: true
+          "@typescript-eslint/no-non-null-assertion": off
+    - files: "src/**"
+      env:
+          browser: true
+          es2021: true
+    - files: "service-worker.ts"
+      env:
+          browser: true
+          es2021: true
+          node: false
+          serviceworker: true
+          worker: true
+      parserOptions:
+          ecmaVersion: latest
+          ecmaFeatures:
+              impliedStrict: true
+          sourceType: script
+          node: false
