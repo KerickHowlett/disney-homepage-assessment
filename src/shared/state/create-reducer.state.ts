@@ -15,7 +15,6 @@ class StateReducer<T> {
     }
 
     private set state(state: Partial<T>) {
-        console.dir(state);
         this._state = updateState<T>(this._state, state);
         this.observable.publish(this.storeName, this._state);
     }
