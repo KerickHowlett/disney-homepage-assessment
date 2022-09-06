@@ -41,7 +41,7 @@ export class HomeNavigation {
         document.removeEventListener('mousemove', (e: MouseEvent) => e.preventDefault());
         document.removeEventListener('click', (e: MouseEvent) => e.preventDefault());
         document.removeEventListener('dblclick', (e: MouseEvent) => e.preventDefault());
-        // document.removeEventListener('contextmenu', (e: MouseEvent) => e.preventDefault());
+        document.removeEventListener('contextmenu', (e: MouseEvent) => e.preventDefault());
         document.addEventListener('keydown', (event: KeyboardEvent): void => {
             this.onKeydown(event);
         });
@@ -78,19 +78,21 @@ export class HomeNavigation {
         this.reducer.dispatch(event.code, this.reducer.state);
     }
 
+    // @NOTE: These are to help sell the "illusion" of a native app that's
+    //        mouseless.
     private stubAllMouseEvents(): void {
         document.addEventListener('mousedown', (e: MouseEvent) => e.preventDefault());
         document.addEventListener('mouseup', (e: MouseEvent) => e.preventDefault());
         document.addEventListener('mousemove', (e: MouseEvent) => e.preventDefault());
         document.addEventListener('click', (e: MouseEvent) => e.preventDefault());
         document.addEventListener('dblclick', (e: MouseEvent) => e.preventDefault());
-        // document.addEventListener('contextmenu', (e: MouseEvent) => e.preventDefault());
+        document.addEventListener('contextmenu', (e: MouseEvent) => e.preventDefault());
     }
 
     private selectFirstContentTileOnViewInit(): void {
         const firstContentTile: ContentTileComponent | undefined = getNthContentTileFromNthCollection(0, 0);
         if (isUndefined(firstContentTile)) return;
-
+        console.log('selecting first content tile');
         this.reducer.dispatch(SELECT_ELEMENT, this.reducer.state, DEFAULT_COLUMN, DEFAULT_ROW);
         this.observer.disconnect();
     }
