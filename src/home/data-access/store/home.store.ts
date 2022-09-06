@@ -67,7 +67,7 @@ export class HomeStore {
     }
 
     loadPersonalizedContent(refId: string): void {
-        this.reducer.dispatch(LOAD_PERSONALIZED_COLLECTION, refId);
+        this.reducer.dispatch(LOAD_PERSONALIZED_COLLECTION, this.reducer.state, refId);
     }
 
     loadStandardCollections(): void {

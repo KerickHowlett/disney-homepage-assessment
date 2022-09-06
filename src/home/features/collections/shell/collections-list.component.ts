@@ -107,6 +107,7 @@ export default class CollectionsListComponent extends HTMLElement {
     ): void {
         const lastCollection: IntersectionObserverEntry = entries[0];
         if (!lastCollection.isIntersecting) return;
+
         observer.unobserve(lastCollection.target);
 
         const nextRefId: CollectionId = this.pluckIdsFrom(this.store.collectionsWithNoContent)[0];

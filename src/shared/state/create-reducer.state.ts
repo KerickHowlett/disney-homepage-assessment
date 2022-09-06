@@ -26,6 +26,8 @@ class StateReducer<T> {
     }
 
     dispatch(type: string, ...payload: any[]): void {
+        if (!this.actions.has(type)) return;
+
         const action: ActionCallback = this.actions.get(type)!;
         // @NOTE: The "Promise.resolve()" is to cover any possible instances
         //        where an action method might be async.
