@@ -1,5 +1,5 @@
 import { Component } from '@disney/shared';
-import { HomeStore, NavigationFacade } from '../data-access';
+import { HomeNavigation, HomeStore } from '../data-access';
 
 import css from './home.shell.css';
 
@@ -14,7 +14,7 @@ export default class HomeShell extends HTMLElement {
 
     constructor(
         private readonly store: HomeStore = new HomeStore(),
-        private readonly navigation: NavigationFacade = new NavigationFacade(),
+        private readonly navigation: HomeNavigation = new HomeNavigation(),
     ) {
         super();
         this.element = this.attachShadow({ mode: 'open' });

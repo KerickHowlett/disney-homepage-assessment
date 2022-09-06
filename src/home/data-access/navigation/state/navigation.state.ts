@@ -1,4 +1,4 @@
-import type { ContentStateKey } from '../store';
+import type { ContentStateKey } from '../../store';
 
 export interface NavigationState {
     readonly column: number; // Content Index Starting at 1.

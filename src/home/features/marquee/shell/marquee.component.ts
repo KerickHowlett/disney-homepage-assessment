@@ -1,5 +1,5 @@
 import type { Content, ContentStateKey } from '@disney/home/data-access';
-import { HomeStore, NavigationFacade } from '@disney/home/data-access';
+import { HomeNavigation, HomeStore } from '@disney/home/data-access';
 import { changeDetectedBetween, Component, Debounce, isNil, isNull, isUndefined } from '@disney/shared';
 import type { MarqueeContentInformationComponent, MarqueeContentPreviewComponent } from '../ui';
 
@@ -15,7 +15,7 @@ export class MarqueeComponent extends HTMLElement {
     private currentContentId: ContentStateKey | null = null;
 
     constructor(
-        private readonly controls: NavigationFacade = new NavigationFacade(),
+        private readonly controls: HomeNavigation = new HomeNavigation(),
         private readonly store: HomeStore = new HomeStore(),
     ) {
         super();

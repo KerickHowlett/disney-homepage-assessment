@@ -25,16 +25,11 @@ class StateReducer<T> {
         this.loadActions(actions);
     }
 
-    dispatch<P = unknown>(type: string, payload?: P): void {
-        if (!this.actions.has(type)) {
-            console.error(`[Action Not Found]: ${type}`);
-        }
-
+    dispatch(type: string, ...payload: any[]): void {
         const action: ActionCallback = this.actions.get(type)!;
         // @NOTE: The "Promise.resolve()" is to cover any possible instances
         //        where an action method might be async.
-        const actionResponse: T | Promise<T> = Promise.resolve(action(payload));
-
+        const actionResponse: T | Promise<T> = Promise.resolve(action(...payload));
         actionResponse
             .then((state: T): void => {
                 this.state = state;
