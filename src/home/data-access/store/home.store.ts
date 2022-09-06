@@ -1,15 +1,30 @@
-import type { Callback } from '@disney/shared';
+import type { Callback, StateReducer } from '@disney/shared';
 import { isUndefined, Singleton } from '@disney/shared';
-import { OnHomeAction } from './home.actions';
-import { HomeReducer } from './home.reducer';
-import type { Collection, CollectionStateKey, Content, ContentStateKey, HomeState } from './home.state';
+import { createReducer } from '@disney/shared/state/create-reducer.state';
+import {
+    loadHomeAPIAction,
+    loadPersonalizedCuratedSetAction,
+    LOAD_PERSONALIZED_COLLECTION,
+    LOAD_STANDARD_COLLECTIONS,
+} from './actions';
+import type { Collection, CollectionStateKey, Content, HomeState } from './state';
+import { ContentStateKey, getInitialHomeStoreState } from './state';
 import { byHavingContent, byHavingNoContent, byPersonalizedCollections, byStandardCollections } from './utils';
 
-const { LOAD_STANDARD_COLLECTIONS, LOAD_PERSONALIZED_COLLECTION } = OnHomeAction;
+const HOME_STORE_NAME = 'Home Store';
 
 @Singleton()
 export class HomeStore {
-    constructor(private readonly reducer: HomeReducer = new HomeReducer()) {}
+    private readonly reducer: StateReducer<HomeState>;
+
+    constructor() {
+        this.reducer = createReducer<HomeState>(
+            HOME_STORE_NAME,
+            getInitialHomeStoreState(),
+            loadHomeAPIAction,
+            loadPersonalizedCuratedSetAction,
+        );
+    }
 
     get collections(): Collection[] {
         return Array.from(this.state.collections.values());
@@ -52,11 +67,11 @@ export class HomeStore {
     }
 
     loadPersonalizedContent(refId: string): void {
-        this.reducer.on(LOAD_PERSONALIZED_COLLECTION, refId);
+        this.reducer.dispatch(LOAD_PERSONALIZED_COLLECTION, refId);
     }
 
     loadStandardCollections(): void {
-        this.reducer.on(LOAD_STANDARD_COLLECTIONS);
+        this.reducer.dispatch(LOAD_STANDARD_COLLECTIONS);
     }
 
     subscribe(callback: Callback): void {

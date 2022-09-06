@@ -1,6 +1,5 @@
 import { isEmpty } from '@disney/shared';
-import type { Collection } from '../home.state';
-import type { CollectionSetType } from '../types';
+import type { Collection, CollectionSetType } from '../state';
 
 export const CollectionType: Record<'STANDARD' | 'PERSONALIZED', CollectionSetType> = {
     STANDARD: 'CuratedSet',

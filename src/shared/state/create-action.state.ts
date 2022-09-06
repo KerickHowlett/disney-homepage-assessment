@@ -1,12 +1,12 @@
-export type ActionCallback<T> = (state: T, ...payload: unknown[]) => Partial<T>;
+export type ActionCallback = (...args: any[]) => any;
 export type ActionType = string;
-export interface Action<T> {
+export interface Action {
     type: ActionType;
-    callback: ActionCallback<T>;
+    callback: ActionCallback;
 }
-export type Actions<T> = Map<ActionType, ActionCallback<T>>;
+export type Actions = Map<ActionType, ActionCallback>;
 
-export const createAction = <T = unknown>(type: ActionType, callback: ActionCallback<T>): Action<T> => ({
+export const createAction = (type: ActionType, callback: ActionCallback): Action => ({
     type,
     callback,
 });
