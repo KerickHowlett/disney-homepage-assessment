@@ -23,8 +23,8 @@
 
 .content-tile-container::after {
     border-radius: 4px;
-    border: 4px solid rgba(255, 255, 255, 0);
-    inset: 0px;
+    border: 4px solid rgb(255 255 255 / 0%);
+    inset: 0;
     content: "";
     position: absolute;
     transition: border 300ms ease-out 0s;
@@ -35,11 +35,11 @@
     backface-visibility: hidden;
     background-color: transparent;
     border-radius: 4px;
-    box-shadow: rgba(0, 0, 0, 0.69) 0px 26px 30px -10px, rgba(0, 0, 0, 0.73) 0px 16px 10px -10px;
+    box-shadow: rgb(0 0 0 / 69%) 0 26px 30px -10px, rgb(0 0 0 / 73%) 0 16px 10px -10px;
     box-sizing: border-box;
     display: block;
     position: relative;
-    transform: scale(1, 1) translateZ(0px);
+    transform: scale(1, 1) translateZ(0);
     transition-duration: 300ms;
     transition-property: transform, box-shadow;
     transition-timing-function: ease-out;
@@ -47,14 +47,14 @@
 
 .content-tile-link:focus,
 .content-tile-link:focus-within {
-    box-shadow: rgb(0 0 0 / 80%) 0px 40px 58px -16px, rgb(0 0 0 / 72%) 0px 30px 22px -10px;
-    transform: scale(1.05, 1.05) translateZ(0px) translate3d(0px, 0px, 0px);
+    box-shadow: rgb(0 0 0 / 80%) 0 40px 58px -16px, rgb(0 0 0 / 72%) 0 30px 22px -10px;
+    transform: scale(1.05, 1.05) translateZ(0) translate3d(0, 0, 0);
 }
 
 .content-tile-link::after {
     border-radius: 4px;
-    border: 4px solid rgba(255, 255, 255, 0);
-    inset: 0px;
+    border: 4px solid rgb(255 255 255 / 0%);
+    inset: 0;
     content: "";
     position: absolute;
     transition: border 300ms ease-out 0s;
@@ -62,11 +62,11 @@
 
 .content-tile-link:focus::after,
 .content-tile-link:focus-within::after {
-    border: 4px solid rgba(249, 249, 249, 0.8);
+    border: 4px solid rgb(249 249 249 / 80%);
 }
 
 .image-container {
-    background: linear-gradient(rgb(48, 50, 62), rgb(30, 31, 42));
+    background: linear-gradient(rgb(48 50 62), rgb(30 31 42));
     border-radius: 4px;
     padding-top: 56.25%;
     overflow: hidden;
@@ -78,7 +78,7 @@
     border-style: none;
     display: block;
     height: 100%;
-    inset: 0px;
+    inset: 0;
     object-fit: cover;
     position: absolute;
     width: 100%;

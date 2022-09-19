@@ -80,18 +80,18 @@ export class MarqueeContentPreviewComponent extends HTMLElement {
     }
 
     private onError(): void {
-        this.videoElement.style.display = 'none';
         this.imageElement.style.display = 'block';
+        this.videoElement.style.display = 'none';
     }
 
     private onPosterSrcChange(posterSrc: string): void {
-        this.videoElement.poster = posterSrc;
         this.imageElement.src = posterSrc;
+        this.videoElement.poster = posterSrc;
     }
 
     private onSuccess(): void {
-        this.videoElement.style.display = 'block';
         this.imageElement.style.display = 'none';
+        this.videoElement.style.display = 'block';
         this.videoElement.play().catch(this.videoElement.pause.bind(this));
     }
 }

@@ -28,15 +28,12 @@ export class ImageComponent extends HTMLImageElement {
         this.bindImageEventHandlers();
     }
 
+    private bindImageEventHandlers(): void {
+        this.onerror = this.renderFailsafeImage.bind(this);
+    }
+
     protected renderFailsafeImage(): void {
         if (isNull(this.failsafeImage)) return;
         this.src = this.failsafeImage;
-    }
-
-    private bindImageEventHandlers(): void {
-        this.addEventListener('error', () => {
-            this.renderFailsafeImage();
-            return true;
-        });
     }
 }
