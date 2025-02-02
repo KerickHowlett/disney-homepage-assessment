@@ -20,7 +20,7 @@
     ],
     "engineStrict": true,
     "engines": {
-        "node": ">=18.0.0"
+        "node": ">=23.7.0"
     },
     "scripts": {
         "build": "run-s check:build:all build:no-type-check",
